@@ -15,6 +15,15 @@
   },
   "gallery": [
     {
+      "title": "anime",
+      "category": "Umum",
+      "description": "anime chan",
+      "image": "https://files.catbox.moe/sxrc1h.jpg",
+      "type": "image",
+      "id": "1763470141",
+      "date": "2025-11-18"
+    },
+    {
       "title": "test",
       "category": "Kegiatan",
       "description": "inih hanya test ajah ok",
