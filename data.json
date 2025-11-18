@@ -1,7 +1,6 @@
 {
   "settings": {
-    "anti_screenshot": true,
-    "maintenance_mode": false
+    "anti_screenshot": false
   },
   "school_profile": {
     "name": "Sekolah",
@@ -15,45 +14,14 @@
   },
   "gallery": [
     {
-      "title": "anime",
-      "category": "Umum",
-      "description": "anime chan",
-      "image": "https://files.catbox.moe/sxrc1h.jpg",
-      "type": "image",
-      "id": "1763470141",
-      "date": "2025-11-18"
-    },
-    {
-      "title": "test",
-      "category": "Kegiatan",
-      "description": "inih hanya test ajah ok",
-      "image": "https://files.catbox.moe/sxrc1h.jpg",
-      "type": "image",
-      "id": "1763468490",
-      "date": "2025-11-18"
-    },
-    {
       "id": "1",
-      "title": "Contoh Postingan",
+      "title": "Selamat Datang",
       "image": "https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000",
-      "description": "Ini contoh postingan pertama.",
+      "description": "Website sekolah baru.",
       "category": "Umum",
       "date": "2025-11-18",
       "type": "image"
     }
   ],
-  "teachers": [
-    {
-      "name": "sigit",
-      "role": "murid",
-      "image": "https://files.catbox.moe/sxrc1h.jpg",
-      "socials": {
-        "wa": "https://wa.me/6285891267541",
-        "ig": "https://www.instagram.com/cyber_scurity12?igsh=MmcxeXR4NWtobzc3",
-        "tt": "https://www.tiktok.com/@penggemar1112?_r=1&_t=ZS-91VDKcCluXl",
-        "yt": "https://youtube.com/@guepunyacerita?si=UVWVfga-SI9aP3aa"
-      },
-      "id": "t1763470278"
-    }
-  ]
+  "teachers": []
 }
