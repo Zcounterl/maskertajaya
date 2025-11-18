@@ -42,5 +42,18 @@
       "type": "image"
     }
   ],
-  "teachers": []
+  "teachers": [
+    {
+      "name": "sigit",
+      "role": "murid",
+      "image": "https://files.catbox.moe/sxrc1h.jpg",
+      "socials": {
+        "wa": "https://wa.me/6285891267541",
+        "ig": "https://www.instagram.com/cyber_scurity12?igsh=MmcxeXR4NWtobzc3",
+        "tt": "https://www.tiktok.com/@penggemar1112?_r=1&_t=ZS-91VDKcCluXl",
+        "yt": "https://youtube.com/@guepunyacerita?si=UVWVfga-SI9aP3aa"
+      },
+      "id": "t1763470278"
+    }
+  ]
 }
