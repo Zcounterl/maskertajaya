@@ -1,6 +1,7 @@
 {
   "settings": {
-    "anti_screenshot": true
+    "anti_screenshot": true,
+    "maintenance_mode": false
   },
   "school_profile": {
     "name": "Sekolah",
@@ -32,5 +33,22 @@
       "type": "image"
     }
   ],
-  "teachers": []
+  "teachers": [],
+  "playlist": [
+    {
+      "title": "musik galau",
+      "artist": "sigit",
+      "src": "https://files.catbox.moe/dy8z1p.mp3",
+      "cover": "",
+      "type": "audio",
+      "id": "p1763473376",
+      "date": "2025-11-18"
+    }
+  ],
+  "developer": {
+    "whatsapp": "",
+    "tiktok": "",
+    "youtube": "",
+    "github": ""
+  }
 }
