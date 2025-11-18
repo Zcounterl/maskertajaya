@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Sekolah Digital</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -14,17 +13,13 @@
     <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
-
     <script>
         tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { dark: "#0f172a", primary: "#38bdf8", secondary: "#818cf8" } } } }
     </script>
-
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         body { background-color: #020617; color: #e2e8f0; overflow-x: hidden; user-select: none; -webkit-user-select: none; }
-        
         #nprogress .bar { background: #38bdf8 !important; height: 4px !important; }
-        
         .glass-panel {
             background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(20px);
@@ -32,24 +27,17 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
         }
-        
-        /* Navigasi Aktif Mobile & Desktop */
         .nav-active { background: rgba(56, 189, 248, 0.2) !important; color: #38bdf8 !important; border-left: 3px solid #38bdf8; }
         .nav-desktop-active { background: #38bdf8 !important; color: white !important; box-shadow: 0 0 15px rgba(56, 189, 248, 0.5); }
-
-        /* Anti-Screenshot Overlay */
-        #privacy-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; align-items: center; justify-content: center; color: white; font-size: 1.5rem; font-weight: bold; text-align: center; }
-        
-        /* Detail Page Typography */
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(6, 182, 212, 0.15); border-color: rgba(56, 189, 248, 0.5); }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         .rich-text p { margin-bottom: 1.5em; line-height: 1.8; color: #cbd5e1; }
+        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
     </style>
 </head>
 <body class="antialiased">
-
-    <div id="privacy-overlay">
-        <div><i class="fas fa-lock fa-3x mb-4 text-red-500"></i><br>Konten Dilindungi<br><span class="text-sm text-gray-500 font-normal">Dilarang mengambil tangkapan layar</span></div>
-    </div>
-
     <div class="fixed inset-0 z-[-1] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-[#020617] to-black"></div>
     <div class="fixed top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
 
@@ -65,55 +53,34 @@
                         <span class="text-[10px] text-sky-400 tracking-[0.3em] uppercase" id="nav-brand-color">Digital</span>
                     </div>
                 </div>
-                
                 <div class="hidden md:flex items-center space-x-2 bg-white/5 p-1 rounded-full border border-white/10 backdrop-blur-md">
                     <button onclick="navigateTo('home')" id="d-btn-home" class="nav-desk px-5 py-2 rounded-full text-sm font-medium transition-all text-gray-400 hover:text-white">Galeri</button>
-                    <button onclick="navigateTo('archive')" id="d-btn-archive" class="nav-desk px-5 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Arsip</button>
+                    <button onclick="navigateTo('playlist')" id="d-btn-playlist" class="nav-desk px-5 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Playlist</button>
                     <button onclick="navigateTo('teachers')" id="d-btn-teachers" class="nav-desk px-5 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Guru</button>
                     <button onclick="navigateTo('about')" id="d-btn-about" class="nav-desk px-5 py-2 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Profil</button>
                 </div>
-                
                 <button onclick="toggleMenu()" class="md:hidden w-10 h-10 flex items-center justify-center text-white bg-white/5 rounded-lg border border-white/10 active:scale-95 transition"><i class="fas fa-bars"></i></button>
             </div>
         </div>
-
         <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-white/5 absolute w-full left-0 transform transition-all duration-300 origin-top">
             <div class="p-4 space-y-2">
-                <button onclick="navigateTo('home')" id="m-btn-home" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3">
-                    <i class="fas fa-images w-6 text-center"></i> Galeri Utama
-                </button>
-                <button onclick="navigateTo('teachers')" id="m-btn-teachers" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3">
-                    <i class="fas fa-chalkboard-teacher w-6 text-center"></i> Direktori Guru
-                </button>
-                <button onclick="navigateTo('archive')" id="m-btn-archive" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3">
-                    <i class="fas fa-history w-6 text-center"></i> Arsip Sekolah
-                </button>
-                <button onclick="navigateTo('about')" id="m-btn-about" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3">
-                    <i class="fas fa-info-circle w-6 text-center"></i> Profil Sekolah
-                </button>
-                
+                <button onclick="navigateTo('home')" id="m-btn-home" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3"><i class="fas fa-images w-6 text-center"></i> Galeri Utama</button>
+                <button onclick="navigateTo('playlist')" id="m-btn-playlist" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3"><i class="fas fa-headphones-alt w-6 text-center"></i> Playlist Multimedia</button>
+                <button onclick="navigateTo('teachers')" id="m-btn-teachers" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3"><i class="fas fa-chalkboard-teacher w-6 text-center"></i> Direktori Guru</button>
+                <button onclick="navigateTo('about')" id="m-btn-about" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3"><i class="fas fa-info-circle w-6 text-center"></i> Profil Sekolah</button>
                 <div class="border-t border-white/10 my-2"></div>
-                
-                <button onclick="navigateTo('settings')" id="m-btn-settings" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3">
-                    <i class="fas fa-cog w-6 text-center"></i> Pengaturan
-                </button>
+                <button onclick="navigateTo('settings')" id="m-btn-settings" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 font-medium hover:bg-white/5 transition flex items-center gap-3"><i class="fas fa-cog w-6 text-center"></i> Pengaturan</button>
             </div>
         </div>
     </nav>
 
     <main class="relative z-10 pt-28 pb-20 min-h-screen container mx-auto px-4 sm:px-6">
-        
         <section id="view-home" class="view-section transition-all duration-500">
             <div class="text-center max-w-3xl mx-auto mb-12" data-aos="fade-down">
-                <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">
-                    Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-purple-500">Aktivitas</span>
-                </h1>
+                <h1 class="text-4xl md:text-6xl font-black text-white mb-6 leading-tight">Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-purple-500">Aktivitas</span></h1>
                 <div class="glass-panel p-2 rounded-2xl flex flex-col md:flex-row gap-3 shadow-2xl">
-                    <div class="relative flex-grow">
-                        <i class="fas fa-search absolute left-5 top-4 text-gray-500"></i>
-                        <input type="text" id="searchInput" placeholder="Cari momen..." class="w-full bg-black/20 text-white pl-12 pr-4 py-3.5 rounded-xl border border-transparent focus:border-sky-500/50 focus:bg-black/40 focus:outline-none transition">
-                    </div>
-                    <select id="categoryFilter" class="bg-black/20 text-gray-300 px-6 py-3.5 rounded-xl border border-transparent focus:border-sky-500/50 focus:bg-black/40 focus:outline-none">
+                    <div class="relative flex-grow"><i class="fas fa-search absolute left-5 top-4 text-gray-500"></i><input type="text" id="searchInput" placeholder="Cari momen..." class="w-full bg-black/20 text-white pl-12 pr-4 py-3.5 rounded-xl border border-transparent focus:border-sky-500/50 focus:bg-black/40 focus:outline-none transition"></div>
+                    <select id="categoryFilter" class="bg-black/20 text-gray-300 px-6 py-3.5 rounded-xl border border-transparent focus:border-sky-500/50 focus:bg-black/40 focus:outline-none cursor-pointer hover:bg-black/30 transition font-medium appearance-none pr-10">
                         <option value="all">Semua</option><option value="Prestasi">🏆 Prestasi</option><option value="Kegiatan">⛺ Kegiatan</option><option value="Organisasi">👔 Organisasi</option><option value="Video">🎬 Video</option><option value="Umum">📷 Umum</option>
                     </select>
                 </div>
@@ -121,48 +88,9 @@
             <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
-        <section id="view-detail" class="view-section hidden">
-            <button onclick="navigateTo('home')" class="mb-6 flex items-center gap-2 text-sky-400 hover:text-white transition font-bold bg-white/5 px-4 py-2 rounded-full w-fit">
-                <i class="fas fa-arrow-left"></i> Kembali ke Galeri
-            </button>
-            
-            <div class="glass-panel rounded-3xl overflow-hidden border border-white/10">
-                <div class="w-full bg-black relative group" id="detail-hero-container">
-                    </div>
-                
-                <div class="p-8 md:p-12">
-                    <div class="flex flex-wrap items-center gap-4 mb-6">
-                        <span id="detail-cat" class="px-4 py-1.5 rounded-full text-sm font-bold bg-sky-500 text-white shadow-lg shadow-sky-500/20">Kategori</span>
-                        <span id="detail-date" class="text-gray-400 font-mono text-sm"><i class="far fa-calendar mr-2"></i>Date</span>
-                    </div>
-                    
-                    <h1 id="detail-title" class="text-3xl md:text-5xl font-bold text-white mb-8 leading-tight">Judul Postingan</h1>
-                    
-                    <div class="prose prose-invert prose-lg max-w-none text-gray-300 rich-text">
-                        <p id="detail-desc">Sinopsis lengkap...</p>
-                    </div>
-                    
-                    <div class="mt-12 pt-8 border-t border-white/10">
-                        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
-                            <div class="text-center md:text-left">
-                                <p class="text-sm text-gray-500 uppercase tracking-widest mb-2">Developer</p>
-                                <div class="flex items-center gap-3">
-                                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">G</div>
-                                    <div>
-                                        <h4 class="text-white font-bold">Garuda Security</h4>
-                                        <p class="text-xs text-gray-400">Web & Security Expert</p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <a href="#" class="w-10 h-10 rounded-full bg-white/5 hover:bg-[#25D366] text-gray-400 hover:text-white flex items-center justify-center transition"><i class="fab fa-whatsapp"></i></a>
-                                <a href="#" class="w-10 h-10 rounded-full bg-white/5 hover:bg-black text-gray-400 hover:text-white flex items-center justify-center transition"><i class="fab fa-tiktok"></i></a>
-                                <a href="#" class="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-600 text-gray-400 hover:text-white flex items-center justify-center transition"><i class="fab fa-github"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <section id="view-playlist" class="view-section hidden">
+            <div class="text-center max-w-3xl mx-auto mb-12"><h1 class="text-4xl md:text-6xl font-black text-white mb-6"><span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500">Playlist</span> Multimedia</h1></div>
+            <div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div>
         </section>
 
         <section id="view-teachers" class="view-section hidden">
@@ -170,25 +98,11 @@
             <div id="teacher-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </section>
 
-        <section id="view-archive" class="view-section hidden">
-            <div class="max-w-4xl mx-auto"><div class="mb-12 text-center"><h2 class="text-3xl font-bold text-white mb-2">Jejak Waktu</h2></div><div id="archive-list" class="relative border-l-2 border-white/10 ml-4 space-y-8 pb-12"></div></div>
-        </section>
-
         <section id="view-settings" class="view-section hidden">
             <div class="max-w-2xl mx-auto glass-panel rounded-2xl p-8">
-                <h2 class="text-2xl font-bold text-white mb-6 border-b border-white/10 pb-4">Pengaturan Tampilan</h2>
+                <h2 class="text-2xl font-bold text-white mb-6 border-b border-white/10 pb-4">Pengaturan</h2>
                 <div class="space-y-6">
-                    <div class="flex justify-between items-center">
-                        <div><h3 class="text-white font-medium">Mode Gelap</h3><p class="text-xs text-gray-500">Tampilan default (Permanen)</p></div>
-                        <div class="w-12 h-6 bg-sky-500 rounded-full relative"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full shadow"></div></div>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div><h3 class="text-white font-medium">Animasi Latar</h3><p class="text-xs text-gray-500">Matikan untuk performa</p></div>
-                        <button onclick="document.body.classList.toggle('no-anim')" class="text-sky-400 text-sm hover:underline">Toggle</button>
-                    </div>
-                    <div class="bg-blue-500/10 p-4 rounded-xl border border-blue-500/20">
-                        <p class="text-sm text-blue-200"><i class="fas fa-info-circle mr-2"></i>Pengaturan admin (Data Sekolah, Guru, dll) hanya dapat diakses melalui Terminal Python.</p>
-                    </div>
+                    <div class="flex justify-between items-center"><div><h3 class="text-white font-medium">Mode Gelap</h3><p class="text-xs text-gray-500">Permanen</p></div><div class="w-11 h-6 bg-blue-600 rounded-full relative"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div></div>
                 </div>
             </div>
         </section>
@@ -197,96 +111,66 @@
             <div class="max-w-5xl mx-auto glass-panel rounded-3xl p-12 border border-white/10">
                 <h2 class="text-4xl font-bold text-white mb-6">Visi & Misi</h2>
                 <div class="space-y-6">
-                    <div class="bg-white/5 p-6 rounded-2xl border-l-4 border-sky-500">
-                        <p id="about-vision" class="text-gray-200 text-lg italic">Memuat...</p>
-                    </div>
-                    <div class="bg-white/5 p-6 rounded-2xl border-l-4 border-purple-500">
-                        <p id="about-mission" class="text-gray-400 whitespace-pre-line">Memuat...</p>
-                    </div>
+                    <div class="bg-white/5 p-6 rounded-2xl border-l-4 border-sky-500"><p id="about-vision" class="text-gray-200 text-lg italic">Memuat...</p></div>
+                    <div class="bg-white/5 p-6 rounded-2xl border-l-4 border-purple-500"><p id="about-mission" class="text-gray-400 whitespace-pre-line">Memuat...</p></div>
                 </div>
             </div>
+        </section>
+        
+        <section id="view-archive" class="view-section hidden">
+            <div class="max-w-4xl mx-auto"><div class="mb-12 text-center"><h2 class="text-3xl font-bold text-white mb-2">Arsip</h2></div><div id="archive-list" class="relative border-l-2 border-white/10 ml-4 space-y-8 pb-12"></div></div>
         </section>
     </main>
 
     <div id="detail-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-xl transition-opacity opacity-0" id="modal-backdrop" onclick="closeModal()"></div>
-        <div class="bg-[#0f172a] w-full max-w-md rounded-2xl overflow-hidden shadow-2xl border border-white/10 relative transform scale-95 opacity-0 transition-all duration-300 z-10" id="modal-card">
-            <div class="p-4 bg-black flex items-center justify-center relative" id="modal-media-container"></div>
-            <div class="p-6">
-                <h2 id="m-title" class="text-xl font-bold text-white mb-2 line-clamp-1">Judul</h2>
-                <p id="m-desc" class="text-gray-400 text-sm line-clamp-3 mb-4">Deskripsi...</p>
-                <button onclick="openFullPage()" class="w-full py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white font-bold transition shadow-lg shadow-sky-500/20">
-                    Lihat Selengkapnya
-                </button>
+        <div class="bg-[#0f172a] w-full max-w-6xl max-h-[95vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col lg:flex-row relative transform scale-95 opacity-0 transition-all duration-300 z-10" id="modal-card">
+            <button onclick="closeModal()" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center transition border border-white/20"><i class="fas fa-times"></i></button>
+            <div class="lg:w-2/3 bg-black flex items-center justify-center relative overflow-hidden" id="media-container"></div>
+            <div class="lg:w-1/3 p-8 flex flex-col bg-[#1e293b] border-l border-white/5 overflow-y-auto custom-scrollbar">
+                <div class="flex items-center gap-3 mb-6"><span id="m-cat" class="px-3 py-1 rounded-full text-xs font-bold bg-sky-500/20 text-sky-400 border border-sky-500/20 uppercase tracking-wider"></span><span id="m-date" class="text-xs text-gray-400 font-mono"></span></div>
+                <h2 id="m-title" class="text-2xl font-bold text-white mb-4 leading-snug"></h2>
+                <div class="prose prose-invert prose-sm max-w-none text-gray-300 mb-8 flex-grow"><p id="m-desc"></p></div>
+                <div class="mt-auto pt-6 border-t border-white/10">
+                    <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div class="text-center md:text-left"><p class="text-xs text-gray-500 uppercase tracking-widest mb-2">Developer</p><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">D</div><div><h4 class="text-white text-sm font-bold">Garuda</h4></div></div></div>
+                        <div class="flex gap-3" id="dev-socials"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
         AOS.init({ duration: 800, once: true });
-        let db = { gallery: [], teachers: [], profile: {}, settings: {} };
-        let currentItem = null;
-
-        // --- SMART NAVIGATION ---
+        let db = { gallery: [], teachers: [], playlist: [], profile: {}, settings: {}, developer: {} };
+        
         function navigateTo(pageId) {
             NProgress.start();
-            // Hide all pages
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            // Show target
-            const target = document.getElementById(`view-${pageId}`);
-            if(target) target.classList.remove('hidden');
-            
-            // Update Active State (Desktop)
-            document.querySelectorAll('.nav-desk').forEach(btn => {
-                btn.classList.remove('nav-desktop-active');
-                btn.classList.add('text-gray-400');
-            });
+            document.getElementById(`view-${pageId}`).classList.remove('hidden');
+            document.querySelectorAll('.nav-desk').forEach(btn => { btn.classList.remove('nav-desktop-active'); btn.classList.add('text-gray-400'); });
             const activeDesk = document.getElementById(`d-btn-${pageId}`);
-            if(activeDesk) {
-                activeDesk.classList.add('nav-desktop-active');
-                activeDesk.classList.remove('text-gray-400');
-            }
-
-            // Update Active State (Mobile)
-            document.querySelectorAll('#mobile-menu button').forEach(btn => {
-                btn.classList.remove('nav-active', 'bg-white/5', 'text-sky-400');
-                btn.classList.add('text-gray-300');
-            });
+            if(activeDesk) { activeDesk.classList.add('nav-desktop-active'); activeDesk.classList.remove('text-gray-400'); }
+            document.querySelectorAll('#mobile-menu button').forEach(btn => { btn.classList.remove('nav-active', 'bg-white/5', 'text-sky-400'); btn.classList.add('text-gray-300'); });
             const activeMob = document.getElementById(`m-btn-${pageId}`);
-            if(activeMob) {
-                activeMob.classList.add('nav-active');
-                activeMob.classList.remove('text-gray-300');
-            }
-            
+            if(activeMob) { activeMob.classList.add('nav-active'); activeMob.classList.remove('text-gray-300'); }
             window.scrollTo(0, 0);
             document.getElementById('mobile-menu').classList.add('hidden');
             NProgress.done();
         }
         function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
 
-        // --- DATA LOADER & RENDER ---
         async function loadData() {
             NProgress.start();
             try {
                 const res = await fetch('data.json?t=' + Date.now());
                 if(!res.ok) throw new Error("Data missing");
                 const data = await res.json();
+                db.gallery = data.gallery || []; db.teachers = data.teachers || []; db.playlist = data.playlist || []; db.profile = data.school_profile || {}; db.settings = data.settings || {}; db.developer = data.developer || {};
                 
-                db.gallery = data.gallery || [];
-                db.teachers = data.teachers || [];
-                db.profile = data.school_profile || {};
-                db.settings = data.settings || {};
-
-                applySecurity(db.settings);
-                applyProfile(db.profile);
-                renderGallery(db.gallery);
-                renderTeachers(db.teachers);
-                renderArchive(db.gallery);
-                
-                // Init Home Active
-                const activeDesk = document.getElementById('d-btn-home');
-                if(activeDesk) activeDesk.classList.add('nav-desktop-active');
-                
+                applySecurity(db.settings); applyProfile(db.profile); renderGallery(db.gallery); renderTeachers(db.teachers); renderPlaylist(db.playlist); renderArchive(db.gallery);
+                const activeDesk = document.getElementById('d-btn-home'); if(activeDesk) activeDesk.classList.add('nav-desktop-active');
             } catch (e) { console.error(e); }
             NProgress.done();
         }
@@ -294,18 +178,10 @@
         function applySecurity(settings) {
             if(settings.anti_screenshot) {
                 document.addEventListener('contextmenu', event => event.preventDefault());
-                // Anti-SS: Blur saat ganti tab/tidak fokus
-                window.addEventListener('blur', () => {
-                    document.body.style.filter = 'blur(20px)';
-                    document.title = "🔒 Terkunci";
-                });
-                window.addEventListener('focus', () => {
-                    document.body.style.filter = 'none';
-                    document.title = db.profile.name || "Sekolah";
-                });
+                window.addEventListener('blur', () => { document.body.style.filter = 'blur(20px)'; document.title = "🔒 Terkunci"; });
+                window.addEventListener('focus', () => { document.body.style.filter = 'none'; document.title = db.profile.name || "Sekolah"; });
             }
         }
-
         function applyProfile(profile) {
             if(!profile) return;
             document.getElementById('nav-school-name').innerText = profile.name || "Sekolah";
@@ -318,20 +194,26 @@
             const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
             items.forEach((item, i) => {
                 const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
-                const mediaHtml = isVideo ? 
-                    `<div class="w-full h-full bg-gray-800 flex items-center justify-center"><i class="fas fa-play-circle text-5xl text-white/50"></i><video src="${item.image}#t=0.1" class="absolute inset-0 w-full h-full object-cover opacity-60"></video></div>` : 
-                    `<img src="${item.image}" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">`;
-
+                const mediaHtml = isVideo ? `<div class="w-full h-full bg-gray-800 flex items-center justify-center"><i class="fas fa-play-circle text-5xl text-white/50"></i><video src="${item.image}#t=0.1" class="absolute inset-0 w-full h-full object-cover opacity-60"></video></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110">`;
                 const div = document.createElement('div');
                 div.className = 'glass-panel rounded-2xl overflow-hidden group cursor-pointer card-hover flex flex-col h-full';
                 div.onclick = () => openModal(item);
-                div.innerHTML = `
-                    <div class="h-56 relative bg-black/50">${mediaHtml}<div class="absolute top-3 left-3"><span class="px-3 py-1 rounded-lg text-[10px] font-bold bg-black/40 text-white border border-white/10 uppercase">${item.category}</span></div></div>
-                    <div class="p-5 flex flex-col flex-grow">
-                        <div class="flex items-center gap-2 text-xs text-gray-400 mb-2"><i class="far fa-calendar"></i> ${item.date}</div>
-                        <h3 class="text-lg font-bold text-white mb-2 leading-snug line-clamp-2 group-hover:text-sky-400 transition">${item.title}</h3>
-                    </div>`;
+                div.innerHTML = `<div class="h-56 relative bg-black/50">${mediaHtml}<div class="absolute top-3 left-3"><span class="px-3 py-1 rounded-lg text-[10px] font-bold bg-black/40 text-white border border-white/10 uppercase">${item.category}</span></div></div><div class="p-5 flex flex-col flex-grow"><div class="flex items-center gap-2 text-xs text-gray-400 mb-2"><i class="far fa-calendar"></i> ${item.date}</div><h3 class="text-lg font-bold text-white mb-2 leading-snug line-clamp-2 group-hover:text-sky-400 transition">${item.title}</h3></div>`;
                 grid.appendChild(div);
+            });
+        }
+        
+        function renderPlaylist(items) {
+            const container = document.getElementById('playlist-container'); container.innerHTML = '';
+            if(items.length === 0) { container.innerHTML = '<div class="text-center text-gray-500 col-span-full">Playlist kosong.</div>'; return; }
+            items.forEach(item => {
+                const isVideo = item.type === 'video';
+                const icon = isVideo ? 'fa-video' : 'fa-music';
+                const div = document.createElement('div');
+                div.className = 'glass-panel p-4 rounded-xl flex items-center gap-4 hover:bg-white/5 transition cursor-pointer';
+                div.onclick = () => openModal({ title: item.title, description: `Artis: ${item.artist}`, image: item.src, type: item.type, category: 'Playlist', date: item.date });
+                div.innerHTML = `<div class="w-12 h-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white"><i class="fas ${icon}"></i></div><div><h4 class="font-bold text-white line-clamp-1">${item.title}</h4><p class="text-xs text-gray-400">${item.artist}</p></div><div class="ml-auto"><i class="fas fa-play text-sky-400"></i></div>`;
+                container.appendChild(div);
             });
         }
 
@@ -339,24 +221,9 @@
             const grid = document.getElementById('teacher-grid'); grid.innerHTML = '';
             list.forEach(t => {
                 let socials = '';
-                if(t.socials) {
-                    for (const [k, v] of Object.entries(t.socials)) {
-                        if(!v) continue;
-                        const icons = {wa:'whatsapp', ig:'instagram', fb:'facebook', yt:'youtube', tt:'tiktok', email:'envelope'};
-                        const colors = {wa:'text-green-400', ig:'text-pink-400', fb:'text-blue-400', yt:'text-red-400', tt:'text-purple-400', email:'text-yellow-400'};
-                        socials += `<a href="${v}" target="_blank" class="${colors[k] || 'text-white'} hover:scale-110 transition"><i class="fab fa-${icons[k] || 'link'} text-xl"></i></a>`;
-                    }
-                }
-                const div = document.createElement('div');
-                div.className = 'glass-panel p-6 rounded-2xl text-center border border-white/5 hover:-translate-y-2 transition duration-300';
-                div.innerHTML = `
-                    <div class="w-24 h-24 mx-auto rounded-full p-1 bg-gradient-to-br from-gray-700 to-gray-800 mb-4 relative group">
-                        <img src="${t.image}" class="w-full h-full rounded-full object-cover border-2 border-sky-500/30">
-                    </div>
-                    <h3 class="text-lg font-bold text-white">${t.name}</h3>
-                    <p class="text-sm text-sky-400 mb-4">${t.role}</p>
-                    <div class="flex justify-center gap-4 bg-black/20 py-2 rounded-lg">${socials || '<span class="text-xs text-gray-600">-</span>'}</div>
-                `;
+                if(t.socials) { for (const [k, v] of Object.entries(t.socials)) { if(!v) continue; socials += `<a href="${v}" target="_blank" class="text-gray-400 hover:text-white transition mx-1"><i class="fab fa-${k==='wa'?'whatsapp':k==='ig'?'instagram':k==='yt'?'youtube':k==='tt'?'tiktok':'facebook'}"></i></a>`; } }
+                const div = document.createElement('div'); div.className = 'glass-panel p-6 rounded-2xl text-center border border-white/5 hover:-translate-y-2 transition duration-300';
+                div.innerHTML = `<div class="w-24 h-24 mx-auto rounded-full p-1 bg-gradient-to-br from-gray-700 to-gray-800 mb-4"><img src="${t.image}" class="w-full h-full rounded-full object-cover border-2 border-sky-500/30"></div><h3 class="text-lg font-bold text-white mb-1">${t.name}</h3><p class="text-sm text-sky-400 mb-4">${t.role}</p><div class="flex justify-center gap-3 text-lg">${socials}</div>`;
                 grid.appendChild(div);
             });
         }
@@ -370,61 +237,27 @@
              });
         }
 
-        // --- MODAL & FULL PAGE LOGIC ---
         const modal = document.getElementById('detail-modal');
-        const modalContent = document.getElementById('modal-card');
         const mediaContainer = document.getElementById('modal-media-container');
-
         function openModal(item) {
-            currentItem = item;
-            const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
-            mediaContainer.innerHTML = isVideo ? `<video src="${item.image}" class="w-full max-h-64 object-cover rounded-lg" muted playsinline autoplay loop></video>` : `<img src="${item.image}" class="w-full max-h-64 object-cover rounded-lg">`;
+            const isVideo = item.type === 'video' || item.image.endsWith('.mp4') || (item.src && item.src.endsWith('.mp4'));
+            const src = item.src || item.image;
+            mediaContainer.innerHTML = isVideo ? `<video id="player" playsinline controls class="max-w-full max-h-[80vh]"><source src="${src}" type="video/mp4" /></video>` : (item.type === 'audio' ? `<audio id="player" controls class="w-full"><source src="${src}" type="audio/mp3"></audio><div class="mt-4 text-center"><i class="fas fa-music text-6xl text-purple-500 animate-pulse"></i></div>` : `<img src="${src}" class="max-w-full max-h-[85vh] object-contain rounded-lg">`);
+            if(isVideo || item.type === 'audio') new Plyr('#player', { autoplay: true });
             
-            document.getElementById('m-title').innerText = item.title;
-            document.getElementById('m-desc').innerText = item.description;
+            document.getElementById('m-title').innerText = item.title; document.getElementById('m-desc').innerText = item.description; document.getElementById('m-cat').innerText = item.category; document.getElementById('m-date').innerText = item.date;
             
-            modal.classList.remove('hidden');
-            setTimeout(() => {
-                document.getElementById('modal-backdrop').classList.remove('opacity-0');
-                modalContent.classList.remove('opacity-0', 'scale-95');
-                modalContent.classList.add('scale-100');
-            }, 10);
-        }
-
-        function closeModal() {
-            document.getElementById('modal-backdrop').classList.add('opacity-0');
-            modalContent.classList.remove('scale-100'); modalContent.classList.add('opacity-0', 'scale-95');
-            setTimeout(() => modal.classList.add('hidden'), 300);
-        }
-
-        function openFullPage() {
-            closeModal();
-            if(!currentItem) return;
-            
-            // Populate Full Page
-            const isVideo = currentItem.type === 'video' || currentItem.image.endsWith('.mp4');
-            const heroContainer = document.getElementById('detail-hero-container');
-            
-            if(isVideo) {
-                heroContainer.innerHTML = `
-                    <div class="video-wrapper">
-                        <video id="player-full" playsinline controls>
-                            <source src="${currentItem.image}" type="video/mp4" />
-                        </video>
-                    </div>`;
-                new Plyr('#player-full', { autoplay: true });
-            } else {
-                heroContainer.innerHTML = `<img src="${currentItem.image}" class="w-full max-h-[70vh] object-contain mx-auto">`;
+            // Render Developer Socials
+            const devContainer = document.getElementById('dev-socials'); devContainer.innerHTML = '';
+            if(db.developer) {
+                if(db.developer.whatsapp) devContainer.innerHTML += `<a href="${db.developer.whatsapp}" target="_blank" class="w-10 h-10 rounded-full bg-white/5 hover:bg-green-500 flex items-center justify-center text-white transition"><i class="fab fa-whatsapp"></i></a>`;
+                if(db.developer.tiktok) devContainer.innerHTML += `<a href="${db.developer.tiktok}" target="_blank" class="w-10 h-10 rounded-full bg-white/5 hover:bg-pink-500 flex items-center justify-center text-white transition"><i class="fab fa-tiktok"></i></a>`;
+                if(db.developer.youtube) devContainer.innerHTML += `<a href="${db.developer.youtube}" target="_blank" class="w-10 h-10 rounded-full bg-white/5 hover:bg-red-500 flex items-center justify-center text-white transition"><i class="fab fa-youtube"></i></a>`;
             }
             
-            document.getElementById('detail-cat').innerText = currentItem.category;
-            document.getElementById('detail-date').innerText = currentItem.date;
-            document.getElementById('detail-title').innerText = currentItem.title;
-            document.getElementById('detail-desc').innerText = currentItem.description;
-            
-            navigateTo('detail');
+            modal.classList.remove('hidden'); setTimeout(() => { document.getElementById('modal-backdrop').classList.remove('opacity-0'); document.getElementById('modal-card').classList.remove('opacity-0', 'scale-95'); document.getElementById('modal-card').classList.add('scale-100'); }, 10);
         }
-
+        function closeModal() { document.getElementById('modal-backdrop').classList.add('opacity-0'); document.getElementById('modal-card').classList.remove('scale-100'); document.getElementById('modal-card').classList.add('opacity-0', 'scale-95'); setTimeout(() => { modal.classList.add('hidden'); mediaContainer.innerHTML = ''; }, 300); }
         loadData();
     </script>
 </body>
