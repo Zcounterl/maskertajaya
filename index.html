@@ -20,31 +20,87 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { dark: "#0b0f19", surface: "#111827", primary: "#38bdf8", secondary: "#818cf8" } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { dark: "#0b0f19", surface: "#111827", primary: "#38bdf8", secondary: "#818cf8" }
+                }
+            }
+        }
     </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
         body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
         #nprogress .bar { background: #38bdf8 !important; height: 3px !important; }
-        .glass-panel { background: rgba(20, 25, 40, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
         
-        /* CHAT UI FIX */
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(20, 25, 40, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* --- CHAT UI MODERN (BUBBLE STYLE) --- */
         .chat-container { display: flex; flex-direction: column; gap: 6px; padding-bottom: 10px; }
-        .chat-card { max-width: 80%; width: fit-content; padding: 8px 12px; border-radius: 12px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; word-wrap: break-word; }
-        .chat-me { align_self: flex-end; background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border-bottom-right-radius: 2px; margin-left: auto; }
-        .chat-other { align_self: flex-start; background: #1e293b; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); border-bottom-left-radius: 2px; margin-right: auto; }
+        
+        .chat-card {
+            max-width: 80%; 
+            width: fit-content;
+            padding: 8px 12px;
+            border-radius: 12px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            word-wrap: break-word;
+        }
+
+        /* Pesan Saya (Kanan) */
+        .chat-me {
+            align_self: flex-end;
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: white;
+            border-bottom-right-radius: 2px;
+            margin-left: auto;
+        }
+
+        /* Pesan Orang Lain (Kiri) */
+        .chat-other {
+            align_self: flex-start;
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-bottom-left-radius: 2px;
+            margin-right: auto;
+        }
+
         .c-user { font-size: 0.65rem; font-weight: 800; margin-bottom: 2px; opacity: 0.9; letter-spacing: 0.5px; }
         .c-text { font-size: 0.9rem; line-height: 1.4; }
-        .c-meta { font-size: 0.6rem; margin-top: 4px; opacity: 0.7; align-self: flex-end; display: flex; gap: 8px; align-items: center; margin-left: auto; }
-        .chat-me .c-user { color: #bae6fd; } .chat-other .c-user { color: #38bdf8; }
+        .c-meta { 
+            font-size: 0.6rem; margin-top: 4px; opacity: 0.7; 
+            align-self: flex-end;
+            display: flex; gap: 8px; align-items: center; margin-left: auto;
+        }
+        
+        .chat-me .c-user { color: #bae6fd; }
+        .chat-other .c-user { color: #38bdf8; }
         .reply-quote { background: rgba(0,0,0,0.2); border-left: 2px solid rgba(255,255,255,0.5); padding: 4px 8px; margin-bottom: 4px; border-radius: 4px; font-size: 0.7rem; opacity: 0.8; }
+        /* --- END CHAT UI --- */
 
-        .clickable { cursor: pointer; user-select: none; transition: transform 0.1s; } .clickable:active { transform: scale(0.95); }
+        .clickable { cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .clickable:active { transform: scale(0.95); }
         .like-bounce { animation: bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #ef4444 !important; }
         @keyframes bounce { 0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
-        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0b0f19; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
+        ::-webkit-scrollbar { width: 6px; } 
+        ::-webkit-scrollbar-track { background: #0b0f19; } 
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        
         select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
+        
         #privacy-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -59,8 +115,8 @@
                 <button onclick="loginGuest()" class="w-full py-4 rounded-xl bg-white/5 text-gray-300 font-medium hover:bg-white/10 transition flex items-center justify-center gap-2"><i class="fas fa-user"></i> Masuk sebagai Tamu</button>
             </div>
             <div id="login-form" class="hidden mt-6 pt-6 border-t border-white/10">
-                <input type="text" id="access-code" placeholder="Kode Akses Unik (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-center text-white outline-none mb-4">
-                <input type="text" id="username-input" placeholder="Username Anda" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-center text-white outline-none mb-4">
+                <input type="text" id="username-input" placeholder="Username Anda" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-center text-white outline-none mb-4 focus:border-blue-500 transition">
+                <input type="text" id="access-code" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-center text-white font-mono tracking-widest outline-none mb-4 focus:border-blue-500 transition">
                 <button onclick="verifyCode()" class="w-full py-3 rounded-xl bg-sky-500 text-white font-bold hover:bg-sky-400 transition">Verifikasi</button>
                 <button onclick="hideLoginInput()" class="mt-3 text-xs text-gray-500 hover:text-white">Batal</button>
             </div>
@@ -68,7 +124,12 @@
     </div>
 
     <div id="privacy-overlay"><i class="fas fa-lock text-6xl mb-4 text-red-500 animate-pulse"></i><h2 class="text-2xl font-bold text-white uppercase tracking-widest">Locked</h2></div>
-    <div class="fixed inset-0 z-[-1] bg-[#0b0f19]"><div class="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div><div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div><div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div></div>
+    
+    <div class="fixed inset-0 z-[-1] bg-[#0b0f19]">
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
+        <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
+    </div>
 
     <nav class="fixed w-full z-50 top-4 px-4">
         <div class="max-w-6xl mx-auto glass-panel rounded-2xl px-6 h-16 flex justify-between items-center">
@@ -91,10 +152,12 @@
             <button onclick="navigateTo('about')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-info-circle mr-3 text-yellow-400"></i> Profil</button>
             <div class="border-t border-white/10 my-2"></div>
             <button onclick="navigateTo('settings')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-cog mr-3 text-gray-400"></i> Pengaturan</button>
+            <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-white/5 transition"><i class="fas fa-sign-out-alt mr-3"></i> Keluar</button>
         </div>
     </nav>
 
     <main class="relative z-10 pt-28 pb-20 px-4 container mx-auto max-w-6xl">
+        
         <section id="view-home" class="view-section transition-all duration-500">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4" data-aos="fade-down">
                 <div><h1 class="text-4xl font-black text-white mb-1">Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Aktivitas</span></h1></div>
@@ -158,7 +221,9 @@
                     <h3 class="font-bold text-white text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Diskusi</h3>
                     <a id="m-full-link" href="#" target="_blank" class="text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition">FULL SCREEN</a>
                 </div>
+                
                 <div id="comments-list" class="flex-grow overflow-y-auto p-4 custom-scrollbar bg-[#0b0f19] relative pb-20 chat-container"></div>
+
                 <div class="absolute bottom-0 w-full bg-[#111827] border-t border-white/5">
                     <div id="reply-indicator" class="hidden bg-blue-900/30 px-4 py-2 text-xs flex justify-between items-center border-b border-white/5 text-blue-300"><span><i class="fas fa-reply mr-2"></i>Balas...</span><button onclick="window.cancelReply()" class="hover:text-white"><i class="fas fa-times"></i></button></div>
                     <form id="comment-form" onsubmit="window.sendComment(event)" class="flex gap-2 p-3">
@@ -200,45 +265,41 @@
         let userFingerprint = localStorage.getItem('user_fp');
         let currentUser = JSON.parse(localStorage.getItem('current_user')) || null;
 
-        // --- AUTH & PRESENCE ---
+        // --- AUTH SYSTEM ---
         window.onload = () => {
             if(!currentUser) document.getElementById('login-modal').classList.remove('hidden');
             else initApp();
         }
-
-        window.showLoginInput = () => { document.getElementById('login-form').classList.remove('hidden'); };
-        window.hideLoginInput = () => { document.getElementById('login-form').classList.add('hidden'); };
+        window.showLoginInput = () => document.getElementById('login-form').classList.remove('hidden');
+        window.hideLoginInput = () => document.getElementById('login-form').classList.add('hidden');
         window.loginGuest = () => {
             currentUser = { username: "Tamu", isPremium: false };
             localStorage.setItem('current_user', JSON.stringify(currentUser));
             document.getElementById('login-modal').classList.add('hidden');
             initApp();
         };
-
-        // VERIFY CODE FROM FIREBASE (SECURE)
-        window.verifyCode = () => {
+        window.verifyCode = async () => {
             const code = document.getElementById('access-code').value.trim();
             const username = document.getElementById('username-input').value.trim();
             if(!code || !username) return alert("Isi semua!");
-            
-            const userRef = ref(rtdb, `users/${username}`);
-            get(userRef).then((snapshot) => {
+            try {
+                const snapshot = await get(ref(rtdb, `users/${username}`));
                 if (snapshot.exists() && snapshot.val().code === code) {
                     currentUser = { username: username, isPremium: true };
                     localStorage.setItem('current_user', JSON.stringify(currentUser));
                     document.getElementById('login-modal').classList.add('hidden');
                     initApp();
                     Toastify({text:"Login Berhasil!", style:{background:"#10b981"}}).showToast();
-                } else {
-                    alert("Username atau Kode Salah!");
-                }
-            }).catch((error) => { console.error(error); alert("Error koneksi."); });
+                } else alert("Gagal!");
+            } catch(e) { alert("Error: " + e.message); }
         };
+        window.logout = () => { localStorage.removeItem('current_user'); location.reload(); }
 
         function initApp() {
             if(!userFingerprint) {
-                userFingerprint = currentUser.username + '_' + Math.floor(Math.random()*999);
-                localStorage.setItem('user_fp', userFingerprint);
+                 const randNum = Math.floor(Math.random() * 999);
+                 userFingerprint = currentUser.isPremium ? currentUser.username : `Guest-${randNum}`;
+                 localStorage.setItem('user_fp', userFingerprint);
             }
             
             // Presence
@@ -246,7 +307,7 @@
             const myStatusRef = ref(rtdb, "status/" + userFingerprint);
             onValue(connectedRef, (snap) => {
                 if (snap.val() === true) {
-                    set(myStatusRef, { state: 'online', name: currentUser.username, last_changed: serverTimestamp() });
+                    set(myStatusRef, { state: 'online', name: userFingerprint, last_changed: serverTimestamp() });
                     onDisconnect(myStatusRef).remove();
                     updateStatus(true);
                 } else updateStatus(false);
@@ -255,7 +316,8 @@
         }
 
         function updateStatus(isOnline) {
-            const dot = document.getElementById('global-status-dot'); const text = document.getElementById('global-status-text');
+            const dot = document.getElementById('global-status-dot');
+            const text = document.getElementById('global-status-text');
             if(dot && text) {
                 if(isOnline) { dot.className = "online-dot status-online"; text.innerText = "Online"; }
                 else { dot.className = "online-dot status-offline"; text.innerText = "Offline"; }
@@ -268,8 +330,7 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-' + pageId).classList.remove('hidden');
             document.querySelectorAll('.nav-desk').forEach(btn => { btn.classList.remove('bg-white/10', 'text-white'); btn.classList.add('text-gray-400'); });
-            const activeDesk = document.getElementById('d-btn-' + pageId);
-            if(activeDesk) { activeDesk.classList.add('bg-white/10', 'text-white'); activeDesk.classList.remove('text-gray-400'); }
+            const activeDesk = document.getElementById('d-btn-' + pageId); if(activeDesk) { activeDesk.classList.add('bg-white/10', 'text-white'); activeDesk.classList.remove('text-gray-400'); }
             window.scrollTo(0,0); document.getElementById('mobile-menu').classList.add('hidden');
             NProgress.done();
         };
@@ -290,10 +351,16 @@
 
                 if(data.school_profile) {
                     document.getElementById('nav-school-name').innerText = data.school_profile.name;
-                    document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
-                    document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
                     document.getElementById('about-vision').innerText = data.school_profile.vision;
                     document.getElementById('about-mission').innerText = data.school_profile.mission;
+                    document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
+                    document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
+                }
+                
+                if(data.settings?.anti_screenshot) {
+                    document.addEventListener('contextmenu', e => e.preventDefault());
+                    window.onblur = () => { document.getElementById('privacy-overlay').style.display = 'flex'; };
+                    window.onfocus = () => { document.getElementById('privacy-overlay').style.display = 'none'; };
                 }
 
                 renderGallery(data.gallery || []); renderPlaylist(data.playlist || []); renderTeachers(data.teachers || []);
@@ -305,7 +372,6 @@
 
         function renderGallery(items) {
             const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
-            if(items.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600">Tidak ditemukan.</div>'; return; }
             items.forEach(item => {
                 const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
                 const media = isVideo ? `<div class="w-full h-56 bg-gray-900 flex items-center justify-center group-hover:scale-110 transition duration-700"><i class="fas fa-play text-4xl text-white/50 group-hover:text-white transition"></i></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-56 object-cover transition duration-700 group-hover:scale-110">`;
@@ -336,7 +402,7 @@
                 if(t.socials) { for(let k in t.socials) if(t.socials[k]) socials += `<a href="${t.socials[k]}" target="_blank" class="text-gray-500 hover:text-blue-400 transition"><i class="fab fa-${k=='wa'?'whatsapp':k=='ig'?'instagram':'link'} text-lg"></i></a>`; }
                 const div = document.createElement('div');
                 div.className = 'glass-card p-5 rounded-2xl flex flex-col items-center text-center hover-glow transition';
-                div.innerHTML = `<div class="relative mb-4"><div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600"><img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900 border-2 border-[#0f172a]"></div></div><h4 class="text-white font-bold text-sm mb-1">${t.name}</h4><p class="text-xs text-blue-400 font-medium mb-3 uppercase tracking-wide">${t.role}</p><div class="flex gap-3 mt-auto pt-3 border-t border-white/5 w-full justify-center">${socials}</div>`;
+                div.innerHTML = `<div class="relative mb-4"><div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600"><img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900 border-2 border-[#0f172a]"></div><div class="absolute bottom-0 right-0 w-5 h-5 bg-[#0f172a] rounded-full flex items-center justify-center"><div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div></div></div><h4 class="text-white font-bold text-sm mb-1">${t.name}</h4><p class="text-xs text-blue-400 font-medium mb-3 uppercase tracking-wide">${t.role}</p><div class="flex gap-3 mt-auto pt-3 border-t border-white/5 w-full justify-center">${socials}</div>`;
                 grid.appendChild(div);
             });
         }
@@ -363,7 +429,6 @@
             document.getElementById('m-date').innerText = item.date;
             document.getElementById('m-full-link').href = src;
 
-            // REALTIME
             const viewRef = ref(rtdb, `posts/${safeId}/views`);
             runTransaction(viewRef, (v) => (v || 0) + 1);
             onValue(viewRef, (snap) => document.getElementById('view-count').innerText = snap.val() || 0);
@@ -380,13 +445,24 @@
                     Object.entries(data).sort((a,b) => a[1].timestamp - b[1].timestamp).forEach(([key, c]) => {
                         const isMe = c.userId === userFingerprint;
                         const div = document.createElement('div');
-                        div.className = isMe ? "chat-card chat-me" : "chat-card chat-other";
-                        const timeStr = moment(c.timestamp).format('HH:mm');
                         
-                        let replyHtml = '';
-                        if(c.replyTo) replyHtml = `<div class="reply-quote text-[10px] mb-1 border-l-2 pl-2 truncate opacity-70"><i class="fas fa-share mr-1"></i> ${c.replyTo}</div>`;
+                        if(isMe) { div.className = "chat-card chat-me"; } 
+                        else { div.className = "chat-card chat-other"; }
 
-                        div.innerHTML = `${replyHtml}<div class="c-user">${c.username || 'Anonim'}</div><div class="c-text">${c.text}</div><div class="c-meta"><span>${timeStr}</span><button onclick="window.likeComment('${safeId}', '${key}')" class="hover:text-pink-500 flex items-center gap-1"><i class="far fa-heart"></i> ${c.likes||0}</button><button onclick="window.prepareReply('${c.username || 'Anonim'}', '${c.text.replace(/'/g, "\'").substring(0, 30)}...')" class="hover:text-blue-400">Balas</button></div>`;
+                        const timeStr = moment(c.timestamp).format('HH:mm');
+                        let replyHtml = '';
+                        if(c.replyTo) { replyHtml = `<div class="reply-quote text-[10px] mb-1 border-l-2 pl-2 truncate opacity-70"><i class="fas fa-share mr-1"></i> ${c.replyTo}</div>`; }
+
+                        div.innerHTML = `
+                            ${replyHtml}
+                            <div class="c-user">${c.username || 'Anonim'}</div>
+                            <div class="c-text">${c.text}</div>
+                            <div class="c-meta">
+                                <span>${timeStr}</span>
+                                <button onclick="window.likeComment('${safeId}', '${key}')" class="hover:text-pink-500 flex items-center gap-1"><i class="far fa-heart"></i> ${c.likes||0}</button>
+                                <button onclick="window.prepareReply('${c.username || 'Anonim'}', '${c.text.replace(/'/g, "\'").substring(0, 30)}...')" class="hover:text-blue-400">Balas</button>
+                            </div>
+                        `;
                         list.appendChild(div);
                     });
                     list.scrollTop = list.scrollHeight;
@@ -410,8 +486,19 @@
                 const key = `liked_${safeId}`;
                 const isLiked = localStorage.getItem(key);
                 const likeRef = ref(rtdb, `posts/${safeId}/likes`);
-                if(isLiked) { runTransaction(likeRef, (v) => (v || 0) - 1); localStorage.removeItem(key); document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400"; Toastify({text:"Batal Suka", duration:1500, style:{background:"#334155"}}).showToast(); }
-                else { runTransaction(likeRef, (v) => (v || 0) + 1); localStorage.setItem(key, 'true'); document.getElementById('btn-like-icon').className = "fas fa-heart text-red-500 like-active"; setTimeout(()=>document.getElementById('btn-like-icon').classList.remove('like-active'), 500); Toastify({text:"Disukai ❤️", duration:1500, style:{background:"#ef4444"}}).showToast(); }
+                if(isLiked) { 
+                    runTransaction(likeRef, (v) => (v || 0) - 1); 
+                    localStorage.removeItem(key); 
+                    document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400";
+                    Toastify({text:"Batal Suka", duration:1500, style:{background:"#334155"}}).showToast();
+                } else { 
+                    runTransaction(likeRef, (v) => (v || 0) + 1); 
+                    localStorage.setItem(key, 'true'); 
+                    const icon = document.getElementById('btn-like-icon');
+                    icon.className = "fas fa-heart text-red-500 like-active"; 
+                    setTimeout(()=>icon.classList.remove('like-active'), 500);
+                    Toastify({text:"Disukai ❤️", duration:1500, style:{background:"#ef4444"}}).showToast(); 
+                }
             }
         }
 
@@ -446,7 +533,13 @@
             
             const commentsRef = ref(rtdb, `posts/${safeId}/comments`);
             
-            const payload = { text: text, username: currentUser.username, userId: userFingerprint, timestamp: Date.now(), likes: 0 };
+            const payload = { 
+                text: text, 
+                username: currentUser.username || userFingerprint, 
+                userId: userFingerprint, 
+                timestamp: Date.now(),
+                likes: 0
+            };
             if(replyingTo) payload.replyTo = `${replyingTo.username}: ${replyingTo.text}`;
 
             push(commentsRef, payload).then(() => { 
@@ -460,15 +553,25 @@
             closeModal();
             if(!currentItemId) return;
             navigateTo('detail');
+            
             const item = itemMap[currentItemId];
             const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
             const src = item.src || item.image;
             const hero = document.getElementById('detail-hero-container');
             if(player) { player.destroy(); player = null; } hero.innerHTML = '';
             
-            if(isVideo) { hero.innerHTML = `<video id="player-full" playsinline controls class="w-full h-full object-contain"><source src="${src}" type="video/mp4" /></video>`; new Plyr('#player-full', { autoplay: false }); document.getElementById('download-text').innerText = "Unduh Video"; }
-            else if(item.type === 'audio') { hero.innerHTML = `<div class="w-full h-[300px] flex items-center justify-center bg-gray-800"><audio id="player-full" controls class="w-1/2"><source src="${src}" type="audio/mp3"></audio></div>`; new Plyr('#player-full', { autoplay: false }); document.getElementById('download-text').innerText = "Unduh Audio"; }
-            else { hero.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`; document.getElementById('download-text').innerText = "Unduh Foto"; }
+            if(isVideo) {
+                hero.innerHTML = `<video id="player-full" playsinline controls class="w-full h-full object-contain"><source src="${src}" type="video/mp4" /></video>`;
+                new Plyr('#player-full', { autoplay: false });
+                document.getElementById('download-text').innerText = "Unduh Video";
+            } else if(item.type === 'audio') {
+                hero.innerHTML = `<div class="w-full h-[300px] flex items-center justify-center bg-gray-800"><audio id="player-full" controls class="w-1/2"><source src="${src}" type="audio/mp3"></audio></div>`;
+                new Plyr('#player-full', { autoplay: false });
+                document.getElementById('download-text').innerText = "Unduh Audio";
+            } else {
+                hero.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
+                document.getElementById('download-text').innerText = "Unduh Foto";
+            }
 
             document.getElementById('detail-cat').innerText = item.category || 'Playlist';
             document.getElementById('detail-date').innerText = item.date || '-';
@@ -499,6 +602,7 @@
             renderGallery(filtered);
         }
 
+        try { AOS.init({ duration: 800, once: true }); } catch(e) {}
         loadData();
     </script>
 </body>
