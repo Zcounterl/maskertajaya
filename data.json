@@ -33,7 +33,22 @@
       "type": "image"
     }
   ],
-  "teachers": [],
+  "teachers": [
+    {
+      "name": "sigit",
+      "role": "siswa",
+      "image": "https://files.catbox.moe/sxrc1h.jpg",
+      "socials": {
+        "wa": "https://wa.me/6285891267541",
+        "ig": "",
+        "tt": "",
+        "yt": "",
+        "fb": "",
+        "email": ""
+      },
+      "id": "t1763475710"
+    }
+  ],
   "playlist": [
     {
       "title": "musik galau",
