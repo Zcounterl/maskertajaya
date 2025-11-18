@@ -32,7 +32,7 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
-        body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         #nprogress .bar { background: #38bdf8 !important; height: 3px !important; }
         
         /* Glassmorphism Panel */
@@ -87,7 +87,7 @@
         
         .chat-me .c-user { color: #bae6fd; }
         .chat-other .c-user { color: #38bdf8; }
-        .reply-quote { background: rgba(0,0,0,0.2); border-left: 2px solid rgba(255,255,255,0.5); padding: 4px 8px; margin-bottom: 4px; border-radius: 4px; font-size: 0.75rem; opacity: 0.8; }
+        .reply-quote { background: rgba(0,0,0,0.2); border-left: 2px solid rgba(255,255,255,0.5); padding: 4px 8px; margin-bottom: 4px; border-radius: 4px; font-size: 0.7rem; opacity: 0.8; }
         /* --- END CHAT UI --- */
 
         .clickable { cursor: pointer; user-select: none; transition: transform 0.1s; }
@@ -221,11 +221,13 @@
                     <h3 class="font-bold text-white text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Diskusi</h3>
                     <a id="m-full-link" href="#" target="_blank" class="text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition">FULL SCREEN</a>
                 </div>
+                
                 <div id="comments-list" class="flex-grow overflow-y-auto p-4 custom-scrollbar bg-[#0b0f19] relative pb-20 chat-container"></div>
+
                 <div class="absolute bottom-0 w-full bg-[#111827] border-t border-white/5">
                     <div id="reply-indicator" class="hidden bg-blue-900/30 px-4 py-2 text-xs flex justify-between items-center border-b border-white/5 text-blue-300"><span><i class="fas fa-reply mr-2"></i>Balas...</span><button onclick="window.cancelReply()" class="hover:text-white"><i class="fas fa-times"></i></button></div>
                     <form id="comment-form" onsubmit="window.sendComment(event)" class="flex gap-2 p-3">
-                        <input type="text" id="comment-input" class="flex-grow bg-black/30 text-white text-sm px-4 py-2.5 rounded-xl border border-white/10 focus:border-blue-500 focus:bg-white/5 outline-none transition" placeholder="Tulis pesan..." required autocomplete="off">
+                        <input type="text" id="comment-input" class="flex-grow bg-black/30 text-white text-sm px-4 py-2.5 rounded-xl border border-white/10 focus:border-blue-500 focus:bg-white/5 outline-none transition" placeholder="Tulis komentar..." required autocomplete="off">
                         <button type="submit" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition clickable shadow-lg shadow-blue-500/20"><i class="fas fa-paper-plane text-xs"></i></button>
                     </form>
                 </div>
@@ -237,7 +239,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, push, runTransaction, onDisconnect, set, serverTimestamp, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// ===========================================
+        // ===========================================
         // ⚠️ PASTE CONFIG FIREBASE ANDA DI SINI ⚠️
         // ===========================================
         const firebaseConfig = {
@@ -278,7 +280,7 @@
         window.hideLoginInput = () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('login-options').classList.remove('hidden'); };
         
         window.loginGuest = () => {
-            currentUser = { username: userFingerprint, isPremium: false };
+            currentUser = { username: "Tamu", isPremium: false };
             localStorage.setItem('current_user', JSON.stringify(currentUser));
             document.getElementById('login-modal').classList.add('hidden');
             initApp();
@@ -325,7 +327,8 @@
         }
         
         function updateStatus(isOnline) {
-            const dot = document.getElementById('global-status-dot'); const text = document.getElementById('global-status-text');
+            const dot = document.getElementById('global-status-dot');
+            const text = document.getElementById('global-status-text');
             if(dot && text) {
                 if(isOnline) { dot.className = "online-dot status-online"; text.innerText = "Online"; }
                 else { dot.className = "online-dot status-offline"; text.innerText = "Offline"; }
@@ -338,7 +341,8 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-' + pageId).classList.remove('hidden');
             document.querySelectorAll('.nav-desk').forEach(btn => { btn.classList.remove('bg-white/10', 'text-white'); btn.classList.add('text-gray-400'); });
-            const activeDesk = document.getElementById('d-btn-' + pageId); if(activeDesk) { activeDesk.classList.add('bg-white/10', 'text-white'); activeDesk.classList.remove('text-gray-400'); }
+            const activeDesk = document.getElementById('d-btn-' + pageId);
+            if(activeDesk) { activeDesk.classList.add('bg-white/10', 'text-white'); activeDesk.classList.remove('text-gray-400'); }
             window.scrollTo(0,0); document.getElementById('mobile-menu').classList.add('hidden');
             NProgress.done();
         };
@@ -364,7 +368,7 @@
                     document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
                     document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
                 }
-
+                
                 if(data.settings?.anti_screenshot) {
                     document.addEventListener('contextmenu', e => e.preventDefault());
                     window.onblur = () => { document.getElementById('privacy-overlay').style.display = 'flex'; };
@@ -380,6 +384,7 @@
 
         function renderGallery(items) {
             const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
+            if(items.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600">Tidak ditemukan.</div>'; return; }
             items.forEach(item => {
                 const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
                 const media = isVideo ? `<div class="w-full h-56 bg-gray-900 flex items-center justify-center group-hover:scale-110 transition duration-700"><i class="fas fa-play text-4xl text-white/50 group-hover:text-white transition"></i></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-56 object-cover transition duration-700 group-hover:scale-110">`;
@@ -410,7 +415,7 @@
                 if(t.socials) { for(let k in t.socials) if(t.socials[k]) socials += `<a href="${t.socials[k]}" target="_blank" class="text-gray-500 hover:text-blue-400 transition"><i class="fab fa-${k=='wa'?'whatsapp':k=='ig'?'instagram':'link'} text-lg"></i></a>`; }
                 const div = document.createElement('div');
                 div.className = 'glass-card p-5 rounded-2xl flex flex-col items-center text-center hover-glow transition';
-                div.innerHTML = `<div class="relative mb-4"><div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600"><img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900 border-2 border-[#0f172a]"></div></div><h4 class="text-white font-bold text-sm mb-1">${t.name}</h4><p class="text-xs text-blue-400 font-medium mb-3 uppercase tracking-wide">${t.role}</p><div class="flex gap-3 mt-auto pt-3 border-t border-white/5 w-full justify-center">${socials}</div>`;
+                div.innerHTML = `<div class="relative mb-4"><div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600"><img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900 border-2 border-[#0f172a]"></div><div class="absolute bottom-0 right-0 w-5 h-5 bg-[#0f172a] rounded-full flex items-center justify-center"><div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div></div></div><h4 class="text-white font-bold text-sm mb-1">${t.name}</h4><p class="text-xs text-blue-400 font-medium mb-3 uppercase tracking-wide">${t.role}</p><div class="flex gap-3 mt-auto pt-3 border-t border-white/5 w-full justify-center">${socials}</div>`;
                 grid.appendChild(div);
             });
         }
@@ -481,8 +486,8 @@
                 const key = `liked_${safeId}`;
                 const isLiked = localStorage.getItem(key);
                 const likeRef = ref(rtdb, `posts/${safeId}/likes`);
-                if(isLiked) { runTransaction(likeRef, (v) => (v || 0) - 1); localStorage.removeItem(key); document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400"; }
-                else { runTransaction(likeRef, (v) => (v || 0) + 1); localStorage.setItem(key, 'true'); document.getElementById('btn-like-icon').className = "fas fa-heart text-red-500 like-active"; setTimeout(()=>document.getElementById('btn-like-icon').classList.remove('like-active'), 500); }
+                if(isLiked) { runTransaction(likeRef, (v) => (v || 0) - 1); localStorage.removeItem(key); document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400"; Toastify({text:"Batal Suka", duration:1500, style:{background:"#334155"}}).showToast(); }
+                else { runTransaction(likeRef, (v) => (v || 0) + 1); localStorage.setItem(key, 'true'); document.getElementById('btn-like-icon').className = "fas fa-heart text-red-500 like-active"; setTimeout(()=>document.getElementById('btn-like-icon').classList.remove('like-active'), 500); Toastify({text:"Disukai ❤️", duration:1500, style:{background:"#ef4444"}}).showToast(); }
             }
         }
 
@@ -492,13 +497,13 @@
             const refComm = ref(rtdb, `posts/${postId}/comments/${commentId}/likes`);
             runTransaction(refComm, (v) => (v || 0) + 1);
             localStorage.setItem(likeKey, 'true');
-            Toastify({text:"Disukai", duration:1500, style:{background:"#ec4899"}}).showToast();
+            Toastify({text:"Komentar Disukai", duration:1500, style:{background:"#ec4899"}}).showToast();
         }
 
         function prepareReply(username, text) {
             replyingTo = { username: username, text: text };
             const indicator = document.getElementById('reply-indicator');
-            indicator.innerHTML = `<span><i class="fas fa-reply mr-2"></i>Membalas: ${username}</span><button onclick="window.cancelReply()" class="text-red-400 hover:text-white"><i class="fas fa-times"></i></button>`;
+            indicator.innerHTML = `<span><i class="fas fa-reply mr-2"></i>Membalas: ${username} ("${text}")</span><button onclick="window.cancelReply()" class="text-red-400 hover:text-white"><i class="fas fa-times"></i></button>`;
             indicator.classList.remove('hidden');
             document.getElementById('comment-input').focus();
         }
@@ -514,9 +519,23 @@
             const text = input.value.trim();
             if(!text || !currentItemId) return;
             const safeId = currentItemId.replace(/[^a-zA-Z0-9]/g, '_');
-            const payload = { text: text, username: currentUser.username, userId: userFingerprint, timestamp: Date.now(), likes: 0 };
+            
+            const commentsRef = ref(rtdb, `posts/${safeId}/comments`);
+            
+            const payload = { 
+                text: text, 
+                username: currentUser.username || userFingerprint, 
+                userId: userFingerprint, 
+                timestamp: Date.now(),
+                likes: 0
+            };
             if(replyingTo) payload.replyTo = `${replyingTo.username}: ${replyingTo.text}`;
-            push(ref(rtdb, `posts/${safeId}/comments`), payload).then(() => { input.value = ''; window.cancelReply(); }).catch((err) => alert("Gagal: " + err));
+
+            push(commentsRef, payload).then(() => { 
+                input.value = ''; 
+                cancelReply();
+                Toastify({text:"Terkirim", duration:2000, style:{background:"#10b981"}}).showToast(); 
+            }).catch((err) => alert("Gagal: " + err));
         }
 
         function openFullPage() {
@@ -529,9 +548,18 @@
             const hero = document.getElementById('detail-hero-container');
             if(player) { player.destroy(); player = null; } hero.innerHTML = '';
             
-            if(isVideo) { hero.innerHTML = `<video id="player-full" playsinline controls class="w-full h-full object-contain"><source src="${src}" type="video/mp4" /></video>`; new Plyr('#player-full', { autoplay: false }); document.getElementById('download-text').innerText = "Unduh Video"; }
-            else if(item.type === 'audio') { hero.innerHTML = `<div class="w-full h-[300px] flex items-center justify-center bg-gray-800"><audio id="player-full" controls class="w-1/2"><source src="${src}" type="audio/mp3"></audio></div>`; new Plyr('#player-full', { autoplay: false }); document.getElementById('download-text').innerText = "Unduh Audio"; }
-            else { hero.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`; document.getElementById('download-text').innerText = "Unduh Foto"; }
+            if(isVideo) {
+                hero.innerHTML = `<video id="player-full" playsinline controls class="w-full h-full object-contain"><source src="${src}" type="video/mp4" /></video>`;
+                new Plyr('#player-full', { autoplay: false });
+                document.getElementById('download-text').innerText = "Unduh Video";
+            } else if(item.type === 'audio') {
+                hero.innerHTML = `<div class="w-full h-[300px] flex items-center justify-center bg-gray-800"><audio id="player-full" controls class="w-1/2"><source src="${src}" type="audio/mp3"></audio></div>`;
+                new Plyr('#player-full', { autoplay: false });
+                document.getElementById('download-text').innerText = "Unduh Audio";
+            } else {
+                hero.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
+                document.getElementById('download-text').innerText = "Unduh Foto";
+            }
 
             document.getElementById('detail-cat').innerText = item.category || 'Playlist';
             document.getElementById('detail-date').innerText = item.date || '-';
