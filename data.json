@@ -1,6 +1,6 @@
 {
   "settings": {
-    "anti_screenshot": true,
+    "anti_screenshot": false,
     "maintenance_mode": false
   },
   "school_profile": {
