@@ -1,6 +1,7 @@
 {
   "settings": {
-    "anti_screenshot": false
+    "anti_screenshot": false,
+    "maintenance_mode": false
   },
   "school_profile": {
     "name": "Sekolah",
@@ -13,6 +14,15 @@
     }
   },
   "gallery": [
+    {
+      "title": "test",
+      "category": "Kegiatan",
+      "description": "inih hanya test ajah ok",
+      "image": "https://files.catbox.moe/sxrc1h.jpg",
+      "type": "image",
+      "id": "1763468490",
+      "date": "2025-11-18"
+    },
     {
       "id": "1",
       "title": "Contoh Postingan",
