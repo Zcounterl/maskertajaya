@@ -20,102 +20,92 @@
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: { dark: "#0b0f19", surface: "#111827", primary: "#38bdf8", secondary: "#818cf8" }
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { dark: "#0b0f19", surface: "#111827", primary: "#38bdf8", secondary: "#818cf8" } } } }
     </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap');
         body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; -webkit-tap-highlight-color: transparent; font-family: 'Plus Jakarta Sans', sans-serif; }
-        
         #nprogress .bar { background: #38bdf8 !important; height: 3px !important; }
+        .glass-panel { background: rgba(20, 25, 40, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
         
-        .glass-panel {
-            background: rgba(20, 25, 40, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
+        /* --- CHAT UI PERFECTED --- */
+        .chat-container { display: flex; flex-direction: column; gap: 8px; }
         
-        /* Chat Styling V2 */
+        /* Bubble Dasar */
         .chat-card {
-            background: rgba(30, 41, 59, 0.4);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 12px;
-            padding: 12px;
-            margin-bottom: 12px;
-            transition: background 0.2s;
+            max-width: 80%; /* Jangan terlalu lebar */
+            width: fit-content; /* Lebar mengikuti isi teks */
+            padding: 10px 14px;
+            border-radius: 16px;
+            position: relative;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            word-wrap: break-word;
         }
-        .chat-card:hover { background: rgba(30, 41, 59, 0.7); }
-        .chat-meta { font-size: 0.65rem; color: #94a3b8; margin-top: 6px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* Bubble Milik Saya (Kanan) */
+        .chat-me {
+            align_self: flex-end; /* Tempel Kanan */
+            margin-left: auto; /* Dorong ke kanan */
+            background: linear-gradient(135deg, #0ea5e9, #2563eb);
+            color: white;
+            border-bottom-right-radius: 2px;
+        }
+
+        /* Bubble Orang Lain (Kiri) */
+        .chat-other {
+            align_self: flex-start; /* Tempel Kiri */
+            margin-right: auto; /* Dorong ke kiri */
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid rgba(255,255,255,0.05);
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Meta Info (Nama & Jam) */
+        .chat-meta {
+            font-size: 0.65rem;
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            opacity: 0.8;
+        }
+        
+        .chat-me .chat-meta { color: rgba(255,255,255,0.9); }
+        .chat-other .chat-meta { color: #94a3b8; }
+
         .reply-quote {
-            background: rgba(56, 189, 248, 0.1);
-            border-left: 3px solid #38bdf8;
+            background: rgba(0, 0, 0, 0.2);
+            border-left: 3px solid rgba(255,255,255,0.5);
             padding: 4px 8px;
             margin-bottom: 6px;
             border-radius: 4px;
             font-size: 0.75rem;
-            color: #bae6fd;
-        }
-        
-        /* Reply Box UI */
-        #reply-indicator {
-            background: #1e293b;
-            border-top: 1px solid #38bdf8;
-            padding: 8px 16px;
-            font-size: 0.8rem;
-            display: flex; justify-content: space-between; align-items: center;
-            color: #38bdf8;
+            opacity: 0.9;
         }
 
-        /* Interactive */
+        /* --- END CHAT UI --- */
+
         .clickable { cursor: pointer; user-select: none; transition: transform 0.1s; }
         .clickable:active { transform: scale(0.95); }
-        
-        /* Like Anim */
         .like-bounce { animation: bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #ef4444 !important; }
         @keyframes bounce { 0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #0b0f19; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
+        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0b0f19; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         #privacy-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="privacy-overlay">
-        <i class="fas fa-lock text-6xl mb-4 text-red-500 animate-pulse"></i>
-        <h2 class="text-2xl font-bold text-white uppercase tracking-widest">Locked</h2>
-    </div>
-
-    <div class="fixed inset-0 z-[-1] bg-[#0b0f19]">
-        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-        <div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
-    </div>
+    <div id="privacy-overlay"><i class="fas fa-lock text-6xl mb-4 text-red-500 animate-pulse"></i><h2 class="text-2xl font-bold text-white uppercase tracking-widest">Locked</h2></div>
+    <div class="fixed inset-0 z-[-1] bg-[#0b0f19]"><div class="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div><div class="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div><div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div></div>
 
     <nav class="fixed w-full z-50 top-4 px-4">
         <div class="max-w-6xl mx-auto glass-panel rounded-2xl px-6 h-16 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                    <i class="fas fa-school text-white text-sm"></i>
-                </div>
-                <div class="flex flex-col">
-                    <span class="font-bold text-white leading-none" id="nav-school-name">Sekolah</span>
-                    <span class="text-[10px] text-gray-400 flex items-center gap-1.5 mt-0.5">
-                        <span id="global-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
-                        <span id="global-status-text">Offline</span>
-                    </span>
-                </div>
+                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg"><i class="fas fa-school text-white text-sm"></i></div>
+                <div class="flex flex-col"><span class="font-bold text-white leading-none" id="nav-school-name">Sekolah</span><span class="text-[10px] text-gray-400 flex items-center gap-1.5 mt-0.5"><span id="global-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span><span id="global-status-text">Offline</span></span></div>
             </div>
             <div class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
                 <button onclick="navigateTo('home')" id="d-btn-home" class="px-5 py-1.5 rounded-full text-sm font-medium text-white bg-white/10 transition-all">Galeri</button>
@@ -134,63 +124,33 @@
     </nav>
 
     <main class="relative z-10 pt-28 pb-20 px-4 container mx-auto max-w-6xl">
-        
         <section id="view-home" class="view-section transition-all duration-500">
             <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4" data-aos="fade-down">
                 <div><h1 class="text-4xl font-black text-white mb-1">Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Aktivitas</span></h1></div>
                 <div class="flex gap-2 w-full md:w-auto bg-white/5 p-1 rounded-xl border border-white/10">
-                    <input type="text" id="searchInput" placeholder="Cari..." class="bg-transparent text-white text-sm px-3 py-2 outline-none w-full md:w-48 placeholder-gray-600">
+                    <input type="text" id="searchInput" placeholder="Cari..." class="bg-transparent text-white text-sm px-3 py-2 outline-none w-full md:w-48">
                     <select id="categoryFilter" class="bg-black/30 text-gray-300 text-sm px-3 py-2 rounded-lg outline-none border-none"><option value="all">Semua</option><option value="Prestasi">Prestasi</option><option value="Kegiatan">Kegiatan</option><option value="Video">Video</option><option value="Umum">Umum</option></select>
                 </div>
             </div>
             <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
         </section>
 
-        <section id="view-playlist" class="view-section hidden">
-            <div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Multimedia <span class="text-purple-500">Hub</span></h1></div>
-            <div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div>
-        </section>
-
-        <section id="view-teachers" class="view-section hidden">
-            <div class="text-center mb-10"><h2 class="text-3xl font-bold text-white">Dewan Guru</h2></div>
-            <div id="teacher-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-        </section>
-
-        <section id="view-about" class="view-section hidden">
-            <div class="max-w-4xl mx-auto glass-panel rounded-2xl p-8 md:p-12">
-                <h2 class="text-3xl font-bold text-white mb-6">Tentang Sekolah</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="space-y-6">
-                        <div class="pl-4 border-l-2 border-blue-500"><p class="text-blue-400 text-xs font-bold uppercase mb-1">Visi</p><p id="about-vision" class="text-gray-300 italic">Loading...</p></div>
-                        <div class="pl-4 border-l-2 border-purple-500"><p class="text-purple-400 text-xs font-bold uppercase mb-1">Misi</p><p id="about-mission" class="text-gray-400 text-sm whitespace-pre-line">Loading...</p></div>
-                    </div>
-                </div>
-            </div>
-        </section>
+        <section id="view-playlist" class="view-section hidden"><div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Multimedia <span class="text-purple-500">Hub</span></h1></div><div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div></section>
+        <section id="view-teachers" class="view-section hidden"><div class="text-center mb-10"><h2 class="text-3xl font-bold text-white">Dewan Guru</h2></div><div id="teacher-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div></section>
+        <section id="view-about" class="view-section hidden"><div class="max-w-4xl mx-auto glass-card rounded-2xl p-8 md:p-12"><h2 class="text-3xl font-bold text-white mb-6">Tentang Sekolah</h2><div class="grid md:grid-cols-2 gap-8"><div class="space-y-6"><div class="pl-4 border-l-2 border-blue-500"><p class="text-blue-400 text-xs font-bold uppercase mb-1">Visi</p><p id="about-vision" class="text-gray-300 italic">Loading...</p></div><div class="pl-4 border-l-2 border-purple-500"><p class="text-purple-400 text-xs font-bold uppercase mb-1">Misi</p><p id="about-mission" class="text-gray-400 text-sm whitespace-pre-line">Loading...</p></div></div><div class="grid grid-cols-2 gap-4"><div class="bg-white/5 p-4 rounded-xl text-center border border-white/5 hover:bg-white/10 transition"><div id="stat-1-val" class="text-3xl font-black text-white">-</div><div class="text-[10px] text-gray-500 uppercase font-bold">Siswa</div></div><div class="bg-white/5 p-4 rounded-xl text-center border border-white/5 hover:bg-white/10 transition"><div id="stat-2-val" class="text-3xl font-black text-white">-</div><div class="text-[10px] text-gray-500 uppercase font-bold">Prestasi</div></div></div></div></div></section>
     </main>
 
     <div id="detail-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-2 md:p-4">
         <div class="absolute inset-0 bg-black/95 backdrop-blur-xl transition-opacity opacity-0" id="modal-backdrop" onclick="window.closeModal()"></div>
         
         <div class="glass-panel w-full max-w-6xl h-[95vh] md:h-[90vh] rounded-2xl overflow-hidden flex flex-col lg:flex-row relative transform scale-95 opacity-0 transition-all duration-300 z-10 border border-white/10" id="modal-card">
-            
             <button onclick="window.closeModal()" class="absolute top-3 right-3 z-50 bg-black/60 text-white w-9 h-9 rounded-full flex items-center justify-center hover:bg-red-500 transition clickable border border-white/20"><i class="fas fa-times"></i></button>
 
             <div class="lg:w-2/3 flex flex-col bg-black/50 h-2/5 lg:h-full relative">
                 <div class="flex-grow flex items-center justify-center relative overflow-hidden" id="modal-media-container"></div>
-                
                 <div class="p-4 bg-[#111827] border-t border-white/10 flex justify-between items-center">
-                    <div>
-                        <h2 id="m-title" class="text-lg font-bold text-white line-clamp-1">Judul</h2>
-                        <div class="flex gap-4 text-xs text-gray-400 mt-1">
-                            <span class="flex items-center gap-1"><i class="far fa-eye text-blue-400"></i> <span id="view-count">0</span></span>
-                            <span class="flex items-center gap-1"><i class="far fa-clock text-purple-400"></i> <span id="m-date">Date</span></span>
-                        </div>
-                    </div>
-                    <button onclick="window.handleReaction('like')" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 transition clickable group">
-                        <i class="far fa-heart group-hover:text-red-500 group-hover:scale-110 transition" id="btn-like-icon"></i>
-                        <span id="like-count" class="font-bold text-sm text-white">0</span>
-                    </button>
+                    <div><h2 id="m-title" class="text-lg font-bold text-white line-clamp-1">Judul</h2><div class="flex gap-4 text-xs text-gray-400 mt-1"><span class="flex items-center gap-1"><i class="far fa-eye text-blue-400"></i> <span id="view-count">0</span></span><span class="flex items-center gap-1"><i class="far fa-clock text-purple-400"></i> <span id="m-date">Date</span></span></div></div>
+                    <button onclick="window.handleReaction('like')" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 transition clickable group"><i class="far fa-heart group-hover:text-red-500 group-hover:scale-110 transition" id="btn-like-icon"></i><span id="like-count" class="font-bold text-sm text-white">0</span></button>
                 </div>
             </div>
 
@@ -200,16 +160,13 @@
                     <a id="m-full-link" href="#" target="_blank" class="text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition">FULL SCREEN</a>
                 </div>
                 
-                <div id="comments-list" class="flex-grow overflow-y-auto p-4 custom-scrollbar bg-[#0b0f19] relative pb-20"></div>
+                <div id="comments-list" class="flex-grow overflow-y-auto p-4 custom-scrollbar bg-[#0b0f19] relative pb-20 chat-container"></div>
 
                 <div class="absolute bottom-0 w-full bg-[#111827] border-t border-white/10">
-                    <div id="reply-indicator" class="hidden">
-                        <span><i class="fas fa-reply mr-2"></i>Membalas komentar...</span>
-                        <button onclick="cancelReply()" class="text-red-400 hover:text-white"><i class="fas fa-times"></i></button>
-                    </div>
+                    <div id="reply-indicator" class="hidden bg-blue-900/30 px-4 py-2 text-xs flex justify-between items-center border-b border-white/5 text-blue-300"><span><i class="fas fa-reply mr-2"></i>Balas...</span><button onclick="window.cancelReply()" class="hover:text-white"><i class="fas fa-times"></i></button></div>
                     
                     <form id="comment-form" onsubmit="window.sendComment(event)" class="flex gap-2 p-3">
-                        <input type="text" id="comment-input" class="flex-grow bg-black/30 text-white text-sm px-4 py-3 rounded-xl border border-white/10 focus:border-blue-500 focus:bg-white/5 outline-none transition" placeholder="Tulis komentar..." required autocomplete="off">
+                        <input type="text" id="comment-input" class="flex-grow bg-black/30 text-white text-sm px-4 py-2.5 rounded-xl border border-white/10 focus:border-blue-500 focus:bg-white/5 outline-none transition" placeholder="Tulis pesan..." required autocomplete="off">
                         <button type="submit" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition clickable shadow-lg"><i class="fas fa-paper-plane text-xs"></i></button>
                     </form>
                 </div>
@@ -234,37 +191,43 @@
           appId: "1:939882511814:web:797708c2440f35062646c7",
           measurementId: "G-JYV95GGYEG"
         };
+        // ===========================================
 
         const app = initializeApp(firebaseConfig);
         const rtdb = getDatabase(app);
-
+        
         let dbLocal = { gallery: [], teachers: [], playlist: [] };
         let itemMap = {};
         let currentItemId = null;
+        let replyingTo = null;
         let player = null;
-        let replyingTo = null; // Menyimpan state reply
-        let userFingerprint = localStorage.getItem('user_fp') || 'user_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('user_fp', userFingerprint);
+        let userFingerprint = localStorage.getItem('user_fp');
+        
+        // Generate Random User Name (cth: Anon-X92)
+        if(!userFingerprint) {
+             const randomId = 'Anon-' + Math.random().toString(36).substr(2, 3).toUpperCase() + Math.floor(Math.random() * 100);
+             userFingerprint = randomId;
+             localStorage.setItem('user_fp', randomId);
+        }
 
-        // --- ONLINE STATUS ---
+        // PRESENCE
         const connectedRef = ref(rtdb, ".info/connected");
         const myStatusRef = ref(rtdb, "status/" + userFingerprint);
         onValue(connectedRef, (snap) => {
             if (snap.val() === true) {
-                set(myStatusRef, { state: 'online', last_changed: serverTimestamp() });
+                set(myStatusRef, { state: 'online', name: userFingerprint, last_changed: serverTimestamp() });
                 onDisconnect(myStatusRef).remove();
                 updateStatus(true);
-            } else updateStatus(false);
+            } else { updateStatus(false); }
         });
         function updateStatus(isOnline) {
             const dot = document.getElementById('global-status-dot'); const text = document.getElementById('global-status-text');
             if(dot && text) {
-                if(isOnline) { dot.className = "w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]"; text.innerText = "Online"; text.className = "text-green-400 text-[10px] font-bold"; }
-                else { dot.className = "w-1.5 h-1.5 rounded-full bg-gray-500"; text.innerText = "Offline"; text.className = "text-gray-500 text-[10px]"; }
+                if(isOnline) { dot.className = "online-dot status-online"; text.innerText = "Online"; text.className = "text-green-400 text-[10px] font-bold"; }
+                else { dot.className = "online-dot status-offline"; text.innerText = "Offline"; text.className = "text-gray-500 text-[10px]"; }
             }
         }
 
-        // --- NAVIGATION ---
         window.navigateTo = (pageId) => {
             NProgress.start();
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
@@ -278,10 +241,9 @@
         window.toggleMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
         window.openModalById = openModalById; window.closeModal = closeModal;
         window.handleReaction = handleReaction; window.sendComment = sendComment;
-        window.prepareReply = prepareReply; window.cancelReply = cancelReply;
-        window.likeComment = likeComment;
+        window.prepareReply = prepareReply; window.cancelReply = cancelReply; window.likeComment = likeComment;
+        window.openFullPage = openFullPage;
 
-        // --- LOAD DATA ---
         async function loadData() {
             NProgress.start();
             try {
@@ -293,12 +255,12 @@
 
                 if(data.school_profile) {
                     document.getElementById('nav-school-name').innerText = data.school_profile.name;
-                    document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
-                    document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
                     document.getElementById('about-vision').innerText = data.school_profile.vision;
                     document.getElementById('about-mission').innerText = data.school_profile.mission;
+                    document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
+                    document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
                 }
-
+                
                 if(data.settings?.anti_screenshot) {
                     document.addEventListener('contextmenu', e => e.preventDefault());
                     window.onblur = () => { document.getElementById('privacy-overlay').style.display = 'flex'; };
@@ -307,14 +269,13 @@
 
                 renderGallery(data.gallery || []); renderPlaylist(data.playlist || []); renderTeachers(data.teachers || []);
                 const btnHome = document.getElementById('d-btn-home'); if(btnHome) btnHome.classList.add('bg-white/10', 'text-white');
-
             } catch (e) { console.log("Load error", e); }
             NProgress.done();
         }
 
         function renderGallery(items) {
             const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
-            if(items.length===0) grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600">Tidak ditemukan.</div>';
+            if(items.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600">Tidak ditemukan.</div>'; return; }
             items.forEach(item => {
                 const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
                 const media = isVideo ? `<div class="w-full h-56 bg-gray-900 flex items-center justify-center group-hover:scale-110 transition duration-700"><i class="fas fa-play text-4xl text-white/50 group-hover:text-white transition"></i></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-56 object-cover transition duration-700 group-hover:scale-110">`;
@@ -350,16 +311,15 @@
             });
         }
 
-        // --- MODAL & CHAT V2 ---
         function openModalById(id) {
             currentItemId = id;
             const item = itemMap[id]; if(!item) return;
             const safeId = id.replace(/[^a-zA-Z0-9]/g, '_');
+            window.cancelReply(); // Reset reply
             
             const modal = document.getElementById('detail-modal');
             const mediaBox = document.getElementById('modal-media-container');
-            document.getElementById('comments-list').innerHTML = '<div class="text-center text-gray-600 text-xs mt-10"><i class="fas fa-circle-notch fa-spin text-blue-500"></i> Memuat data...</div>';
-            cancelReply(); // Reset reply
+            document.getElementById('comments-list').innerHTML = '<div class="text-center text-gray-600 text-xs mt-10"><i class="fas fa-circle-notch fa-spin text-blue-500"></i> Memuat...</div>';
             
             if(player) { player.destroy(); player = null; } mediaBox.innerHTML = '';
             const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
@@ -373,43 +333,50 @@
             document.getElementById('m-date').innerText = item.date;
             document.getElementById('m-full-link').href = src;
 
-            // REALTIME VIEWS & LIKES
+            // REALTIME LOGIC
             const viewRef = ref(rtdb, `posts/${safeId}/views`);
             runTransaction(viewRef, (v) => (v || 0) + 1);
             onValue(viewRef, (snap) => document.getElementById('view-count').innerText = snap.val() || 0);
-            onValue(ref(rtdb, `posts/${safeId}/likes`), (snap) => document.getElementById('like-count').innerText = snap.val() || 0);
             
+            onValue(ref(rtdb, `posts/${safeId}/likes`), (snap) => document.getElementById('like-count').innerText = snap.val() || 0);
             const isLiked = localStorage.getItem(`liked_${safeId}`);
             document.getElementById('btn-like-icon').className = isLiked ? "fas fa-heart text-red-500" : "far fa-heart text-gray-400";
 
-            // REALTIME COMMENTS V2
+            // LOAD COMMENTS (V2: Sort & Reply UI)
             onValue(ref(rtdb, `posts/${safeId}/comments`), (snapshot) => {
                 const list = document.getElementById('comments-list'); list.innerHTML = '';
                 const data = snapshot.val();
-                if(!data) { list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10">Jadilah yang pertama berkomentar!</div>'; }
+                if(!data) { list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10">Belum ada komentar.</div>'; }
                 else {
                     Object.entries(data).sort((a,b) => a[1].timestamp - b[1].timestamp).forEach(([key, c]) => {
                         const isMe = c.userId === userFingerprint;
                         const div = document.createElement('div');
-                        div.className = `chat-card ${isMe ? 'bg-blue-900/20 border-blue-500/30' : ''}`;
                         
-                        // Format Waktu
-                        const timeStr = moment(c.timestamp).format('DD MMM YYYY, HH:mm:ss');
-                        
-                        // Quote Reply
-                        let replyHtml = '';
-                        if(c.replyTo) {
-                            replyHtml = `<div class="reply-quote"><i class="fas fa-share mr-1"></i> ${c.replyTo}</div>`;
+                        // Tentukan Kelas Bubble
+                        if(isMe) {
+                            div.className = "chat-card chat-me";
+                        } else {
+                            div.className = "chat-card chat-other";
                         }
 
+                        // Parse Waktu
+                        const timeStr = moment(c.timestamp).format('D MMM, HH:mm:ss');
+                        
+                        // Quote UI
+                        let replyHtml = '';
+                        if(c.replyTo) {
+                            replyHtml = `<div class="reply-quote text-[10px] mb-1 opacity-70 border-l-2 border-white/50 pl-2 truncate"><i class="fas fa-share mr-1"></i> ${c.replyTo}</div>`;
+                        }
+
+                        // Render Isi
                         div.innerHTML = `
                             ${replyHtml}
-                            <div class="text-sm text-gray-200">${c.text}</div>
+                            <div class="text-sm mb-1">${c.text}</div>
                             <div class="chat-meta">
-                                <span>${isMe ? 'Anda' : 'Pengguna'} • ${timeStr}</span>
+                                <span>${isMe ? 'Anda' : c.userId} • ${timeStr}</span>
                                 <div class="flex gap-3">
-                                    <button onclick="likeComment('${safeId}', '${key}')" class="hover:text-pink-500 transition flex items-center gap-1"><i class="far fa-heart"></i> ${c.likes || 0}</button>
-                                    <button onclick="prepareReply('${c.text.substring(0, 30)}...')" class="hover:text-blue-400 transition">Balas</button>
+                                    <button onclick="window.likeComment('${safeId}', '${key}')" class="hover:text-pink-500 transition flex items-center gap-1"><i class="far fa-heart"></i> <span id="cl-${key}">${c.likes||0}</span></button>
+                                    <button onclick="window.prepareReply('${c.text.replace(/'/g, "\'")}')" class="hover:text-blue-400 transition">Balas</button>
                                 </div>
                             </div>
                         `;
@@ -429,7 +396,6 @@
             setTimeout(() => document.getElementById('detail-modal').classList.add('hidden'), 300);
         }
 
-        // --- ACTIONS ---
         function handleReaction(type) {
             if(!currentItemId) return;
             const safeId = currentItemId.replace(/[^a-zA-Z0-9]/g, '_');
@@ -446,8 +412,8 @@
                     runTransaction(likeRef, (v) => (v || 0) + 1); 
                     localStorage.setItem(key, 'true'); 
                     const icon = document.getElementById('btn-like-icon');
-                    icon.className = "fas fa-heart text-red-500 like-bounce"; 
-                    setTimeout(()=>icon.classList.remove('like-bounce'), 500);
+                    icon.className = "fas fa-heart text-red-500 like-active"; 
+                    setTimeout(()=>icon.classList.remove('like-active'), 500);
                     Toastify({text:"Disukai ❤️", duration:1500, style:{background:"#ef4444"}}).showToast(); 
                 }
             }
@@ -455,7 +421,7 @@
 
         function likeComment(postId, commentId) {
             const likeKey = `liked_comment_${commentId}`;
-            if(localStorage.getItem(likeKey)) return; // Sudah like
+            if(localStorage.getItem(likeKey)) return; 
             const refComm = ref(rtdb, `posts/${postId}/comments/${commentId}/likes`);
             runTransaction(refComm, (v) => (v || 0) + 1);
             localStorage.setItem(likeKey, 'true');
@@ -465,7 +431,7 @@
         function prepareReply(text) {
             replyingTo = text;
             const indicator = document.getElementById('reply-indicator');
-            indicator.innerHTML = `<span><i class="fas fa-reply mr-2"></i>Membalas: "${text}"</span><button onclick="cancelReply()" class="text-red-400"><i class="fas fa-times"></i></button>`;
+            indicator.innerHTML = `<span><i class="fas fa-reply mr-2"></i>Membalas: "${text.substring(0, 20)}..."</span><button onclick="window.cancelReply()" class="text-red-400"><i class="fas fa-times"></i></button>`;
             indicator.classList.remove('hidden');
             document.getElementById('comment-input').focus();
         }
@@ -499,7 +465,47 @@
             }).catch((err) => alert("Gagal: " + err));
         }
 
-        // Filter Logic
+        function openFullPage() {
+            closeModal();
+            if(!currentItemId) return;
+            navigateTo('detail');
+            
+            const item = itemMap[currentItemId];
+            const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
+            const src = item.src || item.image;
+            const hero = document.getElementById('detail-hero-container');
+            
+            if(player) { player.destroy(); player = null; }
+            hero.innerHTML = '';
+            
+            if(isVideo) {
+                hero.innerHTML = `<video id="player-full" playsinline controls class="w-full h-full object-contain"><source src="${src}" type="video/mp4" /></video>`;
+                new Plyr('#player-full', { autoplay: false });
+                document.getElementById('download-text').innerText = "Unduh Video";
+            } else if(item.type === 'audio') {
+                hero.innerHTML = `<div class="w-full h-[300px] flex items-center justify-center bg-gray-800"><audio id="player-full" controls class="w-1/2"><source src="${src}" type="audio/mp3"></audio></div>`;
+                new Plyr('#player-full', { autoplay: false });
+                document.getElementById('download-text').innerText = "Unduh Audio";
+            } else {
+                hero.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
+                document.getElementById('download-text').innerText = "Unduh Foto";
+            }
+
+            document.getElementById('detail-cat').innerText = item.category || 'Playlist';
+            document.getElementById('detail-date').innerText = item.date || '-';
+            document.getElementById('detail-title').innerText = item.title;
+            document.getElementById('detail-desc').innerText = item.description || item.artist || '';
+            document.getElementById('download-btn').href = src;
+            
+            const devBox = document.getElementById('full-dev-socials'); devBox.innerHTML = '';
+            if(dbLocal.developer) {
+                const d = dbLocal.developer;
+                if(d.whatsapp) devBox.innerHTML += `<a href="${d.whatsapp}" target="_blank" class="w-8 h-8 rounded bg-white/5 hover:bg-green-500 flex items-center justify-center text-gray-400 hover:text-white transition"><i class="fab fa-whatsapp"></i></a>`;
+                if(d.tiktok) devBox.innerHTML += `<a href="${d.tiktok}" target="_blank" class="w-8 h-8 rounded bg-white/5 hover:bg-pink-500 flex items-center justify-center text-gray-400 hover:text-white transition"><i class="fab fa-tiktok"></i></a>`;
+            }
+        }
+
+        moment.locale('id');
         document.getElementById('searchInput').addEventListener('input', handleFilter);
         document.getElementById('categoryFilter').addEventListener('change', handleFilter);
         function handleFilter() {
@@ -514,8 +520,6 @@
             renderGallery(filtered);
         }
 
-        try { AOS.init({ duration: 800, once: true }); } catch(e) {}
-        moment.locale('id');
         loadData();
     </script>
 </body>
