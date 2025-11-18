@@ -15,6 +15,15 @@
   },
   "gallery": [
     {
+      "title": "test",
+      "category": "Prestasi",
+      "description": "thdhdjdjdjdjdjjdjdjdjdjdjd",
+      "image": "https://files.catbox.moe/sxrc1h.jpg",
+      "type": "image",
+      "id": "1763475923",
+      "date": "2025-11-18"
+    },
+    {
       "title": "video keren",
       "category": "Organisasi",
       "description": "beta test",
