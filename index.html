@@ -1,0 +1,190 @@
+
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Sekolah Digital</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Outfit', 'sans-serif'] }, colors: { dark: "#020617", primary: "#06b6d4", secondary: "#8b5cf6" }, animation: { 'float': 'float 6s ease-in-out infinite' }, keyframes: { float: { '0%, 100%': { transform: 'translateY(0)' }, '50%': { transform: 'translateY(-20px)' } } } } } }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+        body { background-color: #020617; color: #e2e8f0; overflow-x: hidden; }
+        .glass-panel { background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1); }
+        select { appearance: none; background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2306b6d4%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 0.75rem auto; }
+        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-track { background: #020617; } ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 4px; } ::-webkit-scrollbar-thumb:hover { background: #06b6d4; }
+        .orb { position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.3; z-index: -1; }
+    </style>
+</head>
+<body class="antialiased">
+    <div class="fixed inset-0 w-full h-full pointer-events-none z-0">
+        <div class="orb w-96 h-96 bg-cyan-600 top-[-10%] left-[-10%] animate-float"></div>
+        <div class="orb w-[500px] h-[500px] bg-violet-900 bottom-[-10%] right-[-10%] animate-float" style="animation-delay: -3s;"></div>
+    </div>
+
+    <nav class="fixed w-full z-50 glass-panel border-b border-white/5 top-0">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center gap-3 cursor-pointer group" onclick="navigateTo('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-[0_0_20px_rgba(6,182,212,0.4)]">
+                        <i class="fas fa-school text-white text-lg"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-lg text-white leading-none tracking-wide"><span id="nav-school-name">Sekolah</span><span class="text-cyan-400" id="nav-brand-color">Digital</span></span>
+                    </div>
+                </div>
+                <div class="hidden md:flex items-center space-x-1">
+                    <button onclick="navigateTo('home')" class="nav-item px-4 py-2 text-sm font-medium text-white bg-white/10 rounded-lg hover:bg-cyan-500 transition-all">Galeri</button>
+                    <button onclick="navigateTo('archive')" class="nav-item px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">Arsip</button>
+                    <button onclick="navigateTo('teachers')" class="nav-item px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">Guru</button>
+                    <button onclick="navigateTo('about')" class="nav-item px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-all">Tentang</button>
+                </div>
+                <button onclick="toggleMenu()" class="md:hidden w-10 h-10 flex items-center justify-center text-white bg-white/5 rounded-lg border border-white/10"><i class="fas fa-bars text-xl"></i></button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-white/5 absolute w-full left-0">
+            <div class="p-4 space-y-2">
+                <button onclick="navigateTo('home')" class="block w-full text-left px-4 py-3 rounded-xl bg-white/5 text-cyan-400">Galeri</button>
+                <button onclick="navigateTo('archive')" class="block w-full text-left px-4 py-3 rounded-xl text-gray-300">Arsip</button>
+                <button onclick="navigateTo('teachers')" class="block w-full text-left px-4 py-3 rounded-xl text-gray-300">Guru</button>
+                <button onclick="navigateTo('about')" class="block w-full text-left px-4 py-3 rounded-xl text-gray-300">Tentang</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative z-10 pt-28 pb-20 min-h-screen container mx-auto px-4 sm:px-6">
+        <section id="view-home" class="view-section transition-opacity duration-500">
+            <div class="text-center max-w-3xl mx-auto mb-16" data-aos="fade-down">
+                <h1 class="text-5xl md:text-7xl font-black text-white mb-6 leading-tight tracking-tight">
+                    <span id="hero-title">Momen Berharga</span>
+                </h1>
+                <div class="glass-panel p-2 rounded-2xl flex flex-col md:flex-row gap-2 shadow-2xl shadow-black/50">
+                    <div class="relative flex-grow"><i class="fas fa-search absolute left-5 top-4 text-gray-500"></i><input type="text" id="searchInput" placeholder="Cari kegiatan..." class="w-full bg-black/20 text-white pl-12 pr-4 py-3.5 rounded-xl border border-transparent focus:border-cyan-500/50 focus:outline-none transition placeholder-gray-600"></div>
+                    <select id="categoryFilter" class="bg-black/20 text-gray-300 px-6 py-3.5 rounded-xl border border-transparent focus:border-cyan-500/50 focus:outline-none cursor-pointer hover:bg-black/30 transition font-medium min-w-[180px]"><option value="all">Semua Kategori</option><option value="Prestasi">🏆 Prestasi</option><option value="Kegiatan">⛺ Kegiatan</option><option value="Organisasi">👔 Organisasi</option><option value="Umum">📷 Umum</option></select>
+                </div>
+            </div>
+            <div id="gallery-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><div class="col-span-full py-20 text-center"><div class="inline-block w-12 h-12 border-4 border-t-cyan-500 border-white/10 rounded-full animate-spin mb-4"></div><p class="text-gray-500">Memuat Data...</p></div></div>
+        </section>
+
+        <section id="view-archive" class="view-section hidden">
+            <div class="max-w-4xl mx-auto"><div class="mb-12 text-center"><h2 class="text-3xl font-bold text-white mb-2">Jejak Waktu</h2></div><div id="archive-list" class="relative border-l-2 border-white/10 ml-4 space-y-8 pb-12"></div></div>
+        </section>
+
+        <section id="view-teachers" class="view-section hidden">
+            <div class="text-center mb-12"><h2 class="text-3xl font-bold text-white mb-2">Dewan Guru</h2></div><div id="teacher-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+        </section>
+
+        <section id="view-about" class="view-section hidden">
+            <div class="max-w-5xl mx-auto glass-panel rounded-3xl p-8 md:p-12 relative overflow-hidden border border-white/10">
+                <div class="flex flex-col md:flex-row gap-10 items-center relative z-10">
+                    <div class="md:w-1/2 space-y-6">
+                        <h2 class="text-4xl font-bold text-white">Visi & Misi</h2>
+                        <p id="about-vision" class="text-gray-300 leading-relaxed text-lg">Memuat visi...</p>
+                        <p id="about-mission" class="text-gray-400 text-sm italic">Memuat misi...</p>
+                        <div class="grid grid-cols-2 gap-4 pt-4">
+                            <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-center"><div id="stat-1-val" class="text-3xl font-bold text-cyan-400">-</div><div class="text-xs text-gray-500 uppercase tracking-widest mt-1">Siswa</div></div>
+                            <div class="bg-black/20 p-4 rounded-xl border border-white/5 text-center"><div id="stat-2-val" class="text-3xl font-bold text-violet-400">-</div><div class="text-xs text-gray-500 uppercase tracking-widest mt-1">Penghargaan</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="detail-modal" class="fixed inset-0 z-[100] hidden"><div class="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="closeModal()"></div><div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none"><div class="bg-[#0f172a] w-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl border border-cyan-500/20 flex flex-col lg:flex-row transform scale-95 opacity-0 transition-all duration-300 pointer-events-auto" id="modal-card"><button onclick="closeModal()" class="absolute top-4 right-4 z-20 bg-black/50 text-white w-10 h-10 rounded-full hover:bg-red-500 transition flex items-center justify-center border border-white/10"><i class="fas fa-times"></i></button><div class="lg:w-2/3 bg-black flex items-center justify-center relative group"><img id="m-img" src="" class="max-w-full max-h-[50vh] lg:max-h-full object-contain"><a id="m-link" href="#" target="_blank" class="absolute bottom-6 right-6 bg-white/10 hover:bg-cyan-500 text-white px-5 py-2.5 rounded-full text-sm font-medium backdrop-blur-md border border-white/20 transition opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"><i class="fas fa-expand mr-2"></i> Buka HD</a></div><div class="lg:w-1/3 p-8 flex flex-col bg-[#1e293b] border-l border-white/5 overflow-y-auto"><div class="flex items-center justify-between mb-6"><span id="m-cat" class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/20 uppercase tracking-wider">Kategori</span><span id="m-date" class="text-xs text-gray-400 font-mono">Date</span></div><h2 id="m-title" class="text-2xl font-bold text-white mb-4 leading-snug">Judul</h2><div class="prose prose-invert prose-sm max-w-none text-gray-300 mb-8 flex-grow"><p id="m-desc">Deskripsi...</p></div></div></div></div></div>
+
+    <script>
+        AOS.init({ duration: 800, once: true });
+        let db = { gallery: [], teachers: [], profile: {} };
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`view-${pageId}`).classList.remove('hidden');
+            window.scrollTo(0, 0);
+            document.getElementById('mobile-menu').classList.add('hidden');
+        }
+        function toggleMenu() { document.getElementById('mobile-menu').classList.toggle('hidden'); }
+
+        async function loadData() {
+            try {
+                const res = await fetch('data.json?t=' + Date.now());
+                if(!res.ok) throw new Error("Data missing");
+                const data = await res.json();
+                
+                db.gallery = Array.isArray(data) ? data : (data.gallery || []);
+                db.teachers = data.teachers || [];
+                db.profile = data.school_profile || { name: "Sekolah", brand_color: "Digital", vision: "-", mission: "-", stats: {student:"-", award:"-"} };
+
+                if(db.profile) {
+                    document.title = db.profile.name;
+                    document.getElementById('nav-school-name').innerText = db.profile.name;
+                    document.getElementById('nav-brand-color').innerText = db.profile.brand_color;
+                    document.getElementById('about-vision').innerText = db.profile.vision;
+                    document.getElementById('about-mission').innerText = db.profile.mission;
+                    document.getElementById('stat-1-val').innerText = db.profile.stats.student;
+                    document.getElementById('stat-2-val').innerText = db.profile.stats.award;
+                }
+
+                renderGallery(db.gallery);
+                renderArchive(db.gallery);
+                renderTeachers(db.teachers);
+            } catch (e) { console.error(e); document.getElementById('gallery-grid').innerHTML = `<div class="col-span-full text-center text-red-400">Gagal memuat data.</div>`; }
+        }
+
+        function renderGallery(items) {
+            const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
+            if(items.length === 0) { grid.innerHTML = `<div class="col-span-full text-center text-gray-500 py-20">Belum ada konten.</div>`; return; }
+            items.forEach((item, i) => {
+                const div = document.createElement('div');
+                div.className = 'glass-panel rounded-2xl overflow-hidden group cursor-pointer hover:-translate-y-2 transition duration-500 border border-white/5 hover:border-cyan-500/50';
+                div.setAttribute('data-aos', 'fade-up'); div.onclick = () => openModal(item);
+                div.innerHTML = `<div class="h-56 overflow-hidden relative"><img src="${item.image}" loading="lazy" class="w-full h-full object-cover transition duration-700 group-hover:scale-110"><div class="absolute top-3 left-3"><span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border backdrop-blur-md bg-gray-500/20 text-gray-300 border-gray-500/30">${item.category}</span></div></div><div class="p-5"><div class="flex items-center gap-2 text-xs text-gray-500 mb-2"><i class="far fa-calendar"></i> ${item.date}</div><h3 class="text-lg font-bold text-white mb-2 leading-snug line-clamp-2 group-hover:text-cyan-400 transition">${item.title}</h3></div>`;
+                grid.appendChild(div);
+            });
+        }
+
+        function renderTeachers(list) {
+            const grid = document.getElementById('teacher-grid'); grid.innerHTML = '';
+            if(!list || list.length === 0) return;
+            list.forEach(t => {
+                const el = document.createElement('div'); el.className = 'glass-panel p-6 rounded-2xl text-center border border-white/5 hover:-translate-y-2 transition duration-300';
+                let socials = '';
+                if(t.socials?.wa) socials += `<a href="${t.socials.wa}" target="_blank" class="text-gray-400 hover:text-green-400 mx-2"><i class="fab fa-whatsapp text-xl"></i></a>`;
+                if(t.socials?.ig) socials += `<a href="${t.socials.ig}" target="_blank" class="text-gray-400 hover:text-pink-400 mx-2"><i class="fab fa-instagram text-xl"></i></a>`;
+                el.innerHTML = `<div class="w-24 h-24 mx-auto rounded-full p-1 bg-gradient-to-br from-gray-700 to-gray-900 mb-4"><img src="${t.image}" class="w-full h-full rounded-full object-cover"></div><h3 class="text-lg font-bold text-white mb-1">${t.name}</h3><p class="text-sm text-cyan-400 mb-4">${t.role}</p><div class="flex justify-center">${socials}</div>`;
+                grid.appendChild(el);
+            });
+        }
+
+        function renderArchive(items) {
+            const container = document.getElementById('archive-list'); container.innerHTML = '';
+            const sorted = [...items].sort((a, b) => new Date(b.date) - new Date(a.date));
+            sorted.forEach(item => {
+                const el = document.createElement('div'); el.className = 'relative pl-8 group';
+                el.innerHTML = `<div class="absolute -left-[9px] top-0 w-4 h-4 rounded-full bg-[#020617] border-2 border-gray-600 group-hover:border-cyan-400 transition"></div><div class="glass-panel p-5 rounded-xl border border-white/5 group-hover:border-cyan-500/30 transition"><span class="text-xs text-cyan-400 font-mono mb-1 block">${item.date}</span><h4 class="text-lg font-bold text-white">${item.title}</h4></div>`;
+                container.appendChild(el);
+            });
+        }
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase(); const cat = document.getElementById('categoryFilter').value;
+            const filtered = db.gallery.filter(i => (i.title.toLowerCase().includes(term) || i.description.toLowerCase().includes(term)) && (cat === 'all' || i.category === cat));
+            renderGallery(filtered);
+        });
+        
+        const modal = document.getElementById('detail-modal');
+        function openModal(item) {
+            document.getElementById('m-img').src = item.image; document.getElementById('m-title').innerText = item.title; document.getElementById('m-desc').innerText = item.description; document.getElementById('m-cat').innerText = item.category; document.getElementById('m-date').innerText = item.date; document.getElementById('m-link').href = item.image;
+            modal.classList.remove('hidden'); setTimeout(() => { document.getElementById('modal-backdrop').classList.remove('opacity-0'); document.getElementById('modal-card').classList.remove('opacity-0', 'scale-95'); document.getElementById('modal-card').classList.add('scale-100'); }, 10);
+        }
+        function closeModal() { document.getElementById('modal-backdrop').classList.add('opacity-0'); document.getElementById('modal-card').classList.remove('scale-100'); document.getElementById('modal-card').classList.add('opacity-0', 'scale-95'); setTimeout(() => modal.classList.add('hidden'), 300); }
+
+        loadData();
+    </script>
+</body>
+</html>
