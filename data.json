@@ -11,6 +11,14 @@
   },
   "gallery": [
     {
+      "title": "test ajah",
+      "category": "Umum",
+      "description": "inih hanya test ajah",
+      "image": "https://files.catbox.moe/sxrc1h.jpg",
+      "id": "1763466692",
+      "date": "2025-11-18"
+    },
+    {
       "id": "1",
       "title": "Upacara Hari Kemerdekaan",
       "image": "https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?q=80&w=1000",
