@@ -6,99 +6,152 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal Sekolah Digital</title>
     
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <script src="https://cdn.plyr.io/3.7.8/plyr.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
     <script>
-        tailwind.config = { theme: { extend: { fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] }, colors: { dark: "#0f172a", primary: "#38bdf8", secondary: "#818cf8" } } } }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Satoshi', 'sans-serif'] },
+                    colors: { 
+                        bg: "#030712", 
+                        surface: "#111827", 
+                        primary: "#3b82f6", 
+                        accent: "#8b5cf6",
+                        success: "#10b981"
+                    },
+                    animation: {
+                        'blob': 'blob 7s infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        blob: {
+                            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                            '100%': { transform: 'translate(0px, 0px) scale(1)' }
+                        }
+                    }
+                }
+            }
+        }
     </script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
-        body { background-color: #020617; color: #e2e8f0; font-family: 'Plus Jakarta Sans', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
-        #nprogress .bar { background: #38bdf8 !important; height: 3px !important; }
-        .glass-panel { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-        .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 16px; font-size: 0.9rem; margin-bottom: 10px; position: relative; }
-        .chat-bubble.me { background: #0ea5e9; color: white; margin-left: auto; border-bottom-right-radius: 4px; }
-        .chat-bubble.other { background: #334155; color: #e2e8f0; border-bottom-left-radius: 4px; }
-        .online-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 5px; }
-        .status-online { background-color: #22c55e; box-shadow: 0 0 8px #22c55e; }
-        .status-offline { background-color: #64748b; }
-        .like-active { color: #ef4444; animation: heartbeat 0.3s ease-in-out; }
-        @keyframes heartbeat { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
-        .clickable { cursor: pointer; }
-        ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #020617; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        #privacy-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 99999; align-items: center; justify-content: center; flex-direction: column; }
+        body { background-color: #030712; color: #f3f4f6; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        
+        /* NProgress Custom */
+        #nprogress .bar { background: linear-gradient(to right, #3b82f6, #8b5cf6) !important; height: 4px !important; }
+        
+        /* Modern Glass Card */
+        .glass-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Hover Effects */
+        .hover-glow:hover {
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+            border-color: rgba(59, 130, 246, 0.5);
+            transform: translateY(-2px);
+        }
+        
+        /* Interactive Elements */
+        .clickable { cursor: pointer; user-select: none; }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #030712; }
+        ::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+
+        /* Background Blobs */
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.4; z-index: -1; }
     </style>
 </head>
 <body class="antialiased">
 
-    <div id="privacy-overlay" class="hidden">
-        <i class="fas fa-shield-alt text-6xl mb-4 text-red-500 animate-pulse"></i>
-        <h2 class="text-2xl font-bold text-white">Konten Dilindungi</h2>
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+        <div class="blob bg-purple-600 w-96 h-96 top-0 left-0 animate-blob"></div>
+        <div class="blob bg-blue-600 w-96 h-96 bottom-0 right-0 animate-blob animation-delay-2000"></div>
+        <div class="blob bg-cyan-600 w-80 h-80 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 animate-blob animation-delay-4000"></div>
+        <div class="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
     </div>
 
-    <div class="fixed inset-0 z-[-1] bg-[#020617]">
-        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10"></div>
-        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
-    </div>
-
-    <nav class="fixed w-full z-50 glass-panel border-b border-white/5 top-0 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
-                <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg">
-                    <i class="fas fa-school text-white text-sm"></i>
+    <nav class="fixed w-full z-50 top-4 px-4">
+        <div class="max-w-5xl mx-auto glass-card rounded-2xl px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="window.location.reload()">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/20">
+                    <i class="fas fa-school text-white text-xs"></i>
                 </div>
-                <div>
-                    <span class="font-bold text-base text-white block leading-none" id="nav-school-name">Sekolah</span>
-                    <span class="text-[10px] text-gray-400 flex items-center mt-1">
-                        <span id="global-status-dot" class="online-dot status-offline"></span> <span id="global-status-text">Offline</span>
+                <div class="flex flex-col">
+                    <span class="font-bold text-white leading-none tracking-wide" id="nav-school-name">Sekolah</span>
+                    <span class="text-[10px] text-gray-400 flex items-center gap-1.5 mt-0.5">
+                        <span id="status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span>
+                        <span id="status-text">Offline</span>
                     </span>
                 </div>
             </div>
-            
-            <div class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
-                <button onclick="window.navigateTo('home')" id="d-btn-home" class="px-5 py-1.5 rounded-full text-sm font-medium text-white bg-white/10 transition-all">Galeri</button>
-                <button onclick="window.navigateTo('playlist')" id="d-btn-playlist" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Playlist</button>
-                <button onclick="window.navigateTo('teachers')" id="d-btn-teachers" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Guru</button>
-                <button onclick="window.navigateTo('about')" id="d-btn-about" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Profil</button>
+
+            <div class="hidden md:flex items-center gap-1">
+                <button onclick="navigateTo('home')" id="btn-home" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition">Galeri</button>
+                <button onclick="navigateTo('playlist')" id="btn-playlist" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition">Playlist</button>
+                <button onclick="navigateTo('teachers')" id="btn-teachers" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition">Guru</button>
+                <button onclick="navigateTo('about')" id="btn-about" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-300 hover:text-white hover:bg-white/5 transition">Profil</button>
             </div>
-            <button onclick="window.toggleMenu()" class="md:hidden w-9 h-9 flex items-center justify-center text-white bg-white/5 rounded-lg active:scale-95"><i class="fas fa-bars"></i></button>
+
+            <button onclick="toggleMenu()" class="md:hidden w-8 h-8 flex items-center justify-center text-white bg-white/5 rounded-lg border border-white/10"><i class="fas fa-bars"></i></button>
         </div>
         
-        <div id="mobile-menu" class="hidden md:hidden glass-panel border-t border-white/5 absolute w-full left-0 z-50">
-            <div class="p-2 space-y-1">
-                <button onclick="window.navigateTo('home')" class="w-full text-left px-4 py-3 rounded-xl bg-white/5 text-sky-400 font-medium">Galeri Utama</button>
-                <button onclick="window.navigateTo('playlist')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 font-medium">Playlist</button>
-                <button onclick="window.navigateTo('teachers')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 font-medium">Guru</button>
-                <button onclick="window.navigateTo('about')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 font-medium">Profil</button>
-            </div>
+        <div id="mobile-menu" class="hidden md:hidden max-w-5xl mx-auto mt-2 glass-card rounded-2xl p-2 space-y-1 transform transition-all origin-top">
+            <button onclick="navigateTo('home')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition flex items-center gap-3"><i class="fas fa-images w-5 text-center text-blue-400"></i> Galeri</button>
+            <button onclick="navigateTo('playlist')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition flex items-center gap-3"><i class="fas fa-music w-5 text-center text-purple-400"></i> Playlist</button>
+            <button onclick="navigateTo('teachers')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition flex items-center gap-3"><i class="fas fa-users w-5 text-center text-green-400"></i> Guru</button>
+            <button onclick="navigateTo('about')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 hover:text-white transition flex items-center gap-3"><i class="fas fa-info-circle w-5 text-center text-yellow-400"></i> Profil</button>
         </div>
     </nav>
 
-    <main class="relative z-10 pt-24 pb-20 min-h-screen container mx-auto px-4 sm:px-6">
+    <main class="relative z-10 pt-28 pb-20 px-4 min-h-screen container mx-auto max-w-6xl">
+        
         <section id="view-home" class="view-section transition-all duration-500">
-            <div class="text-center mb-10">
-                <h1 class="text-4xl font-bold text-white mb-4">Galeri & Komunitas</h1>
-                <div class="glass-panel p-2 rounded-xl flex flex-col md:flex-row gap-2 max-w-2xl mx-auto">
-                    <input type="text" id="searchInput" placeholder="Cari momen..." class="flex-grow bg-transparent text-white px-4 py-2 outline-none placeholder-gray-500">
-                    <select id="categoryFilter" class="bg-white/5 text-gray-300 px-4 py-2 rounded-lg outline-none border-none cursor-pointer">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4" data-aos="fade-down">
+                <div>
+                    <h1 class="text-4xl font-black text-white mb-1">Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Aktivitas</span></h1>
+                    <p class="text-gray-400 text-sm">Dokumentasi kegiatan terbaru.</p>
+                </div>
+                <div class="flex gap-2 w-full md:w-auto bg-white/5 p-1 rounded-xl border border-white/10">
+                    <input type="text" id="searchInput" placeholder="Cari..." class="bg-transparent text-white text-sm px-3 py-2 outline-none w-full md:w-48">
+                    <select id="categoryFilter" class="bg-black/30 text-gray-300 text-sm px-3 py-2 rounded-lg outline-none cursor-pointer border-none">
                         <option value="all">Semua</option><option value="Prestasi">Prestasi</option><option value="Kegiatan">Kegiatan</option><option value="Organisasi">Organisasi</option><option value="Video">Video</option>
                     </select>
                 </div>
             </div>
-            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+            
+            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-card rounded-2xl h-64 animate-pulse bg-white/5"></div>
+                <div class="glass-card rounded-2xl h-64 animate-pulse bg-white/5"></div>
+                <div class="glass-card rounded-2xl h-64 animate-pulse bg-white/5"></div>
+            </div>
         </section>
 
         <section id="view-playlist" class="view-section hidden">
-            <div class="text-center mb-10"><h1 class="text-3xl font-bold text-white">Playlist Multimedia</h1></div>
+            <div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Multimedia <span class="text-purple-500">Hub</span></h1></div>
             <div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div>
         </section>
 
@@ -108,47 +161,59 @@
         </section>
 
         <section id="view-about" class="view-section hidden">
-            <div class="max-w-4xl mx-auto glass-panel rounded-2xl p-8">
-                <h2 class="text-2xl font-bold text-white mb-4">Profil Sekolah</h2>
-                <p id="about-vision" class="text-gray-300 mb-4 italic">Loading...</p>
-                <p id="about-mission" class="text-gray-400 text-sm whitespace-pre-line">Loading...</p>
+            <div class="max-w-4xl mx-auto glass-card rounded-2xl p-8 md:p-12">
+                <h2 class="text-3xl font-bold text-white mb-6">Tentang Sekolah</h2>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div class="space-y-6">
+                        <div class="pl-4 border-l-2 border-blue-500"><p class="text-blue-400 text-xs font-bold uppercase mb-1">Visi</p><p id="about-vision" class="text-gray-300 italic">Memuat...</p></div>
+                        <div class="pl-4 border-l-2 border-purple-500"><p class="text-purple-400 text-xs font-bold uppercase mb-1">Misi</p><p id="about-mission" class="text-gray-400 text-sm whitespace-pre-line">Memuat...</p></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5 hover:bg-white/10 transition"><div id="stat-1-val" class="text-3xl font-black text-white">-</div><div class="text-[10px] text-gray-500 uppercase font-bold">Siswa</div></div>
+                        <div class="bg-white/5 p-4 rounded-xl text-center border border-white/5 hover:bg-white/10 transition"><div id="stat-2-val" class="text-3xl font-black text-white">-</div><div class="text-[10px] text-gray-500 uppercase font-bold">Prestasi</div></div>
+                    </div>
+                </div>
             </div>
         </section>
+
     </main>
 
     <div id="detail-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-2 md:p-4">
-        <div class="absolute inset-0 bg-black/95 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="window.closeModal()"></div>
-        <div class="bg-[#0f172a] w-full max-w-6xl h-[90vh] md:h-[85vh] rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex flex-col lg:flex-row relative transform scale-95 opacity-0 transition-all duration-300 z-10" id="modal-card">
-            <button onclick="window.closeModal()" class="absolute top-3 right-3 z-50 bg-black/60 text-white w-8 h-8 rounded-full flex items-center justify-center hover:bg-red-500 transition clickable"><i class="fas fa-times"></i></button>
+        <div class="absolute inset-0 bg-black/95 backdrop-blur-xl transition-opacity opacity-0" id="modal-backdrop" onclick="window.closeModal()"></div>
+        
+        <div class="glass-card w-full max-w-6xl h-[90vh] md:h-[85vh] rounded-2xl overflow-hidden flex flex-col lg:flex-row relative transform scale-95 opacity-0 transition-all duration-300 z-10 border border-white/10" id="modal-card">
+            <button onclick="window.closeModal()" class="absolute top-4 right-4 z-50 bg-black/50 hover:bg-red-500 text-white w-8 h-8 rounded-full flex items-center justify-center transition clickable border border-white/10"><i class="fas fa-times"></i></button>
 
-            <div class="lg:w-2/3 flex flex-col bg-black h-1/2 lg:h-full relative">
-                <div class="flex-grow flex items-center justify-center bg-black relative overflow-hidden" id="modal-media-container"></div>
-                <div class="p-4 bg-[#1e293b] border-t border-white/10 flex justify-between items-center">
+            <div class="lg:w-2/3 flex flex-col bg-black/50 h-1/2 lg:h-full relative">
+                <div class="flex-grow flex items-center justify-center relative overflow-hidden" id="modal-media-container"></div>
+                
+                <div class="p-4 border-t border-white/5 bg-[#111827] flex justify-between items-center">
                     <div>
                         <h2 id="m-title" class="text-lg font-bold text-white line-clamp-1">Judul</h2>
                         <div class="flex gap-4 text-xs text-gray-400 mt-1">
-                            <span class="flex items-center gap-1"><i class="far fa-eye text-sky-400"></i> <span id="view-count">0</span></span>
+                            <span class="flex items-center gap-1"><i class="far fa-eye text-blue-400"></i> <span id="view-count">0</span></span>
                             <span class="flex items-center gap-1"><i class="far fa-clock text-purple-400"></i> <span id="m-date">Date</span></span>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2 bg-black/30 px-3 py-1.5 rounded-full border border-white/5">
-                        <button onclick="window.handleReaction('like')" class="flex items-center gap-1.5 text-gray-400 hover:text-pink-500 transition group clickable">
-                            <i class="far fa-heart group-hover:scale-110 transition" id="btn-like-icon"></i>
-                            <span id="like-count" class="font-bold text-sm">0</span>
-                        </button>
-                    </div>
+                    <button onclick="window.handleReaction('like')" class="flex items-center gap-2 bg-white/5 hover:bg-white/10 px-4 py-2 rounded-full border border-white/5 transition clickable group">
+                        <i class="far fa-heart group-hover:text-red-500 group-hover:scale-110 transition" id="btn-like-icon"></i>
+                        <span id="like-count" class="font-bold text-sm text-white">0</span>
+                    </button>
                 </div>
             </div>
 
-            <div class="lg:w-1/3 bg-[#0f172a] flex flex-col border-l border-white/10 h-1/2 lg:h-full">
-                <div class="p-4 border-b border-white/10 bg-[#1e293b]">
-                    <h3 class="font-bold text-white text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Live Chat</h3>
+            <div class="lg:w-1/3 bg-[#0f172a] flex flex-col border-l border-white/5 h-1/2 lg:h-full">
+                <div class="p-3 border-b border-white/5 bg-[#111827] flex justify-between items-center">
+                    <h3 class="font-bold text-white text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Diskusi Live</h3>
+                    <a id="m-full-link" href="#" target="_blank" class="text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition">FULL SCREEN</a>
                 </div>
+                
                 <div id="comments-list" class="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar bg-[#0f172a] relative"></div>
-                <div class="p-3 border-t border-white/10 bg-[#1e293b]">
+
+                <div class="p-3 border-t border-white/5 bg-[#111827]">
                     <form id="comment-form" onsubmit="window.sendComment(event)" class="flex gap-2">
-                        <input type="text" id="comment-input" class="flex-grow bg-black/30 text-white text-sm px-4 py-2.5 rounded-full border border-white/10 focus:border-sky-500 focus:outline-none" placeholder="Tulis pesan..." required autocomplete="off">
-                        <button type="submit" class="w-10 h-10 rounded-full bg-sky-600 hover:bg-sky-500 text-white flex items-center justify-center transition clickable shadow-lg"><i class="fas fa-paper-plane text-xs"></i></button>
+                        <input type="text" id="comment-input" class="flex-grow bg-white/5 text-white text-sm px-4 py-2.5 rounded-xl border border-white/5 focus:border-blue-500 focus:bg-white/10 outline-none transition" placeholder="Tulis komentar..." required autocomplete="off">
+                        <button type="submit" class="w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition clickable shadow-lg shadow-blue-500/20"><i class="fas fa-paper-plane text-xs"></i></button>
                     </form>
                 </div>
             </div>
@@ -156,13 +221,12 @@
     </div>
 
     <script type="module">
-        // --- IMPORT FIREBASE ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, push, runTransaction, onDisconnect, set, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        // ============================================================
-        // ⚠️ PASTE CONFIG FIREBASE KAMU DI BAWAH INI (GANTIKAN YANG INI)
-        // ============================================================
+        // ===========================================
+        // ⚠️ PASTE CONFIG FIREBASE ANDA DI SINI ⚠️
+        // ===========================================
         const firebaseConfig = {
           apiKey: "AIzaSyAYjnWMB23CQ2OnofJuoMBJyoxBahvPj9Q",
           authDomain: "sigitdb-eb445.firebaseapp.com",
@@ -172,172 +236,131 @@
           appId: "1:939882511814:web:797708c2440f35062646c7",
           measurementId: "G-JYV95GGYEG"
         };
-        // ============================================================
+        // ===========================================
 
         const app = initializeApp(firebaseConfig);
         const rtdb = getDatabase(app);
 
-        let dbLocal = { gallery: [], teachers: [], playlist: [] };
+        let db = { gallery: [], teachers: [], playlist: [] };
         let itemMap = {};
         let currentItemId = null;
         let player = null;
         let userFingerprint = localStorage.getItem('user_fp') || 'user_' + Math.random().toString(36).substr(2, 9);
         localStorage.setItem('user_fp', userFingerprint);
 
-        // Presence System
+        // --- 1. PRESENCE SYSTEM (ONLINE STATUS) ---
         const connectedRef = ref(rtdb, ".info/connected");
         const myStatusRef = ref(rtdb, "status/" + userFingerprint);
         onValue(connectedRef, (snap) => {
             if (snap.val() === true) {
                 set(myStatusRef, { state: 'online', last_changed: serverTimestamp() });
                 onDisconnect(myStatusRef).remove();
-                document.getElementById('global-status-dot').className = "online-dot status-online";
-                document.getElementById('global-status-text').innerText = "Online";
+                updateStatusUI(true);
             } else {
-                document.getElementById('global-status-dot').className = "online-dot status-offline";
-                document.getElementById('global-status-text').innerText = "Offline";
+                updateStatusUI(false);
             }
         });
 
-        // --- FUNGSI GLOBAL (AGAR BISA DIKLIK DARI HTML) ---
-        // Ini solusi utama agar tidak error "function not defined"
-        
+        function updateStatusUI(isOnline) {
+            const dot = document.getElementById('status-dot') || document.getElementById('global-status-dot');
+            const text = document.getElementById('status-text') || document.getElementById('global-status-text');
+            if(dot && text) {
+                if(isOnline) {
+                    dot.className = "w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]";
+                    text.innerText = "Online";
+                    text.className = "text-green-400 text-[10px] font-bold";
+                } else {
+                    dot.className = "w-1.5 h-1.5 rounded-full bg-gray-500";
+                    text.innerText = "Offline";
+                    text.className = "text-gray-500 text-[10px]";
+                }
+            }
+        }
+
+        // --- 2. NAVIGASI & UI ---
         window.navigateTo = (pageId) => {
             NProgress.start();
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-' + pageId).classList.remove('hidden');
-            document.querySelectorAll('.nav-desk').forEach(btn => { btn.classList.remove('bg-white/10', 'text-white'); btn.classList.add('text-gray-400'); });
-            const activeDesk = document.getElementById('d-btn-' + pageId);
-            if(activeDesk) { activeDesk.classList.add('bg-white/10', 'text-white'); activeDesk.classList.remove('text-gray-400'); }
-            window.scrollTo(0,0); document.getElementById('mobile-menu').classList.add('hidden');
-            NProgress.done();
-        };
-
-        window.toggleMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
-
-        window.openModalById = (id) => {
-            currentItemId = id;
-            const item = itemMap[id]; if(!item) return;
-            const safeId = id.replace(/\./g, '_');
             
-            const modal = document.getElementById('detail-modal');
-            const mediaBox = document.getElementById('modal-media-container');
-            document.getElementById('comments-list').innerHTML = '<div class="text-center text-gray-500 text-xs mt-10">Memuat...</div>';
-            if(player) { player.destroy(); player = null; }
-            mediaBox.innerHTML = '';
-
-            const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
-            const src = item.src || item.image;
-
-            if(isVideo) { mediaBox.innerHTML = `<video id="player" playsinline controls class="max-w-full max-h-full"><source src="${src}" type="video/mp4" /></video>`; player = new Plyr('#player', { autoplay: true }); }
-            else if(item.type === 'audio') { mediaBox.innerHTML = `<div class="w-full p-10 text-center"><i class="fas fa-music text-6xl text-sky-500 mb-4 animate-pulse"></i><audio id="player" controls class="w-3/4"><source src="${src}" type="audio/mp3"></audio></div>`; player = new Plyr('#player', { autoplay: true }); }
-            else { mediaBox.innerHTML = `<img src="${src}" class="max-w-full max-h-full object-contain">`; }
-
-            document.getElementById('m-title').innerText = item.title;
-            document.getElementById('m-date').innerText = item.date;
-
-            // Realtime Views
-            const viewRef = ref(rtdb, `posts/${safeId}/views`);
-            runTransaction(viewRef, (v) => (v || 0) + 1);
-            onValue(viewRef, (snap) => document.getElementById('view-count').innerText = snap.val() || 0);
-            
-            // Realtime Likes
-            onValue(ref(rtdb, `posts/${safeId}/likes`), (snap) => document.getElementById('like-count').innerText = snap.val() || 0);
-            const isLiked = localStorage.getItem(`liked_${safeId}`);
-            document.getElementById('btn-like-icon').className = isLiked ? "fas fa-heart text-pink-500" : "far fa-heart";
-
-            // Realtime Comments
-            onValue(ref(rtdb, `posts/${safeId}/comments`), (snapshot) => {
-                const list = document.getElementById('comments-list'); list.innerHTML = '';
-                const data = snapshot.val();
-                if(!data) { list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10">Jadilah yang pertama berkomentar!</div>'; }
-                else {
-                    Object.values(data).sort((a,b) => a.timestamp - b.timestamp).forEach(c => {
-                        const isMe = c.userId === userFingerprint;
-                        const div = document.createElement('div');
-                        div.className = `chat-bubble ${isMe ? 'me' : 'other'}`;
-                        div.innerHTML = `<div class="font-bold text-[10px] opacity-70 mb-0.5 flex justify-between"><span>${isMe ? 'Anda' : 'Anonim'}</span><span>${moment(c.timestamp).fromNow()}</span></div><div>${c.text}</div>`;
-                        list.appendChild(div);
-                    });
-                    list.scrollTop = list.scrollHeight;
+            // Reset Nav Styles
+            ['home','playlist','teachers','about'].forEach(id => {
+                const btn = document.getElementById('btn-' + id);
+                if(btn) {
+                    btn.classList.remove('bg-white/10', 'text-white');
+                    btn.classList.add('text-gray-300');
                 }
             });
+            // Active Nav
+            const activeBtn = document.getElementById('btn-' + pageId);
+            if(activeBtn) {
+                activeBtn.classList.add('bg-white/10', 'text-white');
+                activeBtn.classList.remove('text-gray-300');
+            }
 
-            modal.classList.remove('hidden');
-            setTimeout(() => { document.getElementById('modal-backdrop').classList.remove('opacity-0'); document.getElementById('modal-card').classList.remove('opacity-0', 'scale-95'); document.getElementById('modal-card').classList.add('scale-100'); }, 10);
+            window.scrollTo(0,0);
+            document.getElementById('mobile-menu').classList.add('hidden');
+            NProgress.done();
         };
+        window.toggleMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
 
-        window.closeModal = () => {
-            if(player) player.stop();
-            document.getElementById('modal-backdrop').classList.add('opacity-0');
-            document.getElementById('modal-card').classList.remove('scale-100');
-            document.getElementById('modal-card').classList.add('opacity-0', 'scale-95');
-            setTimeout(() => document.getElementById('detail-modal').classList.add('hidden'), 300);
-        };
-
-        window.handleReaction = (type) => {
-            if(!currentItemId) return;
-            const safeId = currentItemId.replace(/\./g, '_');
-            if(type === 'like') {
-                const key = `liked_${safeId}`;
-                const isLiked = localStorage.getItem(key);
-                const likeRef = ref(rtdb, `posts/${safeId}/likes`);
-                if(isLiked) { runTransaction(likeRef, (v) => (v || 0) - 1); localStorage.removeItem(key); document.getElementById('btn-like-icon').className = "far fa-heart"; }
-                else { runTransaction(likeRef, (v) => (v || 0) + 1); localStorage.setItem(key, 'true'); document.getElementById('btn-like-icon').className = "fas fa-heart text-pink-500 like-active"; setTimeout(()=>document.getElementById('btn-like-icon').classList.remove('like-active'), 500); }
-            } else { alert("Fitur Dislike dinonaktifkan."); }
-        };
-
-        window.sendComment = (e) => {
-            e.preventDefault();
-            const input = document.getElementById('comment-input');
-            const text = input.value.trim();
-            if(!text || !currentItemId) return;
-            const safeId = currentItemId.replace(/\./g, '_');
-            push(ref(rtdb, `posts/${safeId}/comments`), { text: text, userId: userFingerprint, timestamp: Date.now() }).then(() => { input.value = ''; });
-        };
-
-        // --- INIT ---
-        moment.locale('id');
-        loadStaticData();
-
-        // Loaders
-        async function loadStaticData() {
+        // --- 3. DATA LOADER ---
+        async function loadData() {
+            NProgress.start();
             try {
                 const res = await fetch('data.json?t=' + Date.now());
                 const data = await res.json();
-                dbLocal = data;
+                db = data;
+                
+                // MAP ID (VITAL FIX)
                 itemMap = {};
-                [...data.gallery, ...data.playlist].forEach(i => { if(i.id) itemMap[i.id] = i; });
+                const allItems = [...(data.gallery||[]), ...(data.playlist||[])];
+                allItems.forEach(i => { if(i.id) itemMap[i.id] = i; });
 
                 if(data.school_profile) {
                     document.getElementById('nav-school-name').innerText = data.school_profile.name;
+                    document.getElementById('nav-brand-color').innerText = data.school_profile.brand_color;
                     document.getElementById('about-vision').innerText = data.school_profile.vision;
                     document.getElementById('about-mission').innerText = data.school_profile.mission;
+                    document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
+                    document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
                 }
+
+                renderGallery(data.gallery || []);
+                renderPlaylist(data.playlist || []);
+                renderTeachers(data.teachers || []);
                 
-                if(data.settings?.anti_screenshot) {
-                     document.addEventListener('contextmenu', e => e.preventDefault());
-                     window.onblur = () => { document.getElementById('privacy-overlay').style.display = 'flex'; };
-                     window.onfocus = () => { document.getElementById('privacy-overlay').style.display = 'none'; };
-                }
+                // Set Home Active
+                const homeBtn = document.getElementById('btn-home');
+                if(homeBtn) homeBtn.classList.add('bg-white/10', 'text-white');
 
-                renderGallery(data.gallery);
-                renderTeachers(data.teachers);
-                renderPlaylist(data.playlist);
-                const activeDesk = document.getElementById('d-btn-home'); if(activeDesk) activeDesk.classList.add('bg-white/10', 'text-white');
-
-            } catch (e) { console.log("Load error", e); }
+            } catch (e) { console.error(e); }
+            NProgress.done();
         }
 
         function renderGallery(items) {
             const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
+            if(items.length === 0) { grid.innerHTML = `<div class="col-span-full text-center py-20 text-gray-600">Belum ada konten.</div>`; return; }
+            
             items.forEach(item => {
                 const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
-                const media = isVideo ? `<div class="w-full h-48 bg-gray-900 flex items-center justify-center"><i class="fas fa-play text-3xl text-white/50"></i></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-48 object-cover transition duration-700 group-hover:scale-110">`;
+                const media = isVideo ? 
+                    `<div class="w-full h-56 bg-gray-900 flex items-center justify-center group-hover:scale-110 transition duration-700"><i class="fas fa-play text-4xl text-white/50 group-hover:text-white transition"></i></div>` : 
+                    `<img src="${item.image}" loading="lazy" class="w-full h-56 object-cover transition duration-700 group-hover:scale-110">`;
+                
                 const div = document.createElement('div');
-                div.className = 'glass-panel rounded-xl overflow-hidden group cursor-pointer hover:border-sky-500/50 transition duration-300 p-0 clickable';
+                div.className = 'glass-card rounded-2xl overflow-hidden group cursor-pointer hover-glow transition duration-300 clickable';
                 div.onclick = () => openModalById(item.id);
-                div.innerHTML = `<div class="relative overflow-hidden">${media}<div class="absolute top-2 left-2 px-2 py-1 bg-black/60 text-white text-[10px] rounded uppercase font-bold backdrop-blur-sm border border-white/10">${item.category}</div></div><div class="p-4"><h3 class="text-white font-bold text-sm line-clamp-2 group-hover:text-sky-400 transition">${item.title}</h3><p class="text-gray-500 text-xs mt-2 flex items-center gap-1"><i class="far fa-calendar"></i> ${item.date}</p></div>`;
+                
+                div.innerHTML = `
+                    <div class="relative overflow-hidden">${media}
+                        <div class="absolute top-3 left-3"><span class="px-2.5 py-1 rounded-lg text-[10px] font-bold bg-black/60 text-white backdrop-blur-md border border-white/10 uppercase">${item.category}</span></div>
+                    </div>
+                    <div class="p-5">
+                        <h3 class="text-white font-bold text-base line-clamp-1 mb-1 group-hover:text-blue-400 transition">${item.title}</h3>
+                        <p class="text-gray-500 text-xs flex items-center gap-1"><i class="far fa-calendar"></i> ${item.date}</p>
+                    </div>
+                `;
                 grid.appendChild(div);
             });
         }
@@ -347,9 +370,16 @@
             items.forEach(item => {
                 const isVideo = item.type === 'video';
                 const div = document.createElement('div');
-                div.className = 'glass-panel p-3 rounded-xl flex items-center gap-3 hover:bg-white/5 transition cursor-pointer border border-white/5 clickable';
+                div.className = 'glass-card p-3 rounded-xl flex items-center gap-4 hover:bg-white/5 transition cursor-pointer border border-white/5 clickable group';
                 div.onclick = () => openModalById(item.id);
-                div.innerHTML = `<div class="w-10 h-10 rounded-lg bg-indigo-500/20 flex items-center justify-center text-indigo-400"><i class="fas ${isVideo?'fa-video':'fa-music'}"></i></div><div class="flex-grow"><h4 class="text-sm font-bold text-white line-clamp-1">${item.title}</h4><p class="text-xs text-gray-400">${item.artist||'Unknown'}</p></div><i class="fas fa-play text-sky-400 text-xs"></i>`;
+                div.innerHTML = `
+                    <div class="w-12 h-12 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition"><i class="fas ${isVideo?'fa-video':'fa-music'}"></i></div>
+                    <div class="flex-grow">
+                        <h4 class="text-sm font-bold text-white line-clamp-1 group-hover:text-indigo-400 transition">${item.title}</h4>
+                        <p class="text-xs text-gray-500">${item.artist||'Unknown'}</p>
+                    </div>
+                    <div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-indigo-500 transition"><i class="fas fa-play text-xs"></i></div>
+                `;
                 container.appendChild(div);
             });
         }
@@ -358,13 +388,175 @@
             const grid = document.getElementById('teacher-grid'); grid.innerHTML = '';
             list.forEach(t => {
                 let socials = '';
-                if(t.socials) { for(let k in t.socials) if(t.socials[k]) socials += `<a href="${t.socials[k]}" target="_blank" class="text-gray-400 hover:text-sky-400 transition"><i class="fab fa-${k=='wa'?'whatsapp':k=='ig'?'instagram':'link'}"></i></a>`; }
+                if(t.socials) { for(let k in t.socials) if(t.socials[k]) socials += `<a href="${t.socials[k]}" target="_blank" class="text-gray-500 hover:text-blue-400 transition"><i class="fab fa-${k=='wa'?'whatsapp':k=='ig'?'instagram':'link'} text-lg"></i></a>`; }
                 const div = document.createElement('div');
-                div.className = 'glass-panel p-4 rounded-xl flex flex-col items-center text-center';
-                div.innerHTML = `<img src="${t.image}" class="w-20 h-20 rounded-full object-cover border-2 border-sky-500/30 mb-3"><h4 class="text-white font-bold text-sm">${t.name}</h4><p class="text-xs text-sky-400 mb-3">${t.role}</p><div class="flex gap-3 text-sm mt-auto">${socials}</div>`;
+                div.className = 'glass-card p-5 rounded-2xl flex flex-col items-center text-center hover-glow transition';
+                div.innerHTML = `
+                    <div class="relative mb-4">
+                        <div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600">
+                            <img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900 border-2 border-[#0f172a]">
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-5 h-5 bg-[#0f172a] rounded-full flex items-center justify-center"><div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div></div>
+                    </div>
+                    <h4 class="text-white font-bold text-sm mb-1">${t.name}</h4>
+                    <p class="text-xs text-blue-400 font-medium mb-3 uppercase tracking-wide">${t.role}</p>
+                    <div class="flex gap-3 mt-auto pt-3 border-t border-white/5 w-full justify-center">${socials}</div>
+                `;
                 grid.appendChild(div);
             });
         }
+
+        // --- 4. LOGIKA MODAL & REALTIME FIX ---
+        window.openModalById = (id) => {
+            currentItemId = id;
+            const item = itemMap[id]; if(!item) return;
+            const safeId = id.replace(/[^a-zA-Z0-9]/g, '_'); // SUPER SAFE ID
+            
+            const modal = document.getElementById('detail-modal');
+            const mediaBox = document.getElementById('modal-media-container');
+            document.getElementById('comments-list').innerHTML = '<div class="text-center text-gray-600 text-xs mt-10"><i class="fas fa-circle-notch fa-spin text-blue-500"></i> Memuat data...</div>';
+            
+            if(player) { player.destroy(); player = null; }
+            mediaBox.innerHTML = '';
+
+            // Media Logic
+            const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
+            const src = item.src || item.image;
+            if(isVideo) {
+                mediaBox.innerHTML = `<video id="player" playsinline controls class="w-full h-full object-contain bg-black"><source src="${src}" type="video/mp4" /></video>`;
+                player = new Plyr('#player', { autoplay: true });
+            } else if(item.type === 'audio') {
+                mediaBox.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black"><div class="w-32 h-32 rounded-full bg-white/5 flex items-center justify-center mb-6 animate-pulse-slow"><i class="fas fa-music text-5xl text-blue-500"></i></div><audio id="player" controls class="w-3/4"><source src="${src}" type="audio/mp3"></audio></div>`;
+                player = new Plyr('#player', { autoplay: true });
+            } else {
+                mediaBox.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
+            }
+
+            // Info
+            document.getElementById('m-title').innerText = item.title;
+            document.getElementById('m-date').innerText = item.date;
+            document.getElementById('m-full-link').href = src;
+
+            // --- REALTIME INTERACTIONS ---
+            // 1. Views
+            const viewRef = ref(rtdb, `posts/${safeId}/views`);
+            runTransaction(viewRef, (v) => (v || 0) + 1);
+            onValue(viewRef, (snap) => document.getElementById('view-count').innerText = snap.val() || 0);
+            
+            // 2. Likes
+            const likeRef = ref(rtdb, `posts/${safeId}/likes`);
+            onValue(likeRef, (snap) => document.getElementById('like-count').innerText = snap.val() || 0);
+            
+            // Cek Local Like
+            const isLiked = localStorage.getItem(`liked_${safeId}`);
+            const likeBtn = document.getElementById('btn-like-icon');
+            if(isLiked) { likeBtn.className = "fas fa-heart text-red-500"; } 
+            else { likeBtn.className = "far fa-heart text-gray-400"; }
+
+            // 3. Comments
+            const commentsRef = ref(rtdb, `posts/${safeId}/comments`);
+            onValue(commentsRef, (snapshot) => {
+                const list = document.getElementById('comments-list'); list.innerHTML = '';
+                const data = snapshot.val();
+                if(!data) { list.innerHTML = '<div class="text-center text-gray-600 text-xs mt-10">Belum ada komentar.</div>'; }
+                else {
+                    Object.values(data).sort((a,b) => a.timestamp - b.timestamp).forEach(c => {
+                        const isMe = c.userId === userFingerprint;
+                        const div = document.createElement('div');
+                        div.className = `chat-bubble ${isMe ? 'me' : 'other'}`;
+                        div.innerHTML = `<div class="font-bold text-[10px] opacity-60 mb-1 flex justify-between"><span>${isMe ? 'Anda' : 'User'}</span><span>${moment(c.timestamp).fromNow()}</span></div><div class="break-words">${c.text}</div>`;
+                        list.appendChild(div);
+                    });
+                    list.scrollTop = list.scrollHeight;
+                }
+            });
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                document.getElementById('modal-backdrop').classList.remove('opacity-0');
+                document.getElementById('modal-card').classList.remove('opacity-0', 'scale-95');
+                document.getElementById('modal-card').classList.add('scale-100');
+            }, 10);
+        };
+
+        window.closeModal = () => {
+            if(player) player.stop();
+            document.getElementById('modal-backdrop').classList.add('opacity-0');
+            document.getElementById('modal-card').classList.remove('scale-100');
+            document.getElementById('modal-card').classList.add('opacity-0', 'scale-95');
+            setTimeout(() => { 
+                document.getElementById('detail-modal').classList.add('hidden'); 
+                document.getElementById('modal-media-container').innerHTML = ''; 
+            }, 300);
+        };
+
+        window.handleReaction = (type) => {
+            if(!currentItemId) return;
+            const safeId = currentItemId.replace(/[^a-zA-Z0-9]/g, '_');
+            
+            if(type === 'like') {
+                const key = `liked_${safeId}`;
+                const isLiked = localStorage.getItem(key);
+                const likeRef = ref(rtdb, `posts/${safeId}/likes`);
+                
+                if(isLiked) {
+                    runTransaction(likeRef, (v) => (v || 0) - 1);
+                    localStorage.removeItem(key);
+                    document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400";
+                    Toastify({ text: "Batal Like", duration: 2000, gravity: "bottom", style: { background: "#334155" } }).showToast();
+                } else {
+                    runTransaction(likeRef, (v) => (v || 0) + 1);
+                    localStorage.setItem(key, 'true');
+                    const icon = document.getElementById('btn-like-icon');
+                    icon.className = "fas fa-heart text-red-500 like-active";
+                    setTimeout(()=>icon.classList.remove('like-active'), 500);
+                    Toastify({ text: "Disukai ❤️", duration: 2000, gravity: "bottom", style: { background: "#ef4444" } }).showToast();
+                }
+            }
+        };
+
+        window.sendComment = (e) => {
+            e.preventDefault();
+            const input = document.getElementById('comment-input');
+            const text = input.value.trim();
+            if(!text || !currentItemId) return;
+            
+            const safeId = currentItemId.replace(/[^a-zA-Z0-9]/g, '_');
+            const commentsRef = ref(rtdb, `posts/${safeId}/comments`);
+            
+            push(commentsRef, { 
+                text: text, 
+                userId: userFingerprint, 
+                timestamp: Date.now() 
+            }).then(() => { 
+                input.value = ''; 
+                Toastify({ text: "Komentar Terkirim", duration: 2000, gravity: "bottom", style: { background: "#10b981" } }).showToast();
+            }).catch((err) => alert("Gagal: " + err));
+        };
+
+        // Init
+        try { AOS.init({ duration: 800, once: true }); } catch(e) {}
+        moment.locale('id');
+        
+        // Filter Logic
+        document.getElementById('searchInput').addEventListener('input', handleFilter);
+        document.getElementById('categoryFilter').addEventListener('change', handleFilter);
+        function handleFilter() {
+            const term = document.getElementById('searchInput').value.toLowerCase();
+            const cat = document.getElementById('categoryFilter').value;
+            const filtered = db.gallery.filter(item => {
+                const t = (item.title||"").toLowerCase().includes(term);
+                const c = cat === 'all' || item.category === cat;
+                if(cat === 'Video') return t && (item.type === 'video' || (item.image && item.image.endsWith('.mp4')));
+                return t && c;
+            });
+            const grid = document.getElementById('gallery-grid');
+            grid.innerHTML = '';
+            if(filtered.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-600">Tidak ditemukan.</div>'; return; }
+            renderGallery(filtered);
+        }
+
+        loadData();
     </script>
 </body>
 </html>
