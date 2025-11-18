@@ -1,0 +1,34 @@
+{
+  "school_profile": {
+    "name": "Sekolah",
+    "brand_color": "Digital",
+    "vision": "Menjadi sekolah unggulan berbasis teknologi dan karakter.",
+    "mission": "1. Mengembangkan potensi siswa.\n2. Menerapkan teknologi tepat guna.",
+    "stats": {
+      "student": "1200+",
+      "award": "85+"
+    }
+  },
+  "gallery": [
+    {
+      "id": "1",
+      "title": "Upacara Hari Kemerdekaan",
+      "image": "https://images.unsplash.com/photo-1576267423445-b2e0074d68a4?q=80&w=1000",
+      "description": "Dokumentasi pelaksanaan upacara bendera memperingati HUT RI ke-79.",
+      "category": "Kegiatan",
+      "date": "2025-11-18"
+    }
+  ],
+  "teachers": [
+    {
+      "id": "t1",
+      "name": "Bapak Kepala Sekolah",
+      "role": "Kepala Sekolah",
+      "image": "https://images.unsplash.com/photo-1560250097-0b93528c311a?q=80&w=400",
+      "socials": {
+        "wa": "https://wa.me/",
+        "ig": "https://instagram.com/"
+      }
+    }
+  ]
+}
