@@ -47,7 +47,7 @@
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
         /* Broadcast Overlay */
-        #broadcast-overlay { position: fixed; inset: 0; z-index: 999999; background: rgba(220, 38, 38, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; backdrop-filter: blur(10px); animation: fadeIn 0.5s; }
+        #broadcast-overlay { position: fixed; inset: 0; z-index: 999999; background: rgba(220, 38, 38, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; backdrop-filter: blur(10px); animation: fadeIn 0.5s; pointer-events: auto; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .marquee-container { overflow: hidden; white-space: nowrap; position: relative; }
@@ -85,7 +85,7 @@
             <p id="broadcast-msg" class="text-xl text-white font-bold leading-relaxed">...</p>
         </div>
         <p class="mt-8 text-white/70 text-sm animate-pulse">Pesan ini dikirim oleh Administrator</p>
-        <button onclick="closeBroadcast()" class="mt-6 px-6 py-2 bg-white text-red-600 font-bold rounded-full hover:bg-gray-200 transition">Tutup</button>
+        <button id="btn-close-broadcast" class="mt-6 px-8 py-3 bg-white text-red-600 font-bold rounded-full hover:bg-gray-200 transition cursor-pointer shadow-lg">Tutup</button>
     </div>
 
     <div id="maintenance-overlay" class="hidden">
@@ -97,7 +97,7 @@
 
     <div class="fixed top-0 w-full z-[60] bg-blue-900/90 text-white text-xs py-1.5 border-b border-white/10 backdrop-blur-md">
         <div class="marquee-container max-w-6xl mx-auto">
-            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V14 - Security Update.</div>
+            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V14.1 - System Normal.</div>
         </div>
     </div>
 
@@ -224,29 +224,21 @@
         let maintenanceConfig = { global: false, gallery: false, mading: false, chat: false };
         let lastBroadcastId = localStorage.getItem('last_broadcast_id');
 
-        // --- BAD WORD LIST (SENSOR) ---
         const BAD_WORDS = ['anjing', 'babi', 'monyet', 'tolol', 'goblok', 'bangsat', 'kontol', 'memek', 'ngentot', 'bego', 'asu', 'bajingan'];
-
-        // --- PWA INSTALLER ---
         let deferredPrompt;
+
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; document.getElementById('pwa-install').classList.remove('hidden'); });
         window.installPWA = () => { document.getElementById('pwa-install').classList.add('hidden'); if(deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; } };
 
-        // --- INIT ---
         window.onload = () => {
             logVisitor(); 
             if(!currentUser) document.getElementById('login-modal').classList.remove('hidden');
-            else {
-                initApp();
-                requestNotificationPermission();
-            }
+            else { initApp(); requestNotificationPermission(); }
         }
         
         function requestNotificationPermission() {
             if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission().then(permission => {
-                    if(permission === "granted") new Notification("Notifikasi Aktif", { body: "Anda akan menerima update penting sekolah.", icon: "https://cdn-icons-png.flaticon.com/512/1903/1903162.png" });
-                });
+                Notification.requestPermission();
             }
         }
 
@@ -268,38 +260,36 @@
 
         function initApp() {
             document.getElementById('login-modal').classList.add('hidden');
-            // Listener Maintenance
             onValue(ref(rtdb, 'site_data/config/maintenance'), (snap) => {
                 maintenanceConfig = snap.val() || {};
                 document.getElementById('maintenance-overlay').classList.toggle('hidden', !maintenanceConfig.global);
             });
             loadRealtimeData();
             listenForBroadcasts();
+            
+            // FIX: Ensure Broadcast Close Button works
+            const btnClose = document.getElementById('btn-close-broadcast');
+            if(btnClose) btnClose.addEventListener('click', () => {
+                document.getElementById('broadcast-overlay').classList.add('hidden');
+            });
         }
 
-        // --- BROADCAST SYSTEM ---
         function listenForBroadcasts() {
             const bcRef = ref(rtdb, 'site_data/config/broadcast');
             onValue(bcRef, (snap) => {
                 const data = snap.val();
                 if (data && data.active && data.id !== lastBroadcastId) {
-                    // Show Popup Web
                     document.getElementById('broadcast-msg').innerText = data.message;
                     document.getElementById('broadcast-overlay').classList.remove('hidden');
-                    
-                    // Show Phone Notification (If Premium)
                     if (currentUser.isPremium && Notification.permission === "granted") {
-                        new Notification("🚨 PERINGATAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png", vibrate: [200, 100, 200] });
+                        new Notification("🚨 PERINGATAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png" });
                     }
-                    
                     lastBroadcastId = data.id;
                     localStorage.setItem('last_broadcast_id', data.id);
                 }
             });
         }
-        window.closeBroadcast = () => document.getElementById('broadcast-overlay').classList.add('hidden');
 
-        // --- REALTIME DATA ---
         function loadRealtimeData() {
             NProgress.start();
             onValue(ref(rtdb, 'site_data/gallery'), (snap) => {
@@ -321,7 +311,6 @@
             onValue(ref(rtdb, 'site_data/config/running_text'), (snap) => { if(snap.val()) document.getElementById('running-text').innerText = snap.val(); });
         }
 
-        // --- RENDERERS ---
         function renderHeroSlider(items) {
             const wrapper = document.getElementById('hero-slider-wrapper');
             wrapper.innerHTML = items.length ? items.map(item => `<div class="swiper-slide relative clickable" onclick="openModalById('${item.id}')"><img src="${item.image}" class="w-full h-full object-cover"><div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent"></div></div>`).join('') : `<div class="swiper-slide"><img src="https://via.placeholder.com/800x400" class="w-full h-full object-cover"></div>`;
@@ -340,7 +329,6 @@
             grid.innerHTML = items.length ? items.map(item => `<div class="glass-card p-4 rounded-xl flex items-center gap-4 border border-white/5"><div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><i class="fas fa-file-alt text-xl"></i></div><div class="flex-grow"><h4 class="text-sm font-bold text-white">${item.title}</h4><p class="text-xs text-gray-500 uppercase">${item.type}</p></div><a href="${item.url}" target="_blank" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-500 flex items-center justify-center text-white transition"><i class="fas fa-download text-sm"></i></a></div>`).join('') : '<div class="col-span-full text-center text-gray-500">Belum ada file.</div>';
         }
 
-        // --- NAVIGATION & LOGIC ---
         window.navigateTo = (pageId) => {
             if (pageId === 'profile' && !currentUser.isPremium) { Toastify({text: "🔒 Login Premium Diperlukan!", style: {background: "#ef4444"}}).showToast(); document.getElementById('login-modal').classList.remove('hidden'); return; }
             if (pageId === 'profile') renderProfile();
@@ -352,7 +340,6 @@
         };
         window.toggleMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
 
-        // --- GAMIFICATION ---
         async function addXP(amount) {
             if(!currentUser.isPremium) return;
             const userRef = ref(rtdb, `users/${currentUser.username}`);
@@ -376,19 +363,18 @@
             });
         }
 
-        // --- COMMENTS & BAD WORD FILTER ---
         window.openModalById = (id) => { currentItemId = id; const item = itemMap[id]; if(!item) return; document.getElementById('m-title').innerText = item.title; const mediaBox = document.getElementById('modal-media-container'); mediaBox.innerHTML = `<img src="${item.image}" class="w-full h-full object-contain">`; onValue(ref(rtdb, `posts/${id}/comments`), (snapshot) => { const list = document.getElementById('comments-list'); list.innerHTML = ''; const data = snapshot.val(); if(data) Object.values(data).forEach(c => { const div = document.createElement('div'); div.className = c.userId === localStorage.getItem('user_fp') ? "chat-card chat-me" : "chat-card chat-other"; div.innerHTML = `<div class="c-user">${c.username}</div><div class="c-text">${c.text}</div>`; list.appendChild(div); }); }); document.getElementById('detail-modal').classList.remove('hidden'); };
         window.closeModal = () => document.getElementById('detail-modal').classList.add('hidden');
+        
         window.sendComment = (e) => {
             e.preventDefault(); const input = document.getElementById('comment-input'); const text = input.value.trim();
             if(!text || !currentItemId) return;
             if(maintenanceConfig.chat) { alert("Komentar sedang maintenance."); return; }
             
-            // Bad Word Check
             const isBad = BAD_WORDS.some(word => text.toLowerCase().includes(word));
-            if(isBad) { Toastify({text: "🚫 Kata kasar terdeteksi! Komentar ditolak.", duration: 3000, style: {background: "#ef4444"}}).showToast(); return; }
+            if(isBad) { Toastify({text: "🚫 Komentar kasar ditolak!", style: {background: "#ef4444"}}).showToast(); return; }
             
-            push(ref(rtdb, `posts/${currentItemId}/comments`), { text, username: currentUser.username, userId: localStorage.getItem('user_fp'), timestamp: serverTimestamp(), likes: 0 }).then(() => { input.value = ''; addXP(10); Toastify({text: "+10 XP", duration: 1000, style: {background: "#eab308"}}).showToast(); });
+            push(ref(rtdb, `posts/${currentItemId}/comments`), { text, username: currentUser.username, userId: localStorage.getItem('user_fp'), timestamp: serverTimestamp(), likes: 0 }).then(() => { input.value = ''; addXP(10); });
         };
         
         async function logVisitor() { if(sessionStorage.getItem('visited')) return; try { const res = await fetch('https://api.ipify.org?format=json'); const data = await res.json(); const ua = navigator.userAgent; push(ref(rtdb, 'analytics/visitors'), { ip: data.ip, device: /Mobile/i.test(ua) ? 'Mobile' : 'Desktop', timestamp: serverTimestamp() }); sessionStorage.setItem('visited', 'true'); } catch(e) {} }
