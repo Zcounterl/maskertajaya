@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V33.5</title>
+    <title>Portal Sekolah V33.6</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -114,6 +114,10 @@
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-track { background: #111; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+
+        /* Line Clamp Custom */
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .expanded { display: block !important; -webkit-line-clamp: unset !important; }
     </style>
 </head>
 <body class="antialiased bg-gradient-to-b from-dark to-[#020617] min-h-screen" id="main-body">
@@ -144,7 +148,7 @@
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold shadow-lg group-hover:rotate-12 transition duration-300" style="background: var(--theme-color)"><i class="fas fa-school"></i></div>
             <div>
                 <h1 class="font-bold text-sm md:text-base leading-none text-white tracking-tight">Portal Sekolah</h1>
-                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.5 <span id="online-count">...</span></p>
+                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.6 <span id="online-count">...</span></p>
             </div>
         </div>
         <div class="flex gap-3 items-center">
@@ -313,63 +317,59 @@
         <div class="flex items-center gap-3"><button onclick="togglePlay()" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition shadow-lg"><i id="sp-icon" class="fas fa-play text-[10px]"></i></button><button onclick="closePlayer()" class="text-gray-400 hover:text-white transition px-2"><i class="fas fa-times"></i></button></div><audio id="audio-element" class="hidden"></audio>
     </div>
     
-    <div id="detail-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-0 md:p-4 bg-black/95 backdrop-blur-sm">
-        <div class="bg-black w-full max-w-4xl md:rounded-3xl overflow-hidden border border-white/10 h-full md:max-h-[90vh] flex flex-col md:flex-row relative shadow-2xl">
+    <div id="detail-modal" class="fixed inset-0 z-[9999] hidden flex items-center justify-center p-0 bg-black/95 backdrop-blur-sm">
+        <div class="bg-[#000] w-full h-full md:max-w-md md:h-[90vh] md:rounded-3xl overflow-hidden flex flex-col relative shadow-2xl md:border md:border-white/10">
             
-            <button onclick="closeDetailModal()" class="absolute top-3 right-3 z-50 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur hover:bg-red-500 transition md:hidden"><i class="fas fa-times"></i></button>
+            <button onclick="closeDetailModal()" class="absolute top-4 right-4 z-50 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur hover:bg-red-500 transition"><i class="fas fa-times"></i></button>
 
-            <div class="relative bg-black flex items-center justify-center w-full md:w-[60%] h-[40vh] md:h-auto border-b md:border-b-0 md:border-r border-white/10" id="modal-media">
-                </div>
-
-            <div class="flex-1 bg-[#000] flex flex-col h-[60vh] md:h-auto relative">
+            <div class="flex-1 overflow-y-auto custom-scroll relative">
                 
-                <div class="p-4 border-b border-white/10 flex justify-between items-center bg-[#000]">
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600 p-[2px]">
+                <div class="relative w-full bg-black min-h-[30vh] flex items-center justify-center" id="modal-media"></div>
+                
+                <div class="p-4 pb-24"> <div class="flex items-center gap-3 mb-3">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-yellow-400 to-purple-600 p-[2px]">
                             <img src="https://ui-avatars.com/api/?name=Admin" class="w-full h-full rounded-full border border-black bg-gray-800 object-cover" id="modal-author-pic">
                         </div>
                         <div>
                             <h3 id="modal-title" class="text-sm font-bold text-white">Title</h3>
                             <p id="modal-date" class="text-[10px] text-gray-400">Date</p>
                         </div>
-                    </div>
-                    <button onclick="closeDetailModal()" class="hidden md:block text-white hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
-                </div>
-
-                <div class="flex-1 overflow-y-auto p-4 custom-scroll" id="modal-scroll-area">
-                    <div class="mb-4 pb-4 border-b border-white/5">
-                        <p id="modal-desc" class="text-sm text-gray-200 leading-relaxed whitespace-pre-line font-light">Desc</p>
+                        <div id="admin-controls" class="hidden ml-auto"><button onclick="deleteContent()" class="text-gray-500 hover:text-red-500"><i class="fas fa-trash"></i></button></div>
                     </div>
 
-                    <div id="comments-list" class="space-y-4 pb-4">
-                        <div class="text-center text-gray-500 text-xs mt-10">Belum ada komentar.</div>
+                    <div class="mb-4">
+                        <p id="modal-desc" class="text-sm text-gray-200 leading-relaxed whitespace-pre-line font-light line-clamp-2">Desc</p>
+                        <button id="btn-read-more" onclick="toggleDesc()" class="text-xs text-gray-400 font-bold mt-1 hidden">... lihat selengkapnya</button>
                     </div>
-                </div>
 
-                <div class="p-3 border-t border-white/10 bg-[#000] z-10">
-                    <div class="flex justify-between items-center mb-3">
-                        <div class="flex gap-4 text-2xl text-white">
-                            <button onclick="toggleLike()" class="hover:text-gray-300 transition transform active:scale-125">
-                                <i id="modal-heart" class="far fa-heart"></i>
-                            </button>
-                            <button onclick="document.getElementById('comment-input').focus()" class="hover:text-gray-300 transition transform active:scale-90">
-                                <i class="far fa-comment"></i>
-                            </button>
-                            <button onclick="sharePostLink()" class="hover:text-gray-300 transition transform active:scale-125 -rotate-12">
-                                <i class="far fa-paper-plane"></i>
-                            </button>
-                        </div>
-                        <div id="admin-controls" class="hidden flex gap-2">
-                            <button onclick="deleteContent()" class="text-gray-400 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    <div id="comment-section" class="hidden border-t border-white/10 pt-4 mt-4 animate-fade-in-down">
+                        <h4 class="text-xs font-bold text-white mb-3 uppercase tracking-wider">Komentar</h4>
+                        <div id="comments-list" class="space-y-4 mb-4">
+                            </div>
+                        
+                        <div class="flex gap-2 items-center mt-4 sticky bottom-0 bg-black pt-2 pb-1">
+                            <img id="my-comment-pic" src="" class="w-8 h-8 rounded-full bg-gray-800 object-cover">
+                            <input type="text" id="comment-input" placeholder="Tulis komentar..." class="flex-1 bg-white/10 text-sm text-white px-4 py-2 rounded-full outline-none focus:bg-white/20 transition" autocomplete="off">
+                            <button onclick="sendComment()" class="text-blue-500 font-bold text-sm px-2 hover:text-white">Kirim</button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div class="text-sm font-bold text-white mb-2"><span id="modal-likes">0</span> suka</div>
-
-                    <div class="flex items-center gap-2 relative">
-                        <input type="text" id="comment-input" placeholder="Tambahkan komentar..." class="w-full bg-transparent text-sm text-white outline-none placeholder-gray-500 pr-10" autocomplete="off" onkeypress="if(event.key==='Enter') sendComment()">
-                        <button onclick="sendComment()" class="text-blue-500 font-bold text-xs hover:text-white transition">Kirim</button>
+            <div class="absolute bottom-0 left-0 w-full p-3 bg-[#000] border-t border-white/10 z-20 flex justify-between items-center">
+                <div class="flex gap-6 text-2xl text-white px-2">
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleLike()" class="hover:text-red-500 transition transform active:scale-125">
+                            <i id="modal-heart" class="far fa-heart"></i>
+                        </button>
+                        <span id="modal-likes" class="text-sm font-bold">0</span>
                     </div>
+                    <button onclick="toggleCommentSection()" class="hover:text-blue-400 transition transform active:scale-90">
+                        <i class="far fa-comment"></i>
+                    </button>
+                    <button onclick="sharePostLink()" class="hover:text-green-400 transition transform active:scale-125 -rotate-12">
+                        <i class="far fa-paper-plane"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -440,11 +440,10 @@
                 else { disableAntiSS(); if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = false; }
             });
             
-            // CHECK DEEP LINK AT STARTUP
-            checkDeepLink();
+            // CHECK DEEP LINK AT STARTUP (WITH DELAY FOR STABILITY)
+            setTimeout(() => checkDeepLink(), 1500);
         }
 
-        // FIX: MEMASTIKAN TERMINAL BISA DIBUKA DARI GLOBAL WINDOW
         window.openTerminal = () => {
             const terminal = document.getElementById('dev-terminal');
             terminal.classList.remove('hidden');
@@ -460,7 +459,6 @@
                     else logToTerm("Database: DISCONNECTED", "error");
                 });
             }, 1000);
-            
             onValue(ref(rtdb, 'community/messages'), s => { const d=s.val(); if(d){ const k=Object.keys(d).pop(); const m=d[k]; logToTerm(`[CHAT] ${m.username}: ${m.text}`, "info"); } });
             onValue(ref(rtdb, 'users'), s => { logToTerm(`[SYS] User Data Updated. Total: ${s.numChildren()}`, "warn"); });
         }
@@ -473,7 +471,6 @@
             if(type==='success') colorClass = 'log-success';
             if(type==='warn') colorClass = 'log-warn';
             if(type==='error') colorClass = 'log-error';
-            
             const row = document.createElement('div');
             row.className = 'log-entry';
             row.innerHTML = `<span class="log-time">[${time}]</span><span class="${colorClass}">${msg}</span>`;
@@ -501,7 +498,6 @@
             }
         });
 
-
         function enableAntiSS() { document.getElementById('main-body').classList.add('no-select'); document.addEventListener('contextmenu', preventDefault); document.addEventListener('keydown', preventCapture); window.addEventListener('blur', blurScreen); window.addEventListener('focus', unblurScreen); }
         function disableAntiSS() { document.getElementById('main-body').classList.remove('no-select'); document.removeEventListener('contextmenu', preventDefault); document.removeEventListener('keydown', preventCapture); window.removeEventListener('blur', blurScreen); window.removeEventListener('focus', unblurScreen); document.getElementById('anti-ss-overlay').classList.remove('active'); }
         const preventDefault = e => e.preventDefault();
@@ -519,7 +515,6 @@
             onValue(ref(rtdb, 'site_data/gallery'), s => { 
                 document.getElementById('skeleton-loader').classList.add('hidden');
                 document.getElementById('gallery-container').classList.remove('hidden');
-                
                 const d=s.val(); 
                 const i=d?Object.entries(d).map(([k,v])=>({id:k,...v})).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)):[]; 
                 renderGallery(i); 
@@ -538,7 +533,6 @@
             const bcRef = ref(rtdb, 'site_data/config/broadcast'); onValue(bcRef, (snap) => { const data = snap.val(); if (data && data.active && data.id !== lastBroadcastId) { if (currentUser.isPremium && Notification.permission === "granted") { new Notification("🚨 PENGUMUMAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png" }); } showGameToast("📢 " + data.message, "info"); localStorage.setItem('last_broadcast_id', data.id); } });
         }
 
-        // FIXED RENDER GALLERY WITH DIRECT ONCLICK
         function renderGallery(items) {
             const c = document.getElementById('gallery-container');
             c.innerHTML = '';
@@ -546,7 +540,6 @@
                 const div = document.createElement('div');
                 div.className = "masonry-item glass-card cursor-pointer group relative overflow-hidden";
                 div.onclick = function() { openDetail(i, 'site_data/gallery'); };
-                
                 div.innerHTML = `
                     <div class="relative overflow-hidden">
                         <img src="${i.image}" class="gallery-card-img transition duration-500 group-hover:scale-110">
@@ -652,56 +645,90 @@
         window.editProfile = async (type) => { const {value:url} = await Swal.fire({input:'url', inputLabel: type==='pic'?'URL Foto Baru':'URL Wallpaper Chat (GIF/JPG)', background:'#1e293b', color:'#fff'}); if(url) { if(type==='pic') { update(ref(rtdb, `users/${user.username}`), {profile_pic: url}); user.pic = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('p-avatar').src = url; } else { update(ref(rtdb, `users/${user.username}`), {chat_bg: url}); user.chat_bg = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('chat-bg').style.backgroundImage = `url('${url}')`; } Swal.fire("Sukses","Diperbarui","success"); } }
         window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
 
-        // FIXED MODAL & MEDIA HANDLING (IG STYLE)
+        // --- LOGIKA DETAIL POST (IG STYLE UPDATE) ---
+        
         window.openDetail = (item, col) => {
             curItem = item; 
             curCollection = col;
             
-            // Tampilkan Modal
+            // Reset State UI
             document.getElementById('detail-modal').classList.remove('hidden');
+            document.getElementById('comment-section').classList.add('hidden');
+            document.getElementById('btn-read-more').classList.add('hidden');
+            document.getElementById('modal-desc').classList.add('line-clamp-2');
+            document.getElementById('modal-desc').classList.remove('expanded');
+            document.getElementById('btn-read-more').innerText = "... lihat selengkapnya";
             
-            // Isi Data Text
+            // Render Data
             document.getElementById('modal-title').innerText = item.title;
-            document.getElementById('modal-desc').innerText = item.description || '-';
+            const desc = item.description || '-';
+            document.getElementById('modal-desc').innerText = desc;
             document.getElementById('modal-date').innerText = item.date;
             document.getElementById('modal-likes').innerText = "0";
             
-            // Render Media (Gambar/Video) - Responsive Full
+            // Handle Read More Logic
+            if(desc.length > 100) { // Jika deskripsi panjang
+                document.getElementById('btn-read-more').classList.remove('hidden');
+            }
+            
+            // Render Media
             const mediaUrl = item.image || item.url || item.src || '';
             const m = document.getElementById('modal-media');
             m.innerHTML = "";
             if (mediaUrl) {
                 if (item.type === 'video') {
-                    m.innerHTML = `<video src="${mediaUrl}" controls class="w-full h-full object-contain bg-black" autoplay muted loop></video>`;
+                    m.innerHTML = `<video src="${mediaUrl}" controls class="w-full h-full max-h-[50vh] object-contain bg-black" autoplay muted loop></video>`;
                 } else {
-                    m.innerHTML = `<img src="${mediaUrl}" class="w-full h-full object-contain bg-black">`;
+                    m.innerHTML = `<img src="${mediaUrl}" class="w-full h-full max-h-[50vh] object-contain bg-black">`;
                 }
-            } else {
-                m.innerHTML = '<div class="text-gray-500 text-xs">No Media</div>';
-            }
+            } else { m.innerHTML = '<div class="text-gray-500 text-xs">No Media</div>'; }
 
-            // Admin Controls
+            // Admin Check
             if (user.role === 'developer') document.getElementById('admin-controls').classList.remove('hidden');
             else document.getElementById('admin-controls').classList.add('hidden');
 
-            // Load Likes Status
+            // Load Likes & Comments
             onValue(ref(rtdb, `posts/${item.id}/likes`), s => document.getElementById('modal-likes').innerText = s.val() || 0);
             const l = localStorage.getItem(`liked_${item.id}`);
             document.getElementById('modal-heart').className = l ? "fas fa-heart text-red-500" : "far fa-heart";
-
-            // LOAD COMMENTS
+            
+            document.getElementById('my-comment-pic').src = user.profile_pic || user.pic || "https://ui-avatars.com/api/?name=Guest";
             loadComments(item.id);
+        }
+
+        window.toggleDesc = () => {
+            const d = document.getElementById('modal-desc');
+            const b = document.getElementById('btn-read-more');
+            if(d.classList.contains('expanded')) {
+                d.classList.remove('expanded');
+                d.classList.add('line-clamp-2');
+                b.innerText = "... lihat selengkapnya";
+            } else {
+                d.classList.add('expanded');
+                d.classList.remove('line-clamp-2');
+                b.innerText = "sembunyikan";
+            }
+        }
+
+        window.toggleCommentSection = () => {
+            const c = document.getElementById('comment-section');
+            c.classList.toggle('hidden');
+            if(!c.classList.contains('hidden')) {
+                setTimeout(() => document.getElementById('comment-input').focus(), 300);
+                // Scroll to bottom of container
+                const cont = document.querySelector('#detail-modal .custom-scroll');
+                cont.scrollTop = cont.scrollHeight;
+            }
         }
         
         window.deleteContent = () => { if(confirm("Hapus Permanen?")) { remove(ref(rtdb, `${curCollection}/${curItem.id}`)); document.getElementById('detail-modal').classList.add('hidden'); Swal.fire("Terhapus","","success"); } }
-        window.editContent = async () => { const {value:nt} = await Swal.fire({input:'text', inputLabel:'Judul Baru', inputValue:curItem.title, background:'#1e293b', color:'#fff'}); const {value:nd} = await Swal.fire({input:'textarea', inputLabel:'Deskripsi Baru', inputValue:curItem.description, background:'#1e293b', color:'#fff'}); if(nt) { update(ref(rtdb, `${curCollection}/${curItem.id}`), {title:nt, description:nd}); Swal.fire("Updated","","success"); document.getElementById('detail-modal').classList.add('hidden'); } }
-        window.toggleLike = () => { if(!curItem||user.isGuest) return Swal.fire("Login","Member only.","warning"); const k=`liked_${curItem.id}`; const r=ref(rtdb,`posts/${curItem.id}/likes`); if(localStorage.getItem(k)) { runTransaction(r,v=>(v||0)-1); localStorage.removeItem(k); document.getElementById('modal-heart').className="far fa-heart text-xl"; } else { runTransaction(r,v=>(v||0)+1); localStorage.setItem(k,'1'); document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active"; } }
+        window.toggleLike = () => { if(!curItem) return; const k=`liked_${curItem.id}`; const r=ref(rtdb,`posts/${curItem.id}/likes`); if(localStorage.getItem(k)) { runTransaction(r,v=>(v||0)-1); localStorage.removeItem(k); document.getElementById('modal-heart').className="far fa-heart text-xl"; } else { runTransaction(r,v=>(v||0)+1); localStorage.setItem(k,'1'); document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active"; } }
         window.playMusic = (src,t,a,type) => { if(type==='video') return window.open(src,'_blank'); const p=document.getElementById('sticky-player'), aud=document.getElementById('audio-element'), img=document.getElementById('sp-img'); document.getElementById('sp-title').innerText=t; document.getElementById('sp-artist').innerText=a; img.src = "https://cdn-icons-png.flaticon.com/512/3844/3844724.png"; p.classList.add('active'); aud.src=src; aud.play(); document.getElementById('sp-icon').className="fas fa-pause text-[10px]"; img.classList.add('vinyl-spin'); }
         window.togglePlay = () => { const a=document.getElementById('audio-element'); const img=document.getElementById('sp-img'); if(a.paused) { a.play(); document.getElementById('sp-icon').className="fas fa-pause text-[10px]"; img.classList.add('vinyl-spin'); } else { a.pause(); document.getElementById('sp-icon').className="fas fa-play text-[10px]"; img.classList.remove('vinyl-spin'); } }
         window.closePlayer = () => { document.getElementById('audio-element').pause(); document.getElementById('sticky-player').classList.remove('active'); document.getElementById('sp-img').classList.remove('vinyl-spin'); }
         window.navigateTo = (p) => { if(p==='admin' && user.role!=='developer') return Swal.fire("Access Denied","Developer Only","error"); document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden')); document.getElementById('view-'+p).classList.remove('hidden'); if(p==='profile') { if(user.isGuest) { document.getElementById('profile-guest-view').classList.remove('hidden'); document.getElementById('profile-member-view').classList.add('hidden'); } else { document.getElementById('profile-guest-view').classList.add('hidden'); document.getElementById('profile-member-view').classList.remove('hidden'); document.getElementById('p-name').innerText = user.username; document.getElementById('p-avatar').src = user.profile_pic; if(user.role==='developer') document.getElementById('admin-panel-btn-container').classList.remove('hidden'); onValue(ref(rtdb,`users/${user.username}`),s=>{const d=s.val();if(d){document.getElementById('p-xp').innerText=d.xp||0;document.getElementById('p-level').innerText=d.level||1;document.getElementById('p-rank').innerText=d.rank||"Pemula"}}); } } document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active'); b.querySelector('i').classList.remove('text-indigo-400');}); const b = document.getElementById('nav-'+p); if(b) {b.classList.add('active'); b.querySelector('i').classList.add('text-indigo-400');} window.scrollTo(0,0); }
 
-        // --- FITUR BARU: SHARE & DEEP LINK & COMMENTS ---
+        // --- SHARE & COMMENTS LOGIC (UPDATED) ---
         
         window.sharePostLink = () => {
             if(!curItem) return;
@@ -716,12 +743,16 @@
             const pId = params.get('id');
             const pCol = params.get('v');
             if (pId && pCol) {
+                // Bersihkan URL
                 window.history.replaceState({}, document.title, window.location.pathname);
+                
+                // Fetch Data
                 try {
                     const snap = await get(ref(rtdb, `${pCol}/${pId}`));
                     if (snap.exists()) {
                         const item = {id: pId, ...snap.val()};
-                        setTimeout(() => openDetail(item, pCol), 1000);
+                        // Force Open Modal
+                        openDetail(item, pCol);
                     } else {
                         showGameToast("Postingan tidak ditemukan.", "error");
                     }
@@ -737,7 +768,7 @@
                 list.innerHTML = '';
                 const data = snap.val();
                 if (!data) {
-                    list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-10">Jadilah yang pertama berkomentar.</div>';
+                    list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Belum ada komentar.</div>';
                     return;
                 }
 
@@ -747,8 +778,6 @@
                     const html = `<div class="flex gap-3 items-start group"><img src="${c.pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover flex-shrink-0"><div class="flex-1"><div class="text-sm text-white"><span class="font-bold mr-1 cursor-pointer hover:text-gray-300">${c.username}</span><span class="font-light text-gray-200">${c.text}</span></div><div class="flex gap-3 mt-1 text-[10px] text-gray-400 font-bold"><span>${moment(c.timestamp).fromNow(true)}</span><button class="hover:text-white" onclick="document.getElementById('comment-input').value='@${c.username} '; document.getElementById('comment-input').focus();">Balas</button>${delBtn}</div></div><button class="text-xs text-gray-500 hover:text-red-500 pt-1"><i class="far fa-heart"></i></button></div>`;
                     list.innerHTML += html;
                 });
-                const area = document.getElementById('modal-scroll-area');
-                area.scrollTop = area.scrollHeight;
             });
         }
 
@@ -757,7 +786,8 @@
             const input = document.getElementById('comment-input');
             const txt = input.value.trim();
             if(!txt) return;
-            if(user.isGuest) return Swal.fire("Akses","Login Premium untuk komentar!","warning");
+            // REMOVED PREMIUM CHECK FOR COMMENTS
+            
             const cId = Date.now().toString();
             const path = `interactions/comments/${curItem.id}/${cId}`;
             const data = { id: cId, text: txt, username: user.username, pic: user.profile_pic || user.pic, timestamp: serverTimestamp() };
