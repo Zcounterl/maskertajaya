@@ -3,13 +3,19 @@
 <html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Portal Sekolah Digital</title>
+    <meta name="theme-color" content="#0b0f19">
+    <link rel="manifest" href="manifest.json">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
     <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
     <link href="https://unpkg.com/nprogress@0.2.0/nprogress.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
@@ -35,76 +41,53 @@
         body { background-color: #0b0f19; color: #f3f4f6; overflow-x: hidden; font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         #nprogress .bar { background: #38bdf8 !important; height: 3px !important; }
         
-        /* Glassmorphism Panel */
-        .glass-panel {
-            background: rgba(20, 25, 40, 0.75);
-            backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        }
+        /* Glassmorphism */
+        .glass-panel { background: rgba(20, 25, 40, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
         
-        /* --- CHAT UI MODERN (WHATSAPP STYLE) --- */
+        /* Swiper Custom */
+        .swiper-pagination-bullet-active { background-color: #38bdf8 !important; }
+        
+        /* Skeleton Loading */
+        .skeleton { background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
+        @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+        /* Running Text */
+        .marquee-container { overflow: hidden; white-space: nowrap; position: relative; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
+
+        /* Chat UI */
         .chat-container { display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }
-        
-        .chat-card {
-            max-width: 85%; 
-            width: fit-content;
-            padding: 8px 12px;
-            border-radius: 12px;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            word-wrap: break-word;
-        }
-
-        /* Pesan Saya (Kanan) */
-        .chat-me {
-            align_self: flex-end;
-            background: linear-gradient(135deg, #0ea5e9, #2563eb);
-            color: white;
-            border-bottom-right-radius: 2px;
-            margin-left: auto;
-        }
-
-        /* Pesan Orang Lain (Kiri) */
-        .chat-other {
-            align_self: flex-start;
-            background: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid rgba(255,255,255,0.08);
-            border-bottom-left-radius: 2px;
-            margin-right: auto;
-        }
-
-        .c-user { font-size: 0.65rem; font-weight: 800; margin-bottom: 2px; opacity: 0.9; letter-spacing: 0.5px; }
+        .chat-card { max-width: 85%; width: fit-content; padding: 8px 12px; border-radius: 12px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; word-wrap: break-word; }
+        .chat-me { align_self: flex-end; background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border-bottom-right-radius: 2px; margin-left: auto; }
+        .chat-other { align_self: flex-start; background: #1e293b; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); border-bottom-left-radius: 2px; margin-right: auto; }
+        .c-user { font-size: 0.65rem; font-weight: 800; margin-bottom: 2px; opacity: 0.9; }
         .c-text { font-size: 0.9rem; line-height: 1.4; }
-        .c-meta { 
-            font-size: 0.6rem; margin-top: 4px; opacity: 0.7; 
-            align-self: flex-end;
-            display: flex; gap: 8px; align-items: center; margin-left: auto;
-        }
+        .c-meta { font-size: 0.6rem; margin-top: 4px; opacity: 0.7; align-self: flex-end; display: flex; gap: 8px; align-items: center; margin-left: auto; }
         
-        .chat-me .c-user { color: #bae6fd; }
-        .chat-other .c-user { color: #38bdf8; }
-        .reply-quote { background: rgba(0,0,0,0.2); border-left: 2px solid rgba(255,255,255,0.5); padding: 4px 8px; margin-bottom: 4px; border-radius: 4px; font-size: 0.7rem; opacity: 0.8; }
-        /* --- END CHAT UI --- */
-
         .clickable { cursor: pointer; user-select: none; transition: transform 0.1s; }
         .clickable:active { transform: scale(0.95); }
-        .like-bounce { animation: bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #ef4444 !important; }
-        @keyframes bounce { 0%{transform:scale(1)} 50%{transform:scale(1.3)} 100%{transform:scale(1)} }
-        
         ::-webkit-scrollbar { width: 6px; } 
         ::-webkit-scrollbar-track { background: #0b0f19; } 
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        
-        select { background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em; }
-        
         #privacy-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="antialiased">
+
+    <div class="fixed top-0 w-full z-[60] bg-blue-900/90 text-white text-xs py-1.5 border-b border-white/10 backdrop-blur-md">
+        <div class="marquee-container max-w-6xl mx-auto">
+            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V13 - Informasi Terkini & Galeri Kegiatan.</div>
+        </div>
+    </div>
+
+    <div id="pwa-install" class="hidden fixed bottom-20 left-4 z-50 bg-blue-600 text-white px-4 py-3 rounded-xl shadow-lg border border-white/20 flex items-center gap-3 animate-bounce">
+        <i class="fas fa-download"></i>
+        <div class="text-sm font-bold">Install Aplikasi</div>
+        <button onclick="installPWA()" class="bg-white text-blue-600 px-3 py-1 rounded-lg text-xs font-bold">Pasang</button>
+        <button onclick="document.getElementById('pwa-install').classList.add('hidden')" class="text-white/70"><i class="fas fa-times"></i></button>
+    </div>
 
     <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden">
         <div class="glass-panel w-full max-w-md p-8 rounded-3xl text-center border border-white/10 relative">
@@ -131,47 +114,66 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[120px] animate-pulse" style="animation-delay: 2s;"></div>
     </div>
 
-    <nav class="fixed w-full z-50 top-4 px-4">
+    <nav class="fixed w-full z-50 top-8 px-4">
         <div class="max-w-6xl mx-auto glass-panel rounded-2xl px-6 h-16 flex justify-between items-center">
             <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
                 <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg"><i class="fas fa-school text-white text-sm"></i></div>
-                <div class="flex flex-col"><span class="font-bold text-white leading-none" id="nav-school-name">Sekolah</span><span class="text-[10px] text-gray-400 flex items-center gap-1.5 mt-0.5"><span id="global-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span><span id="global-status-text">Offline</span></span></div>
+                <div class="flex flex-col"><span class="font-bold text-white leading-none" id="nav-school-name">Sekolah</span><span class="text-[10px] text-gray-400 flex items-center gap-1.5 mt-0.5"><span id="global-status-dot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span><span id="global-status-text">Connecting...</span></span></div>
             </div>
             <div class="hidden md:flex items-center gap-1 bg-white/5 p-1 rounded-full border border-white/5">
-                <button onclick="navigateTo('home')" id="d-btn-home" class="px-5 py-1.5 rounded-full text-sm font-medium text-white bg-white/10 transition-all">Galeri</button>
-                <button onclick="navigateTo('playlist')" id="d-btn-playlist" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Playlist</button>
+                <button onclick="navigateTo('home')" id="d-btn-home" class="px-5 py-1.5 rounded-full text-sm font-medium text-white bg-white/10 transition-all">Beranda</button>
+                <button onclick="navigateTo('mading')" id="d-btn-mading" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Mading</button>
                 <button onclick="navigateTo('teachers')" id="d-btn-teachers" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Guru</button>
-                <button onclick="navigateTo('about')" id="d-btn-about" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Profil</button>
+                <button onclick="navigateTo('playlist')" id="d-btn-playlist" class="px-5 py-1.5 rounded-full text-sm font-medium text-gray-400 hover:text-white transition-all">Media</button>
             </div>
             <button onclick="toggleMenu()" class="md:hidden w-9 h-9 flex items-center justify-center text-white bg-white/5 rounded-lg border border-white/10"><i class="fas fa-bars"></i></button>
         </div>
         <div id="mobile-menu" class="hidden md:hidden max-w-6xl mx-auto mt-2 glass-panel rounded-2xl p-2 space-y-1 transform transition-all origin-top z-50">
-            <button onclick="navigateTo('home')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-images mr-3 text-blue-400"></i> Galeri</button>
-            <button onclick="navigateTo('playlist')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-music mr-3 text-purple-400"></i> Playlist</button>
+            <button onclick="navigateTo('home')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-home mr-3 text-blue-400"></i> Beranda</button>
+            <button onclick="navigateTo('mading')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-newspaper mr-3 text-orange-400"></i> Mading</button>
             <button onclick="navigateTo('teachers')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-users mr-3 text-green-400"></i> Guru</button>
-            <button onclick="navigateTo('about')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-info-circle mr-3 text-yellow-400"></i> Profil</button>
+            <button onclick="navigateTo('playlist')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-play-circle mr-3 text-purple-400"></i> Media</button>
             <div class="border-t border-white/10 my-2"></div>
-            <button onclick="navigateTo('settings')" class="w-full text-left px-4 py-3 rounded-xl text-gray-300 hover:bg-white/5 transition"><i class="fas fa-cog mr-3 text-gray-400"></i> Pengaturan</button>
             <button onclick="logout()" class="w-full text-left px-4 py-3 rounded-xl text-red-400 hover:bg-white/5 transition"><i class="fas fa-sign-out-alt mr-3"></i> Keluar</button>
         </div>
     </nav>
 
-    <main class="relative z-10 pt-28 pb-20 px-4 container mx-auto max-w-6xl">
+    <main class="relative z-10 pt-32 pb-20 px-4 container mx-auto max-w-6xl">
         
         <section id="view-home" class="view-section transition-all duration-500">
-            <div class="flex flex-col md:flex-row justify-between items-end mb-8 gap-4" data-aos="fade-down">
-                <div><h1 class="text-4xl font-black text-white mb-1">Galeri <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-500">Aktivitas</span></h1></div>
-                <div class="flex gap-2 w-full md:w-auto bg-white/5 p-1 rounded-xl border border-white/10">
-                    <input type="text" id="searchInput" placeholder="Cari momen..." class="bg-transparent text-white text-sm px-3 py-2 outline-none w-full md:w-48 placeholder-gray-600">
-                    <select id="categoryFilter" class="bg-black/30 text-gray-300 text-sm px-3 py-2 rounded-lg outline-none border-none"><option value="all">Semua</option><option value="Prestasi">Prestasi</option><option value="Kegiatan">Kegiatan</option><option value="Organisasi">Organisasi</option><option value="Video">Video</option><option value="Umum">Umum</option></select>
+            <div class="w-full h-[250px] md:h-[400px] rounded-2xl overflow-hidden mb-8 relative shadow-2xl border border-white/10 group">
+                <div class="swiper mySwiper w-full h-full">
+                    <div class="swiper-wrapper" id="hero-slider-wrapper">
+                        <div class="swiper-slide skeleton w-full h-full"></div>
+                    </div>
+                    <div class="swiper-pagination"></div>
+                </div>
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none z-10"></div>
+                <div class="absolute bottom-6 left-6 z-20">
+                    <h2 class="text-2xl md:text-4xl font-bold text-white mb-2" id="hero-title">Selamat Datang</h2>
+                    <p class="text-sm md:text-base text-gray-300 line-clamp-2" id="hero-desc">Portal informasi dan galeri digital sekolah.</p>
                 </div>
             </div>
-            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+            <div class="flex flex-col md:flex-row justify-between items-end mb-6 gap-4" data-aos="fade-up">
+                <div><h1 class="text-2xl font-bold text-white">Galeri <span class="text-blue-500">Terkini</span></h1></div>
+                <div class="flex gap-2 w-full md:w-auto bg-white/5 p-1 rounded-xl border border-white/10">
+                    <input type="text" id="searchInput" placeholder="Cari momen..." class="bg-transparent text-white text-sm px-3 py-2 outline-none w-full md:w-48 placeholder-gray-600">
+                    <select id="categoryFilter" class="bg-black/30 text-gray-300 text-sm px-3 py-2 rounded-lg outline-none border-none"><option value="all">Semua</option><option value="Prestasi">Prestasi</option><option value="Kegiatan">Kegiatan</option><option value="Umum">Umum</option></select>
+                </div>
+            </div>
+
+            <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="glass-panel rounded-2xl overflow-hidden h-72"><div class="skeleton w-full h-48"></div><div class="p-4 space-y-2"><div class="skeleton w-3/4 h-4"></div><div class="skeleton w-1/2 h-3"></div></div></div>
+                <div class="glass-panel rounded-2xl overflow-hidden h-72"><div class="skeleton w-full h-48"></div><div class="p-4 space-y-2"><div class="skeleton w-3/4 h-4"></div><div class="skeleton w-1/2 h-3"></div></div></div>
+            </div>
         </section>
 
-        <section id="view-playlist" class="view-section hidden">
-            <div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Multimedia <span class="text-purple-500">Hub</span></h1></div>
-            <div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div>
+        <section id="view-mading" class="view-section hidden">
+            <div class="text-center mb-10"><h1 class="text-4xl font-black text-white">E-Mading <span class="text-orange-500">Sekolah</span></h1><p class="text-gray-400 mt-2">Berita, Artikel, dan Karya Tulis Siswa</p></div>
+            <div id="mading-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                <div class="glass-card p-6 rounded-2xl border border-white/5"><div class="skeleton w-1/3 h-4 mb-4"></div><div class="skeleton w-full h-6 mb-2"></div><div class="skeleton w-full h-20"></div></div>
+            </div>
         </section>
 
         <section id="view-teachers" class="view-section hidden">
@@ -179,27 +181,9 @@
             <div id="teacher-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </section>
 
-        <section id="view-about" class="view-section hidden">
-            <div class="max-w-4xl mx-auto glass-panel rounded-2xl p-8 md:p-12">
-                <h2 class="text-3xl font-bold text-white mb-6">Tentang Sekolah</h2>
-                <div class="grid md:grid-cols-2 gap-8">
-                    <div class="space-y-6"><div class="pl-4 border-l-2 border-blue-500"><p class="text-blue-400 text-xs font-bold uppercase mb-1">Visi</p><p id="about-vision" class="text-gray-300 italic">Loading...</p></div><div class="pl-4 border-l-2 border-purple-500"><p class="text-purple-400 text-xs font-bold uppercase mb-1">Misi</p><p id="about-mission" class="text-gray-400 text-sm whitespace-pre-line">Loading...</p></div></div>
-                    <div class="grid grid-cols-2 gap-4"><div class="bg-white/5 p-4 rounded-xl text-center border border-white/5 hover:bg-white/10 transition"><div id="stat-1-val" class="text-3xl font-black text-white">-</div><div class="text-[10px] text-gray-500 uppercase font-bold">Siswa</div></div><div class="bg-white/5 p-4 rounded-xl text-center border border-white/5 hover:bg-white/10 transition"><div id="stat-2-val" class="text-3xl font-black text-white">-</div><div class="text-[10px] text-gray-500 uppercase font-bold">Prestasi</div></div></div>
-                </div>
-            </div>
-        </section>
-        
-        <section id="view-settings" class="view-section hidden">
-            <div class="max-w-md mx-auto glass-panel rounded-2xl p-6 border border-white/10">
-                <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-2"><i class="fas fa-cog"></i> Pengaturan</h2>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg"><div><div class="text-sm font-medium text-white">Mode Gelap</div><div class="text-xs text-gray-500">Selalu aktif</div></div><i class="fas fa-moon text-blue-400"></i></div>
-                    <div class="flex justify-between items-center p-3 bg-white/5 rounded-lg">
-                        <div><div class="text-sm font-medium text-white">Animasi UI</div><div class="text-xs text-gray-500">Efek transisi</div></div>
-                        <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="anim-toggle" class="sr-only peer" onchange="document.body.classList.toggle('no-anim')"><div class="w-9 h-5 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:bg-blue-600 relative"><div class="absolute left-[2px] top-[2px] bg-white w-4 h-4 rounded-full transition-all peer-checked:translate-x-full"></div></div></label>
-                    </div>
-                </div>
-            </div>
+        <section id="view-playlist" class="view-section hidden">
+            <div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Multimedia <span class="text-purple-500">Hub</span></h1></div>
+            <div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div>
         </section>
     </main>
 
@@ -219,11 +203,8 @@
             <div class="lg:w-1/3 bg-[#0b0f19] flex flex-col border-l border-white/5 h-3/5 lg:h-full">
                 <div class="p-3 border-b border-white/5 bg-[#111827] flex justify-between items-center shadow-md z-10">
                     <h3 class="font-bold text-white text-sm flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> Diskusi</h3>
-                    <a id="m-full-link" href="#" target="_blank" class="text-[10px] font-bold bg-blue-600 hover:bg-blue-500 text-white px-3 py-1 rounded transition">FULL SCREEN</a>
                 </div>
-                
                 <div id="comments-list" class="flex-grow overflow-y-auto p-4 custom-scrollbar bg-[#0b0f19] relative pb-20 chat-container"></div>
-
                 <div class="absolute bottom-0 w-full bg-[#111827] border-t border-white/5">
                     <div id="reply-indicator" class="hidden bg-blue-900/30 px-4 py-2 text-xs flex justify-between items-center border-b border-white/5 text-blue-300"><span><i class="fas fa-reply mr-2"></i>Balas...</span><button onclick="window.cancelReply()" class="hover:text-white"><i class="fas fa-times"></i></button></div>
                     <form id="comment-form" onsubmit="window.sendComment(event)" class="flex gap-2 p-3">
@@ -240,7 +221,7 @@
         import { getDatabase, ref, onValue, push, runTransaction, onDisconnect, set, serverTimestamp, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
         // ===========================================
-        // ⚠️ PASTE CONFIG FIREBASE ANDA DI SINI ⚠️
+        // ⚠️ CONFIG FIREBASE (V13 Realtime) ⚠️
         // ===========================================
         const firebaseConfig = {
           apiKey: "AIzaSyAYjnWMB23CQ2OnofJuoMBJyoxBahvPj9Q",
@@ -249,15 +230,14 @@
           projectId: "sigitdb-eb445",
           storageBucket: "sigitdb-eb445.firebasestorage.app",
           messagingSenderId: "939882511814",
-          appId: "1:939882511814:web:797708c2440f35062646c7",
-          measurementId: "G-JYV95GGYEG"
+          appId: "1:939882511814:web:797708c2440f35062646c7"
         };
         // ===========================================
 
         const app = initializeApp(firebaseConfig);
         const rtdb = getDatabase(app);
 
-        let dbLocal = { gallery: [], teachers: [], playlist: [] };
+        let dbLocal = { gallery: [], teachers: [], playlist: [], mading: [] };
         let itemMap = {};
         let currentItemId = null;
         let replyingTo = null;
@@ -265,26 +245,24 @@
         let userFingerprint = localStorage.getItem('user_fp');
         let currentUser = JSON.parse(localStorage.getItem('current_user')) || null;
         
-        if(!userFingerprint) {
-             const randNum = Math.floor(Math.random() * 9999);
-             userFingerprint = `Guest-${randNum}`;
-             localStorage.setItem('user_fp', userFingerprint);
-        }
+        if(!userFingerprint) { const r = Math.floor(Math.random() * 9999); userFingerprint = `Guest-${r}`; localStorage.setItem('user_fp', userFingerprint); }
 
-        // --- AUTH SYSTEM ---
+        // --- PWA INSTALLER ---
+        let deferredPrompt;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault(); deferredPrompt = e;
+            document.getElementById('pwa-install').classList.remove('hidden');
+        });
+        window.installPWA = () => {
+            document.getElementById('pwa-install').classList.add('hidden');
+            if(deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+        };
+
+        // --- INIT ---
         window.onload = () => {
             if(!currentUser) document.getElementById('login-modal').classList.remove('hidden');
             else initApp();
         }
-        window.showLoginInput = () => { document.getElementById('login-options').classList.add('hidden'); document.getElementById('login-form').classList.remove('hidden'); };
-        window.hideLoginInput = () => { document.getElementById('login-form').classList.add('hidden'); document.getElementById('login-options').classList.remove('hidden'); };
-        
-        window.loginGuest = () => {
-            currentUser = { username: "Tamu", isPremium: false };
-            localStorage.setItem('current_user', JSON.stringify(currentUser));
-            document.getElementById('login-modal').classList.add('hidden');
-            initApp();
-        };
 
         window.verifyLogin = async () => {
             const user = document.getElementById('username-input').value.trim();
@@ -294,100 +272,122 @@
                 const snap = await get(ref(rtdb, `users/${user}`));
                 if (snap.exists() && snap.val().code === code) {
                     currentUser = { username: user, isPremium: true, ...snap.val() };
-                    userFingerprint = user; // Premium uses username as ID
-                    localStorage.setItem('user_fp', userFingerprint);
                     localStorage.setItem('current_user', JSON.stringify(currentUser));
                     location.reload();
                 } else alert("Login Gagal!");
             } catch(e) { alert("Err: "+e.message); }
         };
-        window.logout = () => { localStorage.removeItem('current_user'); location.reload(); }
+        window.loginGuest = () => { currentUser = { username: "Tamu", isPremium: false }; localStorage.setItem('current_user', JSON.stringify(currentUser)); location.reload(); };
+        window.logout = () => { localStorage.removeItem('current_user'); location.reload(); };
 
         function initApp() {
             document.getElementById('login-modal').classList.add('hidden');
-            // UI Role Badge
-            const badge = document.getElementById('user-role-badge');
-            if(currentUser.isPremium) {
-                badge.innerText = "PREMIUM"; badge.className = "text-[9px] text-yellow-400 uppercase font-bold";
-            } else {
-                badge.innerText = "GUEST"; badge.className = "text-[9px] text-gray-400 uppercase";
-            }
+            loadRealtimeData();
+            loadRunningText();
+        }
+
+        // --- REALTIME DATA FETCHING ---
+        function loadRealtimeData() {
+            NProgress.start();
             
-            // Presence
-            const connectedRef = ref(rtdb, ".info/connected");
-            const myStatusRef = ref(rtdb, "status/" + userFingerprint);
-            onValue(connectedRef, (snap) => {
-                if (snap.val() === true) {
-                    set(myStatusRef, { state: 'online', name: currentUser.username, last_changed: serverTimestamp() });
-                    onDisconnect(myStatusRef).remove();
-                    updateStatus(true);
-                } else { updateStatus(false); }
-            });
-            loadData();
-        }
-        
-        function updateStatus(isOnline) {
-            const dot = document.getElementById('global-status-dot');
-            const text = document.getElementById('global-status-text');
-            if(dot && text) {
-                if(isOnline) { dot.className = "online-dot status-online"; text.innerText = "Online"; }
-                else { dot.className = "online-dot status-offline"; text.innerText = "Offline"; }
-            }
-        }
-
-        // --- UI LOGIC ---
-        window.navigateTo = (pageId) => {
-            NProgress.start();
-            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
-            document.getElementById('view-' + pageId).classList.remove('hidden');
-            document.querySelectorAll('.nav-desk').forEach(btn => { btn.classList.remove('bg-white/10', 'text-white'); btn.classList.add('text-gray-400'); });
-            const activeDesk = document.getElementById('d-btn-' + pageId);
-            if(activeDesk) { activeDesk.classList.add('bg-white/10', 'text-white'); activeDesk.classList.remove('text-gray-400'); }
-            window.scrollTo(0,0); document.getElementById('mobile-menu').classList.add('hidden');
-            NProgress.done();
-        };
-        window.toggleMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
-        window.openModalById = openModalById; window.closeModal = closeModal;
-        window.handleReaction = handleReaction; window.sendComment = sendComment;
-        window.prepareReply = prepareReply; window.cancelReply = cancelReply; window.likeComment = likeComment;
-        window.openFullPage = openFullPage;
-
-        async function loadData() {
-            NProgress.start();
-            try {
-                const res = await fetch('data.json?t=' + Date.now());
-                const data = await res.json();
-                dbLocal = data;
-                itemMap = {};
-                [...data.gallery, ...data.playlist].forEach(i => { if(i.id) itemMap[i.id] = i; });
-
-                if(data.school_profile) {
-                    document.getElementById('nav-school-name').innerText = data.school_profile.name;
-                    document.getElementById('about-vision').innerText = data.school_profile.vision;
-                    document.getElementById('about-mission').innerText = data.school_profile.mission;
-                    document.getElementById('stat-1-val').innerText = data.school_profile.stats?.student || "-";
-                    document.getElementById('stat-2-val').innerText = data.school_profile.stats?.award || "-";
-                }
+            // 1. Gallery & Slides
+            onValue(ref(rtdb, 'site_data/gallery'), (snap) => {
+                const data = snap.val();
+                const items = [];
+                for(let k in data) items.push({id: k, ...data[k]});
+                items.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+                dbLocal.gallery = items;
+                renderGallery(items);
                 
-                if(data.settings?.anti_screenshot) {
-                    document.addEventListener('contextmenu', e => e.preventDefault());
-                    window.onblur = () => { document.getElementById('privacy-overlay').style.display = 'flex'; };
-                    window.onfocus = () => { document.getElementById('privacy-overlay').style.display = 'none'; };
+                // Filter for Slides
+                const slides = items.filter(i => i.is_slide);
+                renderHeroSlider(slides);
+                
+                items.forEach(i => itemMap[i.id] = i);
+            });
+
+            // 2. Teachers
+            onValue(ref(rtdb, 'site_data/teachers'), (snap) => {
+                const data = snap.val();
+                const items = [];
+                for(let k in data) items.push({id: k, ...data[k]});
+                renderTeachers(items);
+            });
+
+            // 3. Playlist
+            onValue(ref(rtdb, 'site_data/playlist'), (snap) => {
+                const data = snap.val();
+                const items = [];
+                for(let k in data) items.push({id: k, ...data[k]});
+                items.forEach(i => itemMap[i.id] = i);
+                renderPlaylist(items);
+            });
+
+            // 4. Mading
+            onValue(ref(rtdb, 'site_data/mading'), (snap) => {
+                const data = snap.val();
+                const items = [];
+                for(let k in data) items.push({id: k, ...data[k]});
+                items.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
+                items.forEach(i => itemMap[i.id] = i); // Add to map for modal
+                renderMading(items);
+            });
+
+            // 5. Profile
+            onValue(ref(rtdb, 'site_data/profile'), (snap) => {
+                const p = snap.val();
+                if(p) document.getElementById('nav-school-name').innerText = p.name || "Sekolah Digital";
+            });
+
+            // Connection Status
+            onValue(ref(rtdb, ".info/connected"), (snap) => {
+                if(snap.val() === true) {
+                    document.getElementById('global-status-dot').className = "w-1.5 h-1.5 rounded-full bg-green-500";
+                    document.getElementById('global-status-text').innerText = "Online (Realtime)";
+                    NProgress.done();
+                } else {
+                    document.getElementById('global-status-dot').className = "w-1.5 h-1.5 rounded-full bg-red-500";
+                    document.getElementById('global-status-text').innerText = "Offline";
                 }
+            });
+        }
 
-                renderGallery(data.gallery || []); renderPlaylist(data.playlist || []); renderTeachers(data.teachers || []);
-                const btnHome = document.getElementById('d-btn-home'); if(btnHome) btnHome.classList.add('bg-white/10', 'text-white');
+        function loadRunningText() {
+            onValue(ref(rtdb, 'site_data/config/running_text'), (snap) => {
+                const text = snap.val();
+                if(text) document.getElementById('running-text').innerText = text;
+            });
+        }
 
-            } catch (e) { console.log("Load error", e); }
-            NProgress.done();
+        // --- RENDERING FUNCTIONS ---
+        
+        function renderHeroSlider(items) {
+            const wrapper = document.getElementById('hero-slider-wrapper');
+            if(!items || items.length === 0) {
+                wrapper.innerHTML = `<div class="swiper-slide relative"><img src="https://images.unsplash.com/photo-1509062522246-3755977927d7?q=80&w=1000" class="w-full h-full object-cover"></div>`;
+                return;
+            }
+            wrapper.innerHTML = items.map(item => `
+                <div class="swiper-slide relative clickable" onclick="openModalById('${item.id}')">
+                    <img src="${item.image}" class="w-full h-full object-cover transform scale-105 hover:scale-100 transition duration-[2s]">
+                    <div class="absolute bottom-0 left-0 w-full h-1/2 bg-gradient-to-t from-black to-transparent"></div>
+                </div>
+            `).join('');
+            
+            new Swiper(".mySwiper", {
+                loop: true,
+                effect: "fade",
+                autoplay: { delay: 4000, disableOnInteraction: false },
+                pagination: { el: ".swiper-pagination", clickable: true },
+            });
         }
 
         function renderGallery(items) {
             const grid = document.getElementById('gallery-grid'); grid.innerHTML = '';
-            if(items.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-20 text-gray-600">Tidak ditemukan.</div>'; return; }
+            if(items.length === 0) { grid.innerHTML = '<div class="col-span-full text-center py-10 text-gray-500">Galeri kosong.</div>'; return; }
             items.forEach(item => {
-                const isVideo = item.type === 'video' || item.image.endsWith('.mp4');
-                const media = isVideo ? `<div class="w-full h-56 bg-gray-900 flex items-center justify-center group-hover:scale-110 transition duration-700"><i class="fas fa-play text-4xl text-white/50 group-hover:text-white transition"></i></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-56 object-cover transition duration-700 group-hover:scale-110">`;
+                const isVideo = item.type === 'video';
+                const media = isVideo ? `<div class="w-full h-56 bg-gray-900 flex items-center justify-center group-hover:scale-110 transition duration-700"><i class="fas fa-play text-4xl text-white/50"></i></div>` : `<img src="${item.image}" loading="lazy" class="w-full h-56 object-cover transition duration-700 group-hover:scale-110">`;
                 const div = document.createElement('div');
                 div.className = 'glass-panel rounded-2xl overflow-hidden group cursor-pointer hover-glow transition duration-300 clickable';
                 div.onclick = () => openModalById(item.id);
@@ -396,34 +396,45 @@
             });
         }
 
-        function renderPlaylist(items) {
-            const container = document.getElementById('playlist-container'); container.innerHTML = '';
+        function renderMading(items) {
+            const grid = document.getElementById('mading-grid'); grid.innerHTML = '';
+            if(items.length === 0) { grid.innerHTML = '<div class="text-center text-gray-500 w-full">Belum ada berita mading.</div>'; return; }
             items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'glass-card p-6 rounded-2xl border border-white/5 hover:bg-white/5 transition cursor-pointer group';
+                div.onclick = () => openModalById(item.id);
+                div.innerHTML = `<div class="flex items-center gap-2 mb-3"><span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-[10px] font-bold uppercase">NEWS</span><span class="text-xs text-gray-500">${item.date}</span></div><h3 class="text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition">${item.title}</h3><p class="text-gray-400 text-sm line-clamp-3 mb-4">${item.description}</p><div class="flex items-center gap-2 text-xs text-gray-500"><img src="https://ui-avatars.com/api/?name=${item.author}&background=random" class="w-6 h-6 rounded-full"> <span>Oleh ${item.author}</span></div>`;
+                grid.appendChild(div);
+            });
+        }
+
+        function renderTeachers(items) {
+            const grid = document.getElementById('teacher-grid'); grid.innerHTML = '';
+            items.forEach(t => {
+                const div = document.createElement('div');
+                div.className = 'glass-card p-5 rounded-2xl flex flex-col items-center text-center hover-glow transition';
+                div.innerHTML = `<div class="relative mb-4"><div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600"><img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900"></div></div><h4 class="text-white font-bold text-sm mb-1">${t.name}</h4><p class="text-xs text-blue-400 font-medium mb-3 uppercase">${t.role}</p>`;
+                grid.appendChild(div);
+            });
+        }
+        
+        function renderPlaylist(items) {
+           const container = document.getElementById('playlist-container'); container.innerHTML = '';
+           items.forEach(item => {
                 const isVideo = item.type === 'video';
                 const div = document.createElement('div');
                 div.className = 'glass-card p-3 rounded-xl flex items-center gap-4 hover:bg-white/5 transition cursor-pointer border border-white/5 clickable group';
                 div.onclick = () => openModalById(item.id);
                 div.innerHTML = `<div class="w-12 h-12 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition"><i class="fas ${isVideo?'fa-video':'fa-music'}"></i></div><div class="flex-grow"><h4 class="text-sm font-bold text-white line-clamp-1 group-hover:text-indigo-400 transition">${item.title}</h4><p class="text-xs text-gray-500">${item.artist||'Unknown'}</p></div><div class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-500 group-hover:text-white group-hover:bg-indigo-500 transition"><i class="fas fa-play text-xs"></i></div>`;
                 container.appendChild(div);
-            });
+           });
         }
 
-        function renderTeachers(list) {
-            const grid = document.getElementById('teacher-grid'); grid.innerHTML = '';
-            list.forEach(t => {
-                let socials = '';
-                if(t.socials) { for(let k in t.socials) if(t.socials[k]) socials += `<a href="${t.socials[k]}" target="_blank" class="text-gray-500 hover:text-blue-400 transition"><i class="fab fa-${k=='wa'?'whatsapp':k=='ig'?'instagram':'link'} text-lg"></i></a>`; }
-                const div = document.createElement('div');
-                div.className = 'glass-card p-5 rounded-2xl flex flex-col items-center text-center hover-glow transition';
-                div.innerHTML = `<div class="relative mb-4"><div class="w-20 h-20 rounded-full p-0.5 bg-gradient-to-br from-blue-500 to-purple-600"><img src="${t.image}" class="w-full h-full rounded-full object-cover bg-gray-900 border-2 border-[#0f172a]"></div><div class="absolute bottom-0 right-0 w-5 h-5 bg-[#0f172a] rounded-full flex items-center justify-center"><div class="w-2.5 h-2.5 bg-green-500 rounded-full"></div></div></div><h4 class="text-white font-bold text-sm mb-1">${t.name}</h4><p class="text-xs text-blue-400 font-medium mb-3 uppercase tracking-wide">${t.role}</p><div class="flex gap-3 mt-auto pt-3 border-t border-white/5 w-full justify-center">${socials}</div>`;
-                grid.appendChild(div);
-            });
-        }
-
-        function openModalById(id) {
+        // --- GLOBAL MODAL & CHAT ---
+        window.openModalById = (id) => {
             currentItemId = id;
             const item = itemMap[id]; if(!item) return;
-            const safeId = id.replace(/[^a-zA-Z0-9]/g, '_');
+            const safeId = id; 
             window.cancelReply();
             
             const modal = document.getElementById('detail-modal');
@@ -432,16 +443,17 @@
             if(player) { player.destroy(); player = null; } mediaBox.innerHTML = '';
 
             const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
-            const src = item.src || item.image;
+            const src = item.src || item.image || '';
 
             if(isVideo) { mediaBox.innerHTML = `<video id="player" playsinline controls class="w-full h-full object-contain bg-black"><source src="${src}" type="video/mp4" /></video>`; player = new Plyr('#player', { autoplay: true }); }
             else if(item.type === 'audio') { mediaBox.innerHTML = `<div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-black"><div class="w-32 h-32 rounded-full bg-white/5 flex items-center justify-center mb-6 animate-pulse-slow"><i class="fas fa-music text-5xl text-blue-500"></i></div><audio id="player" controls class="w-3/4"><source src="${src}" type="audio/mp3"></audio></div>`; player = new Plyr('#player', { autoplay: true }); }
-            else { mediaBox.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`; }
+            else if(src) { mediaBox.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`; }
+            else { mediaBox.innerHTML = `<div class="p-10 text-center"><h2 class="text-2xl font-bold text-white mb-4">${item.title}</h2><p class="text-gray-400">${item.description}</p></div>`; } // Fallback for Text-only mading
 
             document.getElementById('m-title').innerText = item.title;
             document.getElementById('m-date').innerText = item.date;
-            document.getElementById('m-full-link').href = src;
 
+            // Realtime Stats
             const viewRef = ref(rtdb, `posts/${safeId}/views`);
             runTransaction(viewRef, (v) => (v || 0) + 1);
             onValue(viewRef, (snap) => document.getElementById('view-count').innerText = snap.val() || 0);
@@ -450,6 +462,7 @@
             const isLiked = localStorage.getItem(`liked_${safeId}`);
             document.getElementById('btn-like-icon').className = isLiked ? "fas fa-heart text-red-500" : "far fa-heart text-gray-400";
 
+            // Realtime Comments
             onValue(ref(rtdb, `posts/${safeId}/comments`), (snapshot) => {
                 const list = document.getElementById('comments-list'); list.innerHTML = '';
                 const data = snapshot.val();
@@ -460,9 +473,8 @@
                         const div = document.createElement('div');
                         div.className = isMe ? "chat-card chat-me" : "chat-card chat-other";
                         const timeStr = moment(c.timestamp).format('HH:mm');
-                        let replyHtml = c.replyTo ? `<div class="reply-quote text-[10px] mb-1 opacity-70 pl-2 truncate border-l-2"><i class="fas fa-share mr-1"></i> ${c.replyTo}</div>` : '';
-
-                        div.innerHTML = `${replyHtml}<div class="c-user">${c.username || 'Anonim'}</div><div class="c-text">${c.text}</div><div class="c-meta"><span>${timeStr}</span><button onclick="window.likeComment('${safeId}', '${key}')" class="hover:text-pink-500 flex items-center gap-1"><i class="far fa-heart"></i> ${c.likes||0}</button><button onclick="window.prepareReply('${c.username || 'Anonim'}', '${c.text.replace(/'/g, "\'").substring(0, 30)}...')" class="hover:text-blue-400">Balas</button></div>`;
+                        let replyHtml = c.replyTo ? `<div class="bg-black/20 border-l-2 border-white/50 px-2 py-1 mb-1 rounded text-[10px] truncate opacity-80">${c.replyTo}</div>` : '';
+                        div.innerHTML = `${replyHtml}<div class="c-user">${c.username}</div><div class="c-text">${c.text}</div><div class="c-meta"><span>${timeStr}</span><button onclick="window.prepareReply('${c.username}', '${c.text.substring(0,20)}...')" class="hover:text-blue-300">Balas</button></div>`;
                         list.appendChild(div);
                     });
                     list.scrollTop = list.scrollHeight;
@@ -471,111 +483,57 @@
 
             modal.classList.remove('hidden');
             setTimeout(() => { document.getElementById('modal-backdrop').classList.remove('opacity-0'); document.getElementById('modal-card').classList.remove('opacity-0', 'scale-95'); document.getElementById('modal-card').classList.add('scale-100'); }, 10);
-        }
+        };
 
-        function closeModal() {
+        window.closeModal = () => {
             if(player) player.stop();
             document.getElementById('modal-backdrop').classList.add('opacity-0'); document.getElementById('modal-card').classList.remove('scale-100'); document.getElementById('modal-card').classList.add('opacity-0', 'scale-95');
             setTimeout(() => document.getElementById('detail-modal').classList.add('hidden'), 300);
-        }
+        };
 
-        function handleReaction(type) {
+        window.handleReaction = (type) => {
             if(!currentItemId) return;
-            const safeId = currentItemId.replace(/[^a-zA-Z0-9]/g, '_');
+            const safeId = currentItemId;
             if(type === 'like') {
                 const key = `liked_${safeId}`;
                 const isLiked = localStorage.getItem(key);
                 const likeRef = ref(rtdb, `posts/${safeId}/likes`);
-                if(isLiked) { runTransaction(likeRef, (v) => (v || 0) - 1); localStorage.removeItem(key); document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400"; Toastify({text:"Batal Suka", duration:1500, style:{background:"#334155"}}).showToast(); }
-                else { runTransaction(likeRef, (v) => (v || 0) + 1); localStorage.setItem(key, 'true'); document.getElementById('btn-like-icon').className = "fas fa-heart text-red-500 like-active"; setTimeout(()=>document.getElementById('btn-like-icon').classList.remove('like-active'), 500); Toastify({text:"Disukai ❤️", duration:1500, style:{background:"#ef4444"}}).showToast(); }
+                if(isLiked) { runTransaction(likeRef, (v) => (v || 0) - 1); localStorage.removeItem(key); document.getElementById('btn-like-icon').className = "far fa-heart text-gray-400"; }
+                else { runTransaction(likeRef, (v) => (v || 0) + 1); localStorage.setItem(key, 'true'); document.getElementById('btn-like-icon').className = "fas fa-heart text-red-500"; }
             }
-        }
+        };
 
-        function likeComment(postId, commentId) {
-            const likeKey = `liked_comment_${commentId}`;
-            if(localStorage.getItem(likeKey)) return; 
-            const refComm = ref(rtdb, `posts/${postId}/comments/${commentId}/likes`);
-            runTransaction(refComm, (v) => (v || 0) + 1);
-            localStorage.setItem(likeKey, 'true');
-            Toastify({text:"Komentar Disukai", duration:1500, style:{background:"#ec4899"}}).showToast();
-        }
+        window.prepareReply = (username, text) => {
+            replyingTo = { username, text };
+            const ind = document.getElementById('reply-indicator');
+            ind.classList.remove('hidden');
+            ind.innerHTML = `<span>Balas: ${username}</span><button onclick="window.cancelReply()"><i class="fas fa-times"></i></button>`;
+        };
+        window.cancelReply = () => { replyingTo = null; document.getElementById('reply-indicator').classList.add('hidden'); };
 
-        function prepareReply(username, text) {
-            replyingTo = { username: username, text: text };
-            const indicator = document.getElementById('reply-indicator');
-            indicator.innerHTML = `<span><i class="fas fa-reply mr-2"></i>Membalas: ${username} ("${text}")</span><button onclick="window.cancelReply()" class="text-red-400 hover:text-white"><i class="fas fa-times"></i></button>`;
-            indicator.classList.remove('hidden');
-            document.getElementById('comment-input').focus();
-        }
-
-        function cancelReply() {
-            replyingTo = null;
-            document.getElementById('reply-indicator').classList.add('hidden');
-        }
-
-        function sendComment(e) {
+        window.sendComment = (e) => {
             e.preventDefault();
             const input = document.getElementById('comment-input');
             const text = input.value.trim();
             if(!text || !currentItemId) return;
-            const safeId = currentItemId.replace(/[^a-zA-Z0-9]/g, '_');
-            
-            const commentsRef = ref(rtdb, `posts/${safeId}/comments`);
-            
-            const payload = { 
-                text: text, 
-                username: currentUser.username || userFingerprint, 
-                userId: userFingerprint, 
-                timestamp: Date.now(),
-                likes: 0
-            };
+            const safeId = currentItemId;
+            const payload = { text, username: currentUser.username, userId: userFingerprint, timestamp: serverTimestamp(), likes: 0 };
             if(replyingTo) payload.replyTo = `${replyingTo.username}: ${replyingTo.text}`;
+            push(ref(rtdb, `posts/${safeId}/comments`), payload).then(() => { input.value = ''; cancelReply(); });
+        };
 
-            push(commentsRef, payload).then(() => { 
-                input.value = ''; 
-                cancelReply();
-                Toastify({text:"Terkirim", duration:2000, style:{background:"#10b981"}}).showToast(); 
-            }).catch((err) => alert("Gagal: " + err));
-        }
+        // Navigation
+        window.navigateTo = (pageId) => {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('view-' + pageId).classList.remove('hidden');
+            document.querySelectorAll('#mobile-menu button, nav button').forEach(b => b.classList.remove('text-white', 'bg-white/10'));
+            const btn = document.getElementById('d-btn-' + pageId); if(btn) btn.classList.add('text-white', 'bg-white/10');
+            document.getElementById('mobile-menu').classList.add('hidden');
+            window.scrollTo(0,0);
+        };
+        window.toggleMenu = () => document.getElementById('mobile-menu').classList.toggle('hidden');
 
-        function openFullPage() {
-            closeModal();
-            if(!currentItemId) return;
-            navigateTo('detail');
-            const item = itemMap[currentItemId];
-            const isVideo = item.type === 'video' || (item.image && item.image.endsWith('.mp4'));
-            const src = item.src || item.image;
-            const hero = document.getElementById('detail-hero-container');
-            if(player) { player.destroy(); player = null; } hero.innerHTML = '';
-            
-            if(isVideo) {
-                hero.innerHTML = `<video id="player-full" playsinline controls class="w-full h-full object-contain"><source src="${src}" type="video/mp4" /></video>`;
-                new Plyr('#player-full', { autoplay: false });
-                document.getElementById('download-text').innerText = "Unduh Video";
-            } else if(item.type === 'audio') {
-                hero.innerHTML = `<div class="w-full h-[300px] flex items-center justify-center bg-gray-800"><audio id="player-full" controls class="w-1/2"><source src="${src}" type="audio/mp3"></audio></div>`;
-                new Plyr('#player-full', { autoplay: false });
-                document.getElementById('download-text').innerText = "Unduh Audio";
-            } else {
-                hero.innerHTML = `<img src="${src}" class="w-full h-full object-contain">`;
-                document.getElementById('download-text').innerText = "Unduh Foto";
-            }
-
-            document.getElementById('detail-cat').innerText = item.category || 'Playlist';
-            document.getElementById('detail-date').innerText = item.date || '-';
-            document.getElementById('detail-title').innerText = item.title;
-            document.getElementById('detail-desc').innerText = item.description || item.artist || '';
-            document.getElementById('download-btn').href = src;
-            
-            const devBox = document.getElementById('full-dev-socials'); devBox.innerHTML = '';
-            if(dbLocal.developer) {
-                const d = dbLocal.developer;
-                if(d.whatsapp) devBox.innerHTML += `<a href="${d.whatsapp}" target="_blank" class="w-8 h-8 rounded bg-white/5 hover:bg-green-500 flex items-center justify-center text-gray-400 hover:text-white transition"><i class="fab fa-whatsapp"></i></a>`;
-                if(d.tiktok) devBox.innerHTML += `<a href="${d.tiktok}" target="_blank" class="w-8 h-8 rounded bg-white/5 hover:bg-pink-500 flex items-center justify-center text-gray-400 hover:text-white transition"><i class="fab fa-tiktok"></i></a>`;
-            }
-        }
-
-        moment.locale('id');
+        // Search Filter
         document.getElementById('searchInput').addEventListener('input', handleFilter);
         document.getElementById('categoryFilter').addEventListener('change', handleFilter);
         function handleFilter() {
@@ -584,14 +542,13 @@
             const filtered = dbLocal.gallery.filter(item => {
                 const t = (item.title||"").toLowerCase().includes(term);
                 const c = cat === 'all' || item.category === cat;
-                if(cat === 'Video') return t && (item.type === 'video' || (item.image && item.image.endsWith('.mp4')));
                 return t && c;
             });
             renderGallery(filtered);
         }
 
-        try { AOS.init({ duration: 800, once: true }); } catch(e) {}
-        loadData();
+        // Start
+        navigateTo('home');
     </script>
 </body>
 </html>
