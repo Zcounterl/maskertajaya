@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V30 Ultimate</title>
+    <title>Portal Sekolah V31 Ultimate</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -17,6 +17,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.1/vanilla-tilt.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
     <script>
         tailwind.config = {
@@ -24,7 +26,7 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: { dark: "#0f172a", card: "#1e293b", primary: "#6366f1", accent: "#8b5cf6" },
-                    animation: { 'spin-slow': 'spin 3s linear infinite' }
+                    animation: { 'spin-slow': 'spin 4s linear infinite', 'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
                 }
             }
         }
@@ -32,51 +34,60 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; padding-bottom: 90px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; padding-bottom: 90px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; user-select: none; }
         
         .glass { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .glass-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; transition: all 0.3s ease; overflow: hidden; }
         .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #6366f1; }
 
+        /* CHAT STYLES V4 (WA Like) */
         .chat-layout { display: grid; grid-template-columns: 1fr; height: calc(100vh - 140px); gap: 10px; }
         @media(min-width: 768px) { .chat-layout { grid-template-columns: 320px 1fr; } }
-        .chat-bubble { max-width: 85%; padding: 10px 14px; border-radius: 16px; margin-bottom: 6px; font-size: 0.9rem; position: relative; word-wrap: break-word; }
-        .chat-me { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; align-self: flex-end; border-bottom-right-radius: 2px; margin-left: auto; }
-        .chat-other { background: #334155; color: white; align-self: flex-start; border-bottom-left-radius: 2px; margin-right: auto; }
+        .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; margin-bottom: 6px; font-size: 0.9rem; position: relative; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); }
+        .chat-me { background: #6366f1; color: white; align-self: flex-end; border-top-right-radius: 0; margin-left: auto; }
+        .chat-other { background: #334155; color: white; align-self: flex-start; border-top-left-radius: 0; margin-right: auto; }
+        .chat-image { border-radius: 8px; margin-top: 4px; max-width: 100%; height: auto; display: block; cursor: pointer; }
+        .typing-indicator span { display: inline-block; width: 4px; height: 4px; background-color: #4ade80; border-radius: 50%; animation: typing 1.4s infinite both; margin: 0 1px; }
+        .typing-indicator span:nth-child(1) { animation-delay: 0s; } .typing-indicator span:nth-child(2) { animation-delay: 0.2s; } .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typing { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
         
         .gallery-card-img { height: 180px; width: 100%; object-fit: cover; }
         .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
         @media (min-width: 768px) { .masonry-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; } }
 
+        /* Music Player & Animation */
         .sticky-player { position: fixed; bottom: 85px; right: 16px; width: calc(100% - 32px); max-width: 400px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 10px; z-index: 40; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .sticky-player.active { transform: translateY(0); }
-        
-        /* Music Animation */
-        .vinyl-spin { animation: spin 4s linear infinite; }
+        .vinyl-spin { animation: spin 3s linear infinite; }
         @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        /* Anti-SS Effects */
-        .blur-content { filter: blur(20px); pointer-events: none; user-select: none; }
-        .no-select { -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
-
+        /* Anti-SS Blur Effect */
+        .blur-mode main, .blur-mode nav, .blur-mode .fixed { filter: blur(15px) brightness(0.5); transition: 0.3s; }
+        
+        /* Toggle Switch */
+        .toggle-checkbox:checked { right: 0; border-color: #68D391; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
+        
         ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         .nav-item.active i { color: #6366f1; transform: scale(1.1); } .nav-item.active span { color: white; }
     </style>
 </head>
-<body class="antialiased bg-gradient-to-b from-dark to-[#020617] min-h-screen select-none" id="main-body">
+<body class="antialiased bg-gradient-to-b from-dark to-[#020617] min-h-screen" id="main-body">
 
-    <div id="anti-ss-overlay" class="fixed inset-0 bg-black z-[99999] hidden flex-col items-center justify-center text-center p-5">
-        <i class="fas fa-eye-slash text-6xl text-red-500 mb-4 animate-pulse"></i>
-        <h2 class="text-2xl font-bold text-white">Mode Aman Aktif</h2>
-        <p class="text-gray-400 mt-2">Konten dilindungi. Jangan tinggalkan aplikasi.</p>
+    <div id="anti-ss-overlay" class="fixed inset-0 z-[99999] flex-col items-center justify-center hidden">
+        <div class="bg-black/80 p-8 rounded-2xl text-center border border-red-500/50 backdrop-blur-md">
+            <i class="fas fa-shield-alt text-6xl text-red-500 mb-4 animate-pulse"></i>
+            <h2 class="text-2xl font-bold text-white">PROTECTED MODE</h2>
+            <p class="text-gray-300 mt-2 text-sm">Tangkapan layar tidak diizinkan.</p>
+        </div>
     </div>
 
-    <div class="fixed top-0 w-full z-50 glass border-b border-white/5 px-4 py-3 flex justify-between items-center">
+    <div class="fixed top-0 w-full z-50 glass border-b border-white/5 px-4 py-3 flex justify-between items-center transition-all" id="top-nav">
         <div class="flex items-center gap-3 cursor-pointer group" onclick="location.reload()">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 group-hover:rotate-12 transition duration-300"><i class="fas fa-school"></i></div>
             <div>
                 <h1 class="font-bold text-sm md:text-base leading-none text-white tracking-tight">Portal Sekolah</h1>
-                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online <span id="online-count">...</span></p>
+                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V31.0 <span id="online-count">...</span></p>
             </div>
         </div>
         <div class="flex gap-3 items-center">
@@ -121,17 +132,29 @@
         </section>
 
         <section id="view-chat-room" class="view-section hidden">
-            <div class="glass rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-120px)]">
+            <div class="glass rounded-3xl overflow-hidden border border-white/10 shadow-2xl flex flex-col h-[calc(100vh-140px)] md:h-[calc(100vh-120px)] relative">
                 <div class="p-3 bg-[#111827]/90 backdrop-blur-md border-b border-white/10 flex justify-between items-center z-10">
                     <div class="flex items-center gap-3">
                         <button onclick="navigateTo('chat-dashboard')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 transition"><i class="fas fa-arrow-left"></i></button>
-                        <div><h3 id="chat-header-name" class="font-bold text-white text-sm md:text-base">Room</h3><p class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Online</p></div>
+                        <div>
+                            <h3 id="chat-header-name" class="font-bold text-white text-sm md:text-base">Room</h3>
+                            <div class="flex flex-col">
+                                <p class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Online</p>
+                                <p id="typing-status" class="text-[10px] text-yellow-400 hidden animate-pulse">seseorang sedang mengetik...</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div id="chat-messages" class="flex-1 custom-scroll p-4 bg-black/20 space-y-1"></div>
-                <div class="p-2 bg-[#111827] border-t border-white/10 flex gap-2 items-center">
-                    <button onclick="promptMedia()" class="w-10 h-10 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-white/5 transition flex items-center justify-center"><i class="fas fa-paperclip"></i></button>
-                    <input type="text" id="chat-input" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off">
+                <div id="upload-preview" class="hidden absolute bottom-16 left-0 w-full bg-black/80 p-3 flex items-center gap-3 z-20">
+                    <img id="preview-img" src="" class="h-16 rounded border border-white/20">
+                    <div class="flex-1"><p class="text-xs text-white mb-1">Kirim gambar ini?</p><button onclick="cancelUpload()" class="text-[10px] text-red-400">Batal</button></div>
+                    <button onclick="sendImage()" class="w-10 h-10 bg-indigo-600 rounded-full text-white flex items-center justify-center"><i class="fas fa-paper-plane"></i></button>
+                </div>
+                <div class="p-2 bg-[#111827] border-t border-white/10 flex gap-2 items-center z-10">
+                    <button onclick="document.getElementById('chat-file-input').click()" class="w-10 h-10 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-white/5 transition flex items-center justify-center"><i class="fas fa-paperclip"></i></button>
+                    <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                    <input type="text" id="chat-input" oninput="handleTyping()" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off">
                     <button onclick="sendMessage()" class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:bg-indigo-500 transition active:scale-90"><i class="fas fa-paper-plane text-xs"></i></button>
                 </div>
             </div>
@@ -170,10 +193,32 @@
                 <div class="glass p-6 rounded-[2rem] border border-yellow-500/30 mb-6 relative overflow-hidden">
                     <h2 class="text-2xl font-black text-yellow-400 mb-1 flex items-center gap-2"><i class="fas fa-code-branch"></i> GOD MODE</h2>
                     
-                    <div id="db-stats-container" class="grid grid-cols-3 gap-2 mt-4 mb-4">
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[10px] text-gray-400 uppercase">Users</h4><div id="stat-users" class="text-lg font-bold text-white">...</div></div>
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[10px] text-gray-400 uppercase">Posts</h4><div id="stat-posts" class="text-lg font-bold text-indigo-400">...</div></div>
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[10px] text-gray-400 uppercase">Latency</h4><div id="stat-ping" class="text-lg font-bold text-green-400">...</div></div>
+                    <div id="db-stats-container" class="grid grid-cols-4 gap-2 mt-4 mb-4">
+                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">Users</h4><div id="stat-users" class="text-lg font-bold text-white">...</div></div>
+                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">Posts</h4><div id="stat-posts" class="text-lg font-bold text-indigo-400">...</div></div>
+                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">DB Size</h4><div id="stat-size" class="text-lg font-bold text-pink-400">...</div></div>
+                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">Latency</h4><div id="stat-ping" class="text-lg font-bold text-green-400">...</div></div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                            <h3 class="text-white font-bold text-sm mb-3"><i class="fas fa-shield-alt text-red-400 mr-2"></i>Keamanan (Anti-SS)</h3>
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-gray-400">Blokir Screenshot & Screen Record</span>
+                                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                                    <input type="checkbox" name="toggle" id="anti-ss-toggle" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer transition-all duration-300" onclick="toggleAntiSSDB()">
+                                    <label for="anti-ss-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-600 cursor-pointer"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 bg-white/5 rounded-xl border border-white/5">
+                            <h3 class="text-white font-bold text-sm mb-3"><i class="fas fa-address-book text-blue-400 mr-2"></i>Kontak Developer</h3>
+                            <div class="space-y-2">
+                                <input id="edit-dev-wa" type="text" placeholder="Link WhatsApp" class="w-full bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white">
+                                <input id="edit-dev-tk" type="text" placeholder="Link TikTok" class="w-full bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white">
+                                <button onclick="saveContactDev()" class="w-full bg-blue-600/50 text-blue-200 text-[10px] py-1 rounded hover:bg-blue-600">Simpan Kontak</button>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-4 p-4 bg-white/5 rounded-xl border border-white/5">
@@ -273,6 +318,8 @@
         let curChatId = 'global';
         let lastBroadcastId = localStorage.getItem('last_broadcast_id');
         let curCollection = null;
+        let typingTimeout = null;
+        let pendingImage = null;
 
         window.onload = () => {
             if(!user) document.getElementById('login-modal').classList.remove('hidden');
@@ -291,29 +338,62 @@
             VanillaTilt.init(document.querySelectorAll(".glass-card"), {max:10, speed:400, glare:true, "max-glare":0.1});
             requestNotificationPermission();
             
-            // Load Config for Contact & Anti-SS
+            // Load Config (Anti-SS & Contact)
             onValue(ref(rtdb, 'site_data/config'), s => {
                 const c = s.val() || {};
                 if(c.contact) {
-                    document.getElementById('dev-wa').href = c.contact.wa || '#';
-                    document.getElementById('dev-tk').href = c.contact.tiktok || '#';
+                    const waLink = c.contact.wa || '#';
+                    const tkLink = c.contact.tiktok || '#';
+                    document.getElementById('dev-wa').href = waLink;
+                    document.getElementById('dev-tk').href = tkLink;
+                    // Set juga di input field admin jika user adalah dev
+                    if(user.role === 'developer') {
+                        document.getElementById('edit-dev-wa').value = waLink;
+                        document.getElementById('edit-dev-tk').value = tkLink;
+                    }
                 }
-                if(c.anti_ss && c.anti_ss === true) enableAntiSS(); else disableAntiSS();
+                if(c.anti_ss) {
+                    enableAntiSS();
+                    if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = true;
+                } else {
+                    disableAntiSS();
+                    if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = false;
+                }
             });
+            
+            // Load DB Health Stats for Dev
+            if(user.role === 'developer') {
+                onValue(ref(rtdb, 'site_data/db_health'), s => {
+                    const h = s.val() || {};
+                    document.getElementById('stat-size').innerText = h.size || 'N/A';
+                });
+            }
         }
 
+        // ANTI-SS LOGIC
         function enableAntiSS() {
-            const o = document.getElementById('anti-ss-overlay');
-            window.addEventListener('blur', () => o.classList.remove('hidden'));
-            window.addEventListener('focus', () => o.classList.add('hidden'));
-            document.addEventListener('contextmenu', e => e.preventDefault());
-            document.addEventListener('keydown', e => { if(e.key=='PrintScreen'||(e.ctrlKey&&e.key=='p')) e.preventDefault(); });
+            document.getElementById('main-body').classList.add('no-select');
+            document.addEventListener('contextmenu', preventDefault);
+            document.addEventListener('keydown', preventCapture);
+            window.addEventListener('blur', blurScreen);
+            window.addEventListener('focus', unblurScreen);
         }
         function disableAntiSS() {
-             const o = document.getElementById('anti-ss-overlay');
-             o.classList.add('hidden');
-             // Removing listeners properly requires named functions, simplifying here by reloading if toggled off in real production.
+            document.getElementById('main-body').classList.remove('no-select');
+            document.removeEventListener('contextmenu', preventDefault);
+            document.removeEventListener('keydown', preventCapture);
+            window.removeEventListener('blur', blurScreen);
+            window.removeEventListener('focus', unblurScreen);
         }
+        const preventDefault = e => e.preventDefault();
+        const preventCapture = e => { 
+            if (e.key === 'PrintScreen' || (e.ctrlKey && (e.key === 'p' || e.key === 's' || e.key === 'u'))) {
+                e.preventDefault(); 
+                Swal.fire("Security", "Screenshot/Source Code disabled!", "error");
+            }
+        };
+        const blurScreen = () => { document.getElementById('anti-ss-overlay').classList.remove('hidden'); document.title = "Locked"; }
+        const unblurScreen = () => { document.getElementById('anti-ss-overlay').classList.add('hidden'); document.title = "Portal Sekolah V30"; }
 
         function requestNotificationPermission() {
             if (Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission();
@@ -378,6 +458,18 @@
             });
             onValue(ref(rtdb,"status/online"), s=>document.getElementById('online-count').innerText=s.numChildren());
             
+            // Listen Typing
+            onValue(ref(rtdb, 'community/typing'), s => {
+                const d = s.val();
+                const el = document.getElementById('typing-status');
+                if (d && d.user !== user.username) {
+                    el.innerText = `${d.user} sedang mengetik...`;
+                    el.classList.remove('hidden');
+                } else {
+                    el.classList.add('hidden');
+                }
+            });
+
             // Broadcast
             const bcRef = ref(rtdb, 'site_data/config/broadcast');
             onValue(bcRef, (snap) => {
@@ -429,12 +521,12 @@
             if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-4 rounded-xl flex items-center gap-3 hover:bg-white/5"><i class="fas fa-file-download text-green-400 text-lg"></i><div><h4 class="text-sm font-bold text-white">${f.title}</h4><p class="text-[10px] text-gray-400">${f.type}</p></div></a>`);
         }
 
-        // CHAT CLICKABLE
+        // CHAT (UPDATED V4)
         window.switchChat = (id, name) => { 
             curChatId = id; 
             document.getElementById('chat-header-name').innerText = name; 
             loadChatMessages(id); 
-            navigateTo('chat-room'); // UPDATE: Auto navigate to room
+            navigateTo('chat-room'); 
         }
         
         function loadChatMessages(id) {
@@ -444,13 +536,58 @@
                  if(s.val()) Object.values(s.val()).sort((a,b)=>a.timestamp-b.timestamp).slice(-50).forEach(m => {
                      const isMe = m.username === user.username;
                      let content = m.text;
-                     if(m.type === 'image') content = `<img src="${m.text}" class="rounded-lg max-w-[200px] mt-1 cursor-pointer" onclick="window.open(this.src)">`;
+                     if(m.type === 'image') content = `<img src="${m.text}" class="chat-image" onclick="window.open(this.src)">`;
                      let reply = m.replyTo ? `<div class="reply-box"><div class="font-bold text-indigo-300 mb-0.5">${m.replyTo.user}</div><div class="truncate opacity-70">${m.replyTo.text}</div></div>` : '';
                      c.innerHTML += `<div class="chat-bubble ${isMe?'chat-me':'chat-other'}">${reply}<div class="text-[10px] font-bold ${isMe?'text-indigo-200':'text-purple-300'} mb-1 cursor-pointer" onclick="window.replyMsg('${m.username}','${m.type=='text'?m.text:'Media'}')">${m.username}</div>${content}<div class="text-[9px] opacity-50 text-right mt-1">${moment(m.timestamp).format('HH:mm')}</div></div>`;
                  });
                  c.scrollTop = c.scrollHeight;
              });
         }
+        
+        window.handleTyping = () => {
+            if(typingTimeout) clearTimeout(typingTimeout);
+            set(ref(rtdb, 'community/typing'), {user: user.username});
+            typingTimeout = setTimeout(() => set(ref(rtdb, 'community/typing'), null), 2000);
+        }
+
+        // FILE UPLOAD LOGIC (LOCAL)
+        window.handleFileSelect = (input) => {
+            const file = input.files[0];
+            if (!file) return;
+            // Compress Image Logic
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.src = e.target.result;
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    const MAX_WIDTH = 800; // Resize for WA-like speed
+                    const scaleSize = MAX_WIDTH / img.width;
+                    canvas.width = MAX_WIDTH;
+                    canvas.height = img.height * scaleSize;
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // Compress quality 0.7
+                    pendingImage = compressedBase64;
+                    document.getElementById('preview-img').src = pendingImage;
+                    document.getElementById('upload-preview').classList.remove('hidden');
+                }
+            }
+            reader.readAsDataURL(file);
+        }
+
+        window.sendImage = () => {
+            if(!pendingImage) return;
+            const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
+            push(ref(rtdb,path), {text:pendingImage, username:user.username, type:'image', timestamp:serverTimestamp()});
+            cancelUpload();
+        }
+        window.cancelUpload = () => {
+            pendingImage = null;
+            document.getElementById('upload-preview').classList.add('hidden');
+            document.getElementById('chat-file-input').value = '';
+        }
+
         window.replyMsg = (u,t) => { replyingToMsg={user:u,text:t}; document.getElementById('reply-ui').classList.remove('hidden'); document.getElementById('reply-user').innerText=u; document.getElementById('reply-text').innerText=t; }
         window.sendMessage = () => {
             const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return;
@@ -462,6 +599,7 @@
             runTransaction(ref(rtdb, `users/${user.username}/xp`), x=>(x||0)+5);
         }
         window.promptMedia = async () => {
+             // Legacy URL method, kept for backup
              const {value:url} = await Swal.fire({input:'url', inputLabel:'URL Gambar', background:'#1e293b', color:'#fff'});
              if(url) {
                  const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
@@ -483,13 +621,30 @@
             if(groups) Object.entries(groups).forEach(([k,g]) => c.innerHTML += `<div onclick="switchChat('${k}', '${g.name}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer"><div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs"><i class="fas fa-users"></i></div><div class="text-sm font-bold text-white">${g.name}</div></div>`);
         }
 
-        // GOD MODE
+        // GOD MODE (Fixed UI for Radio)
         window.openUploadModal = async (type) => {
-            const {value:method} = await Swal.fire({title:"Metode", input:'radio', inputOptions:{'url':'Link URL', 'file':'File Lokal (Base64)'}, inputValue:'url', background:'#1e293b', color:'#fff'});
-            if(!method) return;
+            const { value: method } = await Swal.fire({
+                title: 'Pilih Metode Upload',
+                html: `
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-white/10 p-4 rounded-xl cursor-pointer hover:bg-indigo-600 transition" onclick="Swal.clickConfirm(); window.uploadMethod='url'">
+                        <i class="fas fa-link text-2xl mb-2 text-white"></i><br><span class="text-sm text-white font-bold">Link URL</span>
+                    </div>
+                    <div class="bg-white/10 p-4 rounded-xl cursor-pointer hover:bg-green-600 transition" onclick="Swal.clickConfirm(); window.uploadMethod='file'">
+                        <i class="fas fa-file-upload text-2xl mb-2 text-white"></i><br><span class="text-sm text-white font-bold">File Lokal</span>
+                    </div>
+                </div>
+                `,
+                showConfirmButton: false,
+                background: '#1e293b',
+                color: '#fff'
+            });
             
+            const selectedMethod = window.uploadMethod; // Get from onclick
+            if(!selectedMethod) return;
+
             let finalUrl = "";
-            if(method === 'url') {
+            if(selectedMethod === 'url') {
                 const {value:url} = await Swal.fire({input:'url', inputLabel:'Link URL', background:'#1e293b', color:'#fff'}); finalUrl=url;
             } else {
                 const {value:file} = await Swal.fire({input:'file', inputLabel:'Pilih File', background:'#1e293b', color:'#fff'});
@@ -518,6 +673,19 @@
             const msg = document.getElementById('dev-broadcast-msg').value;
             if(msg) set(ref(rtdb, 'site_data/config/broadcast'), {message:msg, active:true, id:Date.now().toString()});
         }
+        
+        // SETTINGS FUNCTIONS (ADMIN)
+        window.toggleAntiSSDB = () => {
+            const el = document.getElementById('anti-ss-toggle');
+            set(ref(rtdb, 'site_data/config/anti_ss'), el.checked);
+        }
+        window.saveContactDev = () => {
+            const wa = document.getElementById('edit-dev-wa').value;
+            const tk = document.getElementById('edit-dev-tk').value;
+            update(ref(rtdb, 'site_data/config/contact'), {wa: wa, tiktok: tk});
+            Swal.fire("Tersimpan","Kontak diperbarui","success");
+        }
+
         window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
 
         // UTILS
@@ -554,14 +722,15 @@
             else { runTransaction(r,v=>(v||0)+1); localStorage.setItem(k,'1'); document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active"; }
         }
 
+        // MUSIC PLAYER WITH ANIMATION
         window.playMusic = (src,t,a,type) => {
             if(type==='video') return window.open(src,'_blank');
             const p=document.getElementById('sticky-player'), aud=document.getElementById('audio-element'), img=document.getElementById('sp-img');
             document.getElementById('sp-title').innerText=t; document.getElementById('sp-artist').innerText=a;
-            img.src = "https://cdn-icons-png.flaticon.com/512/3844/3844724.png"; // Placeholder vinyl icon
+            img.src = "https://cdn-icons-png.flaticon.com/512/3844/3844724.png"; 
             p.classList.add('active'); aud.src=src; aud.play();
             document.getElementById('sp-icon').className="fas fa-pause text-[10px]";
-            img.classList.add('vinyl-spin'); // Add animation
+            img.classList.add('vinyl-spin');
         }
         window.togglePlay = () => { 
             const a=document.getElementById('audio-element'); 
