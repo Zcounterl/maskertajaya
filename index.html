@@ -46,10 +46,6 @@
         .skeleton { background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        /* Broadcast Overlay - No Button, Auto Fade */
-        #broadcast-overlay { position: fixed; inset: 0; z-index: 9999999; background: rgba(220, 38, 38, 0.98); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; backdrop-filter: blur(15px); animation: fadeIn 0.5s; transition: opacity 1s ease-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
-
         .marquee-container { overflow: hidden; white-space: nowrap; position: relative; }
         .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
         @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
@@ -61,33 +57,26 @@
 
         #maintenance-overlay { position: fixed; inset: 0; z-index: 99999; background: #0b0f19; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
         
-        /* PREMIUM CHAT UI */
+        .chat-container { display: flex; flex-direction: column; gap: 8px; padding-bottom: 20px; }
+        .chat-card { max-width: 85%; width: fit-content; padding: 8px 12px; border-radius: 12px; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.2); display: flex; flex-direction: column; word-wrap: break-word; }
+        .chat-me { align_self: flex-end; background: linear-gradient(135deg, #0ea5e9, #2563eb); color: white; border-bottom-right-radius: 2px; margin-left: auto; }
+        .chat-other { align_self: flex-start; background: #1e293b; color: #e2e8f0; border: 1px solid rgba(255,255,255,0.08); border-bottom-left-radius: 2px; margin-right: auto; }
+        .c-user { font-size: 0.65rem; font-weight: 800; margin-bottom: 2px; opacity: 0.9; }
+        .c-text { font-size: 0.9rem; line-height: 1.4; }
+        .c-meta { font-size: 0.6rem; margin-top: 4px; opacity: 0.7; align-self: flex-end; display: flex; gap: 8px; align-items: center; margin-left: auto; }
+        
+        /* New Chat Bubble for Global Chat */
         .chat-bubble { padding: 10px 15px; border-radius: 15px; margin-bottom: 8px; max-width: 80%; position: relative; word-wrap: break-word; font-size: 0.9rem; }
         .chat-bubble.me { background: linear-gradient(135deg, #0ea5e9, #3b82f6); color: white; align-self: flex-end; border-bottom-right-radius: 2px; margin-left: auto; }
         .chat-bubble.other { background: #1e293b; color: #e2e8f0; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid rgba(255,255,255,0.1); margin-right: auto; }
         .chat-user { font-size: 0.7rem; font-weight: 800; margin-bottom: 2px; opacity: 0.8; color: #bae6fd; cursor: pointer; }
-        .chat-user:hover { text-decoration: underline; }
-        
+
         .clickable { cursor: pointer; user-select: none; transition: transform 0.1s; } .clickable:active { transform: scale(0.95); }
         ::-webkit-scrollbar { width: 6px; } ::-webkit-scrollbar-track { background: #0b0f19; } ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         #privacy-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999999; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="antialiased">
-
-    <div id="broadcast-overlay" class="hidden">
-        <div class="bg-white text-red-600 w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-2xl animate-pulse">
-            <i class="fas fa-bell text-5xl"></i>
-        </div>
-        <h1 class="text-4xl font-black text-white mb-4 uppercase tracking-widest">PERHATIAN</h1>
-        <div class="bg-black/30 p-8 rounded-2xl border border-white/20 max-w-2xl w-full mb-4 backdrop-blur-md">
-            <p id="broadcast-msg" class="text-2xl text-white font-bold leading-relaxed">...</p>
-        </div>
-        <div class="w-64 h-1 bg-white/20 rounded-full overflow-hidden mt-4">
-            <div class="h-full bg-white animate-[width_60s_linear_forwards] w-full origin-left" style="animation-duration: 60s;"></div>
-        </div>
-        <p class="mt-4 text-white/60 text-sm">Pesan ini akan hilang otomatis dalam 1 menit</p>
-    </div>
 
     <div id="maintenance-overlay" class="hidden">
         <i class="fas fa-tools text-6xl text-yellow-500 mb-6 animate-bounce"></i>
@@ -97,7 +86,7 @@
 
     <div class="fixed top-0 w-full z-[60] bg-blue-900/90 text-white text-xs py-1.5 border-b border-white/10 backdrop-blur-md">
         <div class="marquee-container max-w-6xl mx-auto">
-            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V15.0 (Community Edition).</div>
+            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V15.1.</div>
         </div>
     </div>
 
@@ -108,7 +97,7 @@
     <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 hidden">
         <div class="glass-panel w-full max-w-md p-8 rounded-3xl text-center border border-white/10 relative">
             <h2 class="text-3xl font-bold text-white mb-2">Akses Portal</h2>
-            <p class="text-gray-400 text-sm mb-8">Login Premium untuk Akses Chat & Komunitas!</p>
+            <p class="text-gray-400 text-sm mb-8">Login untuk fitur Premium & Notifikasi</p>
             <div class="space-y-3" id="login-options">
                 <button onclick="showLoginInput()" class="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold transition shadow-lg flex items-center justify-center gap-2"><i class="fas fa-crown text-yellow-300"></i> Login Premium</button>
                 <button onclick="loginGuest()" class="w-full py-4 rounded-xl bg-white/5 text-gray-300 font-medium hover:bg-white/10 transition flex items-center justify-center gap-2"><i class="fas fa-user"></i> Masuk sebagai Tamu</button>
@@ -168,24 +157,13 @@
             <div class="grid md:grid-cols-4 gap-6 h-[75vh] max-w-6xl mx-auto">
                 <div class="md:col-span-1 glass-panel rounded-2xl p-4 flex flex-col h-full">
                     <h3 class="text-white font-bold mb-4 flex items-center gap-2"><i class="fas fa-users text-blue-400"></i> Members</h3>
-                    <div id="members-list" class="flex-grow overflow-y-auto custom-scrollbar space-y-2">
-                        <div class="text-center text-gray-500 text-xs">Memuat...</div>
-                    </div>
+                    <div id="members-list" class="flex-grow overflow-y-auto custom-scrollbar space-y-2"><div class="text-center text-gray-500 text-xs">Memuat...</div></div>
                 </div>
-                
                 <div class="md:col-span-3 glass-panel rounded-2xl flex flex-col h-full relative overflow-hidden">
                     <div class="p-4 border-b border-white/10 bg-[#111827] flex justify-between items-center">
-                        <div>
-                            <h3 class="text-white font-bold text-lg">Global Lounge</h3>
-                            <p class="text-xs text-green-400 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Live Chat</p>
-                        </div>
-                        <button onclick="refreshChat()" class="text-gray-400 hover:text-white"><i class="fas fa-sync-alt"></i></button>
+                        <div><h3 class="text-white font-bold text-lg">Global Lounge</h3><p class="text-xs text-green-400 flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> Live Chat</p></div>
                     </div>
-                    
-                    <div id="global-chat-container" class="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar bg-[#0b0f19]/50">
-                        <div class="text-center text-gray-600 text-sm my-10">Selamat datang di Community Hub! 👋</div>
-                    </div>
-                    
+                    <div id="global-chat-container" class="flex-grow overflow-y-auto p-4 space-y-3 custom-scrollbar bg-[#0b0f19]/50"></div>
                     <form onsubmit="window.sendGlobalMessage(event)" class="p-3 bg-[#111827] border-t border-white/10 flex gap-2">
                         <input type="text" id="global-chat-input" class="flex-grow bg-black/30 text-white text-sm px-4 py-3 rounded-xl border border-white/10 focus:border-blue-500 focus:bg-white/5 outline-none transition" placeholder="Ketik pesan..." autocomplete="off">
                         <button type="submit" class="w-12 h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white flex items-center justify-center transition clickable shadow-lg"><i class="fas fa-paper-plane"></i></button>
@@ -196,9 +174,7 @@
 
         <section id="view-downloads" class="view-section hidden">
             <div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Bank Data</h1><p class="text-gray-400 mt-2">Unduh Materi & Dokumen Sekolah</p></div>
-            <div id="downloads-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-                <div class="text-center text-gray-500 w-full col-span-full py-10">Memuat Data...</div>
-            </div>
+            <div id="downloads-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto"></div>
         </section>
 
         <section id="view-profile" class="view-section hidden">
@@ -209,12 +185,6 @@
                         <div class="relative"><img id="p-avatar" src="" class="w-28 h-28 rounded-full border-4 border-[#0b0f19] shadow-2xl object-cover bg-gray-800"><div class="absolute bottom-0 right-0 bg-[#0b0f19] rounded-full p-1"><span id="p-rank-badge" class="rank-badge">Pemula</span></div></div>
                         <h2 id="p-name" class="text-2xl font-bold text-white mt-4">Username</h2>
                         <p id="p-role" class="text-blue-400 text-sm uppercase tracking-wider font-bold mb-6">Member Premium</p>
-                        
-                        <div id="friends-container" class="w-full mb-6 hidden">
-                            <h3 class="text-left text-white font-bold text-sm mb-2 ml-1">Teman Saya</h3>
-                            <div id="friends-list" class="flex gap-3 overflow-x-auto pb-2 custom-scrollbar"></div>
-                        </div>
-
                         <div class="grid grid-cols-3 gap-4 w-full mb-8">
                             <div class="bg-white/5 p-4 rounded-2xl border border-white/5"><div id="p-comments" class="text-2xl font-bold text-white">0</div><div class="text-[10px] text-gray-400 uppercase">Komentar</div></div>
                             <div class="bg-white/5 p-4 rounded-2xl border border-white/5 flex flex-col items-center justify-center"><div class="level-circle" id="p-level-circle" style="--progress: 0deg"><span id="p-level" class="level-number">1</span></div><div class="text-[10px] text-gray-400 uppercase mt-2">Level</div></div>
@@ -226,6 +196,8 @@
             </div>
         </section>
 
+        <section id="view-teachers" class="view-section hidden"><div class="text-center mb-10"><h2 class="text-3xl font-bold text-white">Dewan Guru</h2></div><div id="teacher-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div></section>
+        <section id="view-playlist" class="view-section hidden"><div class="text-center mb-10"><h1 class="text-4xl font-black text-white">Multimedia Hub</h1></div><div id="playlist-container" class="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl mx-auto"></div></section>
     </main>
 
     <div id="detail-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-2 md:p-4"><div class="absolute inset-0 bg-black/95 backdrop-blur-xl" onclick="window.closeModal()"></div><div class="glass-panel w-full max-w-6xl h-[90vh] rounded-2xl overflow-hidden flex flex-col lg:flex-row relative z-10" id="modal-card"><div class="lg:w-2/3 bg-black flex flex-col h-2/5 lg:h-full"><div id="modal-media-container" class="flex-grow flex items-center justify-center"></div><div class="p-4 bg-gray-900 flex justify-between"><h2 id="m-title" class="text-white font-bold"></h2><button onclick="window.handleReaction('like')" class="text-white"><i id="btn-like-icon" class="far fa-heart"></i> <span id="like-count">0</span></button></div></div><div class="lg:w-1/3 bg-[#0b0f19] flex flex-col h-3/5 lg:h-full"><div class="p-3 border-b border-white/10 text-white font-bold">Diskusi</div><div id="comments-list" class="flex-grow overflow-y-auto p-4"></div><form onsubmit="window.sendComment(event)" class="p-3 flex gap-2"><input id="comment-input" class="flex-grow bg-white/10 text-white px-3 py-2 rounded" placeholder="Tulis..." autocomplete="off"><button class="bg-blue-600 text-white px-4 rounded">Kirim</button></form></div></div></div>
@@ -306,17 +278,28 @@
             onValue(bcRef, (snap) => {
                 const data = snap.val();
                 if (data && data.active && data.id !== lastBroadcastId) {
-                    document.getElementById('broadcast-msg').innerText = data.message;
-                    const overlay = document.getElementById('broadcast-overlay');
-                    overlay.classList.remove('hidden');
-                    
-                    // AUTO DISMISS 60 SECONDS
-                    setTimeout(() => { overlay.classList.add('hidden'); }, 60000);
-                    
+                    // 1. Push Notification (Status Bar)
                     if (currentUser.isPremium && Notification.permission === "granted") {
-                        new Notification("🚨 PERINGATAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png" });
+                        new Notification("🚨 PERINGATAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png", tag: data.id });
                     }
                     
+                    // 2. In-App Toast (Backup visual yang elegan)
+                    Toastify({
+                        text: "📢 " + data.message,
+                        duration: 10000, // Tampil 10 detik
+                        close: true,
+                        gravity: "top", 
+                        position: "center", 
+                        style: {
+                            background: "linear-gradient(to right, #ef4444, #b91c1c)",
+                            boxShadow: "0 10px 30px rgba(220, 38, 38, 0.5)",
+                            borderRadius: "15px",
+                            fontWeight: "bold",
+                            fontSize: "14px",
+                            padding: "15px 20px"
+                        }
+                    }).showToast();
+
                     lastBroadcastId = data.id;
                     localStorage.setItem('last_broadcast_id', data.id);
                 }
@@ -325,26 +308,22 @@
 
         function loadRealtimeData() {
             NProgress.start();
-            // Gallery
             onValue(ref(rtdb, 'site_data/gallery'), (snap) => {
                 if(maintenanceConfig.gallery) return;
                 const data = snap.val(); const items = []; for(let k in data) items.push({id: k, ...data[k]});
                 items.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
                 renderGallery(items); renderHeroSlider(items.filter(i => i.is_slide)); items.forEach(i => itemMap[i.id] = i); NProgress.done();
             });
-            // Mading
             onValue(ref(rtdb, 'site_data/mading'), (snap) => {
                 if(maintenanceConfig.mading) return;
                 const data = snap.val(); const items = []; for(let k in data) items.push({id: k, ...data[k]});
                 items.sort((a,b) => (b.timestamp||0) - (a.timestamp||0)); items.forEach(i => itemMap[i.id] = i);
                 renderMading(items);
             });
-            // Downloads
             onValue(ref(rtdb, 'site_data/downloads'), (snap) => {
                 const data = snap.val(); const items = []; for(let k in data) items.push({id: k, ...data[k]});
                 renderDownloads(items);
             });
-            // Config
             onValue(ref(rtdb, 'site_data/config/running_text'), (snap) => { if(snap.val()) document.getElementById('running-text').innerText = snap.val(); });
         }
 
@@ -366,7 +345,6 @@
             grid.innerHTML = items.length ? items.map(item => `<div class="glass-card p-4 rounded-xl flex items-center gap-4 border border-white/5"><div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400"><i class="fas fa-file-alt text-xl"></i></div><div class="flex-grow"><h4 class="text-sm font-bold text-white">${item.title}</h4><p class="text-xs text-gray-500 uppercase">${item.type}</p></div><a href="${item.url}" target="_blank" class="w-10 h-10 rounded-full bg-blue-600 hover:bg-blue-500 flex items-center justify-center text-white transition"><i class="fas fa-download text-sm"></i></a></div>`).join('') : '<div class="col-span-full text-center text-gray-500">Belum ada file.</div>';
         }
 
-        // --- NAVIGATION & LOGIC ---
         window.navigateTo = (pageId) => {
             if ((pageId === 'profile' || pageId === 'chat') && !currentUser.isPremium) { Toastify({text: "🔒 Fitur Khusus Member Premium!", style: {background: "#ef4444"}}).showToast(); document.getElementById('login-modal').classList.remove('hidden'); return; }
             
@@ -376,7 +354,6 @@
             document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
             document.getElementById('view-' + pageId).classList.remove('hidden');
             
-            // Navbar Active State
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('text-white', 'bg-white/10'));
             const btn = document.getElementById('d-btn-' + pageId); if(btn) btn.classList.add('text-white', 'bg-white/10');
             document.getElementById('mobile-menu').classList.add('hidden');
@@ -386,76 +363,31 @@
         // --- CHAT & COMMUNITY LOGIC ---
         function initChat() {
             if(!currentUser.isPremium) return;
-            
-            // Load Members List
             onValue(ref(rtdb, 'users'), (snap) => {
-                const list = document.getElementById('members-list');
-                list.innerHTML = '';
+                const list = document.getElementById('members-list'); list.innerHTML = '';
                 const users = snap.val();
-                if(users) {
-                    Object.values(users).forEach(u => {
-                        const isFriend = false; // Logic save friend bisa ditambah nanti
-                        const div = document.createElement('div');
-                        div.className = "flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg transition cursor-pointer group";
-                        div.innerHTML = `
-                            <img src="${u.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800 border border-white/10">
-                            <div class="flex-grow"><div class="text-xs font-bold text-white">${u.username}</div><div class="text-[10px] text-gray-500">${u.rank||'Pemula'}</div></div>
-                            ${u.username !== currentUser.username ? `<button onclick="window.addFriend('${u.username}')" class="w-6 h-6 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center hover:bg-blue-600 hover:text-white transition"><i class="fas fa-user-plus text-[10px]"></i></button>` : ''}
-                        `;
-                        list.appendChild(div);
-                    });
-                }
+                if(users) Object.values(users).forEach(u => {
+                    list.innerHTML += `<div class="flex items-center gap-3 p-2 hover:bg-white/5 rounded-lg transition cursor-pointer"><img src="${u.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800"><div class="flex-grow"><div class="text-xs font-bold text-white">${u.username}</div><div class="text-[10px] text-gray-500">${u.rank||'Pemula'}</div></div></div>`;
+                });
             });
-
-            // Load Global Messages
             onValue(ref(rtdb, 'community/messages'), (snap) => {
-                const container = document.getElementById('global-chat-container');
-                container.innerHTML = '';
+                const container = document.getElementById('global-chat-container'); container.innerHTML = '';
                 const msgs = snap.val();
-                if(msgs) {
-                    // Convert to array and sort
-                    const sortedMsgs = Object.values(msgs).sort((a,b) => a.timestamp - b.timestamp).slice(-50); // Last 50
-                    sortedMsgs.forEach(m => {
-                        const isMe = m.username === currentUser.username;
-                        const div = document.createElement('div');
-                        div.className = isMe ? "chat-bubble me" : "chat-bubble other";
-                        div.innerHTML = `
-                            ${!isMe ? `<div class="chat-user" onclick="window.addFriend('${m.username}')">${m.username}</div>` : ''}
-                            <div>${m.text}</div>
-                        `;
-                        container.appendChild(div);
-                    });
-                    container.scrollTop = container.scrollHeight;
-                } else {
-                    container.innerHTML = '<div class="text-center text-gray-500 text-xs mt-10">Belum ada obrolan. Mulai sapa! 👋</div>';
-                }
+                if(msgs) Object.values(msgs).sort((a,b) => a.timestamp - b.timestamp).slice(-50).forEach(m => {
+                    const isMe = m.username === currentUser.username;
+                    container.innerHTML += `<div class="chat-bubble ${isMe?'me':'other'}">${!isMe?`<div class="chat-user">${m.username}</div>`:''}<div>${m.text}</div></div>`;
+                });
+                container.scrollTop = container.scrollHeight;
             });
         }
 
         window.sendGlobalMessage = (e) => {
-            e.preventDefault();
-            const input = document.getElementById('global-chat-input');
-            const text = input.value.trim();
+            e.preventDefault(); const input = document.getElementById('global-chat-input'); const text = input.value.trim();
             if(!text) return;
             if(BAD_WORDS.some(w => text.toLowerCase().includes(w))) { Toastify({text:"Kata kasar!", style:{background:"#ef4444"}}).showToast(); return; }
-            
-            push(ref(rtdb, 'community/messages'), {
-                text: text,
-                username: currentUser.username,
-                timestamp: serverTimestamp()
-            });
-            input.value = '';
+            push(ref(rtdb, 'community/messages'), { text, username: currentUser.username, timestamp: serverTimestamp() }); input.value = '';
         };
 
-        window.addFriend = (targetUsername) => {
-            if(targetUsername === currentUser.username) return;
-            const myFriendsRef = ref(rtdb, `users/${currentUser.username}/friends/${targetUsername}`);
-            set(myFriendsRef, { since: serverTimestamp() }).then(() => {
-                Toastify({text: `Berhasil mengikuti ${targetUsername}!`, style:{background:"#10b981"}}).showToast();
-            });
-        };
-
-        // --- GAMIFICATION & PROFILE ---
         async function addXP(amount) {
             if(!currentUser.isPremium) return;
             const userRef = ref(rtdb, `users/${currentUser.username}`);
@@ -477,20 +409,9 @@
                 document.getElementById('p-rank-badge').innerText = data.rank || "Pemula"; document.getElementById('p-comments').innerText = data.total_comments || 0;
                 document.getElementById('p-xp').innerText = data.xp || 0; document.getElementById('p-level').innerText = data.level || 1;
                 document.getElementById('p-level-circle').style.setProperty('--progress', `${(data.xp % 100) * 3.6}deg`);
-
-                // Render Friends
-                const friendsList = document.getElementById('friends-list');
-                const friendsCont = document.getElementById('friends-container');
-                if(data.friends) {
-                    friendsCont.classList.remove('hidden');
-                    friendsList.innerHTML = Object.keys(data.friends).map(f => 
-                        `<div class="flex-shrink-0 w-16 flex flex-col items-center"><img src="https://ui-avatars.com/api/?name=${f}&background=random" class="w-10 h-10 rounded-full border border-white/20"><span class="text-[9px] text-gray-400 mt-1 truncate w-full text-center">${f}</span></div>`
-                    ).join('');
-                }
             });
         }
 
-        // --- COMMENTS & MODAL ---
         window.openModalById = (id) => { currentItemId = id; const item = itemMap[id]; if(!item) return; document.getElementById('m-title').innerText = item.title; const mediaBox = document.getElementById('modal-media-container'); mediaBox.innerHTML = `<img src="${item.image}" class="w-full h-full object-contain">`; onValue(ref(rtdb, `posts/${id}/comments`), (snapshot) => { const list = document.getElementById('comments-list'); list.innerHTML = ''; const data = snapshot.val(); if(data) Object.values(data).forEach(c => { const div = document.createElement('div'); div.className = c.userId === localStorage.getItem('user_fp') ? "chat-card chat-me" : "chat-card chat-other"; div.innerHTML = `<div class="c-user">${c.username}</div><div class="c-text">${c.text}</div>`; list.appendChild(div); }); }); document.getElementById('detail-modal').classList.remove('hidden'); };
         window.closeModal = () => document.getElementById('detail-modal').classList.add('hidden');
         
