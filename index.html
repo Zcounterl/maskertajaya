@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V33.7</title>
+    <title>Portal Sekolah V33.8</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -148,7 +148,7 @@
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold shadow-lg group-hover:rotate-12 transition duration-300" style="background: var(--theme-color)"><i class="fas fa-school"></i></div>
             <div>
                 <h1 class="font-bold text-sm md:text-base leading-none text-white tracking-tight">Portal Sekolah</h1>
-                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.7 <span id="online-count">...</span></p>
+                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.8 <span id="online-count">...</span></p>
             </div>
         </div>
         <div class="flex gap-3 items-center">
@@ -386,8 +386,6 @@
         </div>
     </div>
 
-    <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-6 hidden"><div class="glass p-10 rounded-3xl w-full max-w-sm text-center border border-white/10 shadow-2xl relative overflow-hidden"><div class="w-20 h-20 rounded-2xl bg-indigo-600/10 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20"><i class="fas fa-fingerprint text-4xl text-indigo-500"></i></div><h2 class="text-3xl font-bold mb-2 text-white tracking-tight">Login Portal</h2><p class="text-gray-400 text-sm mb-8">Masukkan kredensial member premium.</p><input id="login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition placeholder-gray-600"><input id="login-code" type="text" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-8 text-white text-center text-sm tracking-[0.3em] font-mono focus:border-indigo-500 outline-none transition placeholder-gray-600"><button id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-sm text-white mb-4 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 tracking-wide">VERIFIKASI MASUK</button><button onclick="doGuest()" class="text-xs text-gray-500 hover:text-white transition">Lanjut sebagai Tamu</button></div></div>
-
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, push, set, update, runTransaction, onDisconnect, serverTimestamp, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
@@ -517,10 +515,44 @@
         const unblurScreen = () => { document.getElementById('anti-ss-overlay').classList.remove('active'); document.title = "Portal Sekolah V32"; }
         function requestNotificationPermission() { if (Notification.permission !== "granted" && Notification.permission !== "denied") Notification.requestPermission(); }
 
-        async function doLogin() { const u = document.getElementById('login-user').value.trim(); const c = document.getElementById('login-code').value.trim(); if(u==='developer' && c==='dev123') { user={name:'Developer',username:'Developer',role:'developer',isPremium:true,pic:'https://cdn-icons-png.flaticon.com/512/2304/2304226.png'}; localStorage.setItem('user',JSON.stringify(user)); location.reload(); return; } try { const snap = await get(ref(rtdb, `users/${u}`)); if(snap.exists() && snap.val().code === c) { user = { ...snap.val(), role: snap.val().role || 'member' }; localStorage.setItem('user', JSON.stringify(user)); location.reload(); } else Swal.fire("Gagal","Salah username/kode","error"); } catch(e) { Swal.fire("Error",e.message,"error"); } }
-        window.doGuest = () => { user={name:"Tamu",isGuest:true,pic:"https://ui-avatars.com/api/?name=Tamu"}; localStorage.setItem('user',JSON.stringify(user)); location.reload(); }
+        // --- FIX: LOGIN LOGIC (Ensure Username Exists) ---
+        
+        async function doLogin() { 
+            const u = document.getElementById('login-user').value.trim(); 
+            const c = document.getElementById('login-code').value.trim(); 
+            if(u==='developer' && c==='dev123') { 
+                user={name:'Developer',username:'Developer',role:'developer',isPremium:true,pic:'https://cdn-icons-png.flaticon.com/512/2304/2304226.png'}; 
+                localStorage.setItem('user',JSON.stringify(user)); 
+                location.reload(); 
+                return; 
+            } 
+            try { 
+                const snap = await get(ref(rtdb, `users/${u}`)); 
+                if(snap.exists() && snap.val().code === c) { 
+                    // Ensure username is set in object
+                    const userData = snap.val();
+                    user = { ...userData, username: u, role: userData.role || 'member' }; 
+                    localStorage.setItem('user', JSON.stringify(user)); 
+                    location.reload(); 
+                } else Swal.fire("Gagal","Salah username/kode","error"); 
+            } catch(e) { Swal.fire("Error",e.message,"error"); } 
+        }
+
+        // FIX: GUEST LOGIN WITH USERNAME PROPERTY
+        window.doGuest = () => { 
+            const rnd = Math.floor(Math.random() * 1000);
+            user={
+                name: "Tamu " + rnd,
+                username: "Tamu_" + rnd, // PENTING: Tambahkan username
+                isGuest: true,
+                pic: "https://ui-avatars.com/api/?name=Tamu"
+            }; 
+            localStorage.setItem('user',JSON.stringify(user)); 
+            location.reload(); 
+        }
+        
         window.logout = () => { localStorage.removeItem('user'); location.reload(); }
-        window.doPageLogin = async () => { const u = document.getElementById('page-login-user').value.trim(); const c = document.getElementById('page-login-code').value.trim(); try { const snap = await get(ref(rtdb, `users/${u}`)); if(snap.exists() && snap.val().code === c) { user = { ...snap.val(), role: snap.val().role || 'member' }; localStorage.setItem('user', JSON.stringify(user)); location.reload(); } else Swal.fire("Gagal","Username/Kode Salah","error"); } catch(e) { Swal.fire("Error",e.message,"error"); } }
+        window.doPageLogin = async () => { const u = document.getElementById('page-login-user').value.trim(); const c = document.getElementById('page-login-code').value.trim(); try { const snap = await get(ref(rtdb, `users/${u}`)); if(snap.exists() && snap.val().code === c) { user = { ...snap.val(), username: u, role: snap.val().role || 'member' }; localStorage.setItem('user', JSON.stringify(user)); location.reload(); } else Swal.fire("Gagal","Username/Kode Salah","error"); } catch(e) { Swal.fire("Error",e.message,"error"); } }
 
         function setupListeners() {
             onValue(ref(rtdb, 'site_data/gallery'), s => { 
@@ -809,12 +841,22 @@
             const txt = input.value.trim();
             if(!txt) return;
             
-            // FREE COMMENT FOR EVERYONE (Guest, Member, Premium, Dev)
-            
+            // FIX: Pastikan username ada
+            const finalUsername = user.username || user.name || "User";
+
             const cId = Date.now().toString();
             const path = `interactions/comments/${curItem.id}/${cId}`;
-            const data = { id: cId, text: txt, username: user.username, pic: user.profile_pic || user.pic, timestamp: serverTimestamp() };
-            set(ref(rtdb, path), data).then(() => { input.value = ''; showGameToast("Terkirim", "success"); });
+            const data = { 
+                id: cId, 
+                text: txt, 
+                username: finalUsername, 
+                pic: user.profile_pic || user.pic || "https://ui-avatars.com/api/?name=" + finalUsername, 
+                timestamp: serverTimestamp() 
+            };
+            
+            set(ref(rtdb, path), data)
+                .then(() => { input.value = ''; showGameToast("Terkirim", "success"); })
+                .catch((e) => { Swal.fire("Gagal Kirim", e.message, "error"); });
         }
 
         window.delComment = (pId, cId) => {
