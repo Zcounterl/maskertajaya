@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V33.6</title>
+    <title>Portal Sekolah V33.7</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -148,7 +148,7 @@
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-white font-bold shadow-lg group-hover:rotate-12 transition duration-300" style="background: var(--theme-color)"><i class="fas fa-school"></i></div>
             <div>
                 <h1 class="font-bold text-sm md:text-base leading-none text-white tracking-tight">Portal Sekolah</h1>
-                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.6 <span id="online-count">...</span></p>
+                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.7 <span id="online-count">...</span></p>
             </div>
         </div>
         <div class="flex gap-3 items-center">
@@ -342,8 +342,11 @@
                         <button id="btn-read-more" onclick="toggleDesc()" class="text-xs text-gray-400 font-bold mt-1 hidden">... lihat selengkapnya</button>
                     </div>
 
-                    <div id="comment-section" class="hidden border-t border-white/10 pt-4 mt-4 animate-fade-in-down">
-                        <h4 class="text-xs font-bold text-white mb-3 uppercase tracking-wider">Komentar</h4>
+                    <div id="comment-section" class="hidden border-t border-white/10 pt-4 mt-4 animate-fade-in-down relative">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-xs font-bold text-white uppercase tracking-wider">Komentar</h4>
+                            <button onclick="toggleCommentSection()" class="text-xs text-gray-400 hover:text-white bg-white/5 px-2 py-1 rounded-full"><i class="fas fa-chevron-up mr-1"></i>Tutup</button>
+                        </div>
                         <div id="comments-list" class="space-y-4 mb-4">
                             </div>
                         
@@ -364,12 +367,20 @@
                         </button>
                         <span id="modal-likes" class="text-sm font-bold">0</span>
                     </div>
-                    <button onclick="toggleCommentSection()" class="hover:text-blue-400 transition transform active:scale-90">
-                        <i class="far fa-comment"></i>
-                    </button>
-                    <button onclick="sharePostLink()" class="hover:text-green-400 transition transform active:scale-125 -rotate-12">
-                        <i class="far fa-paper-plane"></i>
-                    </button>
+                    
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleCommentSection()" class="hover:text-blue-400 transition transform active:scale-90">
+                            <i class="far fa-comment"></i>
+                        </button>
+                        <span id="modal-comments-count" class="text-xs text-gray-400 font-bold">0</span>
+                    </div>
+
+                    <div class="flex items-center gap-2">
+                        <button onclick="sharePostLink()" class="hover:text-green-400 transition transform active:scale-125 -rotate-12">
+                            <i class="far fa-paper-plane"></i>
+                        </button>
+                        <span id="modal-shares-count" class="text-xs text-gray-400 font-bold">0</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -645,7 +656,7 @@
         window.editProfile = async (type) => { const {value:url} = await Swal.fire({input:'url', inputLabel: type==='pic'?'URL Foto Baru':'URL Wallpaper Chat (GIF/JPG)', background:'#1e293b', color:'#fff'}); if(url) { if(type==='pic') { update(ref(rtdb, `users/${user.username}`), {profile_pic: url}); user.pic = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('p-avatar').src = url; } else { update(ref(rtdb, `users/${user.username}`), {chat_bg: url}); user.chat_bg = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('chat-bg').style.backgroundImage = `url('${url}')`; } Swal.fire("Sukses","Diperbarui","success"); } }
         window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
 
-        // --- LOGIKA DETAIL POST (IG STYLE UPDATE) ---
+        // --- LOGIKA DETAIL POST (UPDATED WITH COUNTERS & FREE COMMENTS) ---
         
         window.openDetail = (item, col) => {
             curItem = item; 
@@ -665,6 +676,8 @@
             document.getElementById('modal-desc').innerText = desc;
             document.getElementById('modal-date').innerText = item.date;
             document.getElementById('modal-likes').innerText = "0";
+            document.getElementById('modal-comments-count').innerText = "0";
+            document.getElementById('modal-shares-count').innerText = "0";
             
             // Handle Read More Logic
             if(desc.length > 100) { // Jika deskripsi panjang
@@ -687,8 +700,10 @@
             if (user.role === 'developer') document.getElementById('admin-controls').classList.remove('hidden');
             else document.getElementById('admin-controls').classList.add('hidden');
 
-            // Load Likes & Comments
+            // Load Counts
             onValue(ref(rtdb, `posts/${item.id}/likes`), s => document.getElementById('modal-likes').innerText = s.val() || 0);
+            onValue(ref(rtdb, `posts/${item.id}/shares`), s => document.getElementById('modal-shares-count').innerText = s.val() || 0);
+            
             const l = localStorage.getItem(`liked_${item.id}`);
             document.getElementById('modal-heart').className = l ? "fas fa-heart text-red-500" : "far fa-heart";
             
@@ -715,7 +730,6 @@
             c.classList.toggle('hidden');
             if(!c.classList.contains('hidden')) {
                 setTimeout(() => document.getElementById('comment-input').focus(), 300);
-                // Scroll to bottom of container
                 const cont = document.querySelector('#detail-modal .custom-scroll');
                 cont.scrollTop = cont.scrollHeight;
             }
@@ -736,6 +750,10 @@
             navigator.clipboard.writeText(link).then(() => {
                 Swal.fire({ icon: 'success', title: 'Link Disalin!', text: 'Bagikan kode link ini ke teman.', background: '#000', color: '#fff', timer: 1500, showConfirmButton: false });
             });
+            
+            // INCREMENT SHARE COUNT
+            const refShare = ref(rtdb, `posts/${curItem.id}/shares`);
+            runTransaction(refShare, (v) => (v || 0) + 1);
         }
 
         window.checkDeepLink = async () => {
@@ -769,8 +787,12 @@
                 const data = snap.val();
                 if (!data) {
                     list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Belum ada komentar.</div>';
+                    document.getElementById('modal-comments-count').innerText = "0";
                     return;
                 }
+                
+                // Update Count
+                document.getElementById('modal-comments-count').innerText = Object.keys(data).length;
 
                 Object.values(data).forEach(c => {
                     const isMe = c.username === user.username;
@@ -786,7 +808,8 @@
             const input = document.getElementById('comment-input');
             const txt = input.value.trim();
             if(!txt) return;
-            // REMOVED PREMIUM CHECK FOR COMMENTS
+            
+            // FREE COMMENT FOR EVERYONE (Guest, Member, Premium, Dev)
             
             const cId = Date.now().toString();
             const path = `interactions/comments/${curItem.id}/${cId}`;
