@@ -46,8 +46,8 @@
         .skeleton { background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 8px; }
         @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
         
-        /* Broadcast Overlay */
-        #broadcast-overlay { position: fixed; inset: 0; z-index: 999999; background: rgba(220, 38, 38, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; backdrop-filter: blur(10px); animation: fadeIn 0.5s; pointer-events: auto; }
+        /* Broadcast Overlay - High Z-Index & Interaction Fix */
+        #broadcast-overlay { position: fixed; inset: 0; z-index: 9999999; background: rgba(220, 38, 38, 0.95); display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; backdrop-filter: blur(10px); animation: fadeIn 0.5s; pointer-events: auto; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
 
         .marquee-container { overflow: hidden; white-space: nowrap; position: relative; }
@@ -81,11 +81,15 @@
             <i class="fas fa-exclamation-triangle text-4xl"></i>
         </div>
         <h1 class="text-4xl font-black text-white mb-4 uppercase tracking-widest">PERINGATAN DARURAT</h1>
-        <div class="bg-black/30 p-6 rounded-xl border border-white/20 max-w-lg w-full">
+        <div class="bg-black/30 p-6 rounded-xl border border-white/20 max-w-lg w-full mb-8">
             <p id="broadcast-msg" class="text-xl text-white font-bold leading-relaxed">...</p>
         </div>
+        
+        <button id="btn-close-broadcast" class="px-10 py-4 bg-white text-red-600 font-black text-lg rounded-full hover:bg-gray-200 transition cursor-pointer shadow-xl active:scale-95" style="pointer-events: auto !important; z-index: 10000000;">
+            TUTUP PESAN
+        </button>
+        
         <p class="mt-8 text-white/70 text-sm animate-pulse">Pesan ini dikirim oleh Administrator</p>
-        <button id="btn-close-broadcast" class="mt-6 px-8 py-3 bg-white text-red-600 font-bold rounded-full hover:bg-gray-200 transition cursor-pointer shadow-lg">Tutup</button>
     </div>
 
     <div id="maintenance-overlay" class="hidden">
@@ -97,7 +101,7 @@
 
     <div class="fixed top-0 w-full z-[60] bg-blue-900/90 text-white text-xs py-1.5 border-b border-white/10 backdrop-blur-md">
         <div class="marquee-container max-w-6xl mx-auto">
-            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V14.1 - System Normal.</div>
+            <div id="running-text" class="marquee-content font-medium tracking-wide">Selamat Datang di Portal Sekolah Digital V14.2.</div>
         </div>
     </div>
 
@@ -267,11 +271,13 @@
             loadRealtimeData();
             listenForBroadcasts();
             
-            // FIX: Ensure Broadcast Close Button works
+            // FIX: Force add event listener to Close Button
             const btnClose = document.getElementById('btn-close-broadcast');
-            if(btnClose) btnClose.addEventListener('click', () => {
-                document.getElementById('broadcast-overlay').classList.add('hidden');
-            });
+            if(btnClose) {
+                btnClose.addEventListener('click', function() {
+                    document.getElementById('broadcast-overlay').classList.add('hidden');
+                });
+            }
         }
 
         function listenForBroadcasts() {
@@ -281,9 +287,12 @@
                 if (data && data.active && data.id !== lastBroadcastId) {
                     document.getElementById('broadcast-msg').innerText = data.message;
                     document.getElementById('broadcast-overlay').classList.remove('hidden');
+                    
+                    // Push Notification
                     if (currentUser.isPremium && Notification.permission === "granted") {
                         new Notification("🚨 PERINGATAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png" });
                     }
+                    
                     lastBroadcastId = data.id;
                     localStorage.setItem('last_broadcast_id', data.id);
                 }
