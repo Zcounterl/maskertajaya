@@ -71,8 +71,8 @@
 
         /* Gallery & Masonry */
         .gallery-card-img { height: 180px; width: 100%; object-fit: cover; }
-        .masonry-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-        @media (min-width: 768px) { .masonry-grid { grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; } }
+        .masonry-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; } /* FORCE 2 COLUMN */
+        @media (min-width: 768px) { .masonry-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; } }
 
         /* Music Player */
         .sticky-player { position: fixed; bottom: 85px; right: 16px; width: calc(100% - 32px); max-width: 400px; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 10px; z-index: 40; display: flex; align-items: center; gap: 12px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); transform: translateY(150%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -425,21 +425,48 @@
             const bcRef = ref(rtdb, 'site_data/config/broadcast'); onValue(bcRef, (snap) => { const data = snap.val(); if (data && data.active && data.id !== lastBroadcastId) { if (currentUser.isPremium && Notification.permission === "granted") { new Notification("🚨 PENGUMUMAN SEKOLAH", { body: data.message, icon: "https://cdn-icons-png.flaticon.com/512/564/564619.png" }); } Toastify({ text: "📢 " + data.message, duration: 8000, gravity: "top", position: "right", style: { background: "linear-gradient(to right, #dc2626, #b91c1c)" } }).showToast(); localStorage.setItem('last_broadcast_id', data.id); } });
         }
 
-        function renderGallery(items) { const c = document.getElementById('gallery-container'); c.innerHTML = ''; items.forEach(i => { const div = document.createElement('div'); div.className = "masonry-item glass-card cursor-pointer group relative"; div.onclick = () => openDetail(i, 'site_data/gallery'); div.innerHTML = `<div class="relative overflow-hidden"><img src="${i.image}" class="gallery-card-img transition duration-500 group-hover:scale-110"><div class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">${i.category}</div></div><div class="p-3"><h3 class="font-bold text-white text-sm line-clamp-1">${i.title}</h3><p class="text-[10px] text-gray-400 mt-1 line-clamp-2">${i.description || '...'}</p><div class="flex justify-between items-center mt-2 text-[9px] text-gray-500"><span>${i.date}</span></div></div>`; c.appendChild(div); }); }
-        function renderSlider(items) { const w = document.getElementById('hero-slider'); w.innerHTML = items.length?items.map(i => `<div class="swiper-slide relative"><img src="${i.image}" class="w-full h-full object-cover"></div>`).join(''):`<div class="swiper-slide"><img src="https://via.placeholder.com/800x400/1e293b/ffffff?text=Portal+Sekolah" class="w-full h-full object-cover"></div>`; new Swiper(".mySwiper", { loop: true, autoplay: {delay:4000}, pagination: {el:".swiper-pagination"}, effect:'fade' }); }
-        function renderPlaylist(d) { const l = document.getElementById('playlist-list'); l.innerHTML = ''; if(d) Object.entries(d).forEach(([k,v]) => l.innerHTML += `<div onclick="playMusic('${v.src}','${v.title}','${v.artist}','${v.type}')" class="flex items-center gap-3 p-3 glass-card rounded-xl cursor-pointer hover:bg-white/5 transition"><div class="w-10 h-10 bg-indigo-600/20 rounded flex items-center justify-center text-indigo-400"><i class="fas fa-play"></i></div><div><h4 class="text-sm font-bold text-white">${v.title}</h4><p class="text-xs text-gray-400">${v.artist}</p></div></div>`); }
-        
-        // FIX MADING IMAGE DISPLAY
+        // FIX: CLICK EVENT USING DOM ELEMENTS (100% WORKING)
+        function renderGallery(items) {
+            const c = document.getElementById('gallery-container');
+            c.innerHTML = '';
+            items.forEach(i => {
+                const div = document.createElement('div');
+                div.className = "masonry-item glass-card cursor-pointer group relative overflow-hidden";
+                div.innerHTML = `
+                    <div class="relative overflow-hidden">
+                        <img src="${i.image}" class="gallery-card-img transition duration-500 group-hover:scale-110">
+                        <div class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">${i.category || 'IMG'}</div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-white text-sm line-clamp-1">${i.title}</h3>
+                        <p class="text-[10px] text-gray-400 mt-1 line-clamp-2">${i.description || '...'}</p>
+                        <div class="flex justify-between items-center mt-2 text-[9px] text-gray-500"><span>${i.date}</span></div>
+                    </div>`;
+                // Using event listener instead of inline HTML string prevents quote syntax errors
+                div.addEventListener('click', () => openDetail(i, 'site_data/gallery'));
+                c.appendChild(div);
+            });
+        }
+
         function renderMading(d) {
-            const l = document.getElementById('mading-list'); l.innerHTML = '';
+            const l = document.getElementById('mading-list');
+            l.innerHTML = '';
             if(d) Object.entries(d).forEach(([k,m]) => { 
-                m.id = k;
-                // FIX: Menambahkan properti image/url ke objek openDetail agar modal bisa menampilkannya
-                const imageUrl = m.image || m.url || m.src || ''; // Ensure fallback logic if needed, but pass valid one
-                l.innerHTML += `<div class="glass-card p-5 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:border-orange-400" onclick="openDetail({title:'${m.title}', description:'${m.description}', date:'${m.date}', category:'Mading', id:'${k}', image:'${imageUrl}'}, 'site_data/mading')"><h3 class="font-bold text-white mb-1">${m.title}</h3><p class="text-xs text-gray-400 line-clamp-2">${m.description}</p></div>`;
+                const item = {id: k, ...m};
+                const div = document.createElement('div');
+                div.className = "glass-card p-5 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:border-orange-400";
+                div.innerHTML = `
+                    <h3 class="font-bold text-white mb-1">${m.title}</h3>
+                    <p class="text-xs text-gray-400 line-clamp-2">${m.description}</p>
+                    <div class="mt-2 text-[10px] text-gray-500 italic">${m.date}</div>
+                `;
+                div.addEventListener('click', () => openDetail(item, 'site_data/mading'));
+                l.appendChild(div);
             });
         }
         
+        function renderSlider(items) { const w = document.getElementById('hero-slider'); w.innerHTML = items.length?items.map(i => `<div class="swiper-slide relative"><img src="${i.image}" class="w-full h-full object-cover"></div>`).join(''):`<div class="swiper-slide"><img src="https://via.placeholder.com/800x400/1e293b/ffffff?text=Portal+Sekolah" class="w-full h-full object-cover"></div>`; new Swiper(".mySwiper", { loop: true, autoplay: {delay:4000}, pagination: {el:".swiper-pagination"}, effect:'fade' }); }
+        function renderPlaylist(d) { const l = document.getElementById('playlist-list'); l.innerHTML = ''; if(d) Object.entries(d).forEach(([k,v]) => l.innerHTML += `<div onclick="playMusic('${v.src}','${v.title}','${v.artist}','${v.type}')" class="flex items-center gap-3 p-3 glass-card rounded-xl cursor-pointer hover:bg-white/5 transition"><div class="w-10 h-10 bg-indigo-600/20 rounded flex items-center justify-center text-indigo-400"><i class="fas fa-play"></i></div><div><h4 class="text-sm font-bold text-white">${v.title}</h4><p class="text-xs text-gray-400">${v.artist}</p></div></div>`); }
         function renderDownloads(d) { const c = document.getElementById('downloads-grid'); c.innerHTML = ''; if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-4 rounded-xl flex items-center gap-3 hover:bg-white/5"><i class="fas fa-file-download text-green-400 text-lg"></i><div><h4 class="text-sm font-bold text-white">${f.title}</h4><p class="text-[10px] text-gray-400">${f.type}</p></div></a>`); }
 
         // CHAT (UPDATED V5.0 - Logic & Stability Fixes)
@@ -518,7 +545,7 @@
             const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return;
             if(user.isGuest) return Swal.fire("Akses","Login Premium!","warning");
             
-            // FIX: Routing Logic
+            // FIX: Routing Logic for Premium Users
             const path = curChatId==='global' ? 'community/messages' : 
                          (curChatId.startsWith('grp_') ? `community/groups/${curChatId}/messages` : `chats/private/${curChatId}`);
             
@@ -589,7 +616,7 @@
         window.editProfile = async (type) => { const {value:url} = await Swal.fire({input:'url', inputLabel: type==='pic'?'URL Foto Baru':'URL Wallpaper Chat (GIF/JPG)', background:'#1e293b', color:'#fff'}); if(url) { if(type==='pic') { update(ref(rtdb, `users/${user.username}`), {profile_pic: url}); user.pic = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('p-avatar').src = url; } else { update(ref(rtdb, `users/${user.username}`), {chat_bg: url}); user.chat_bg = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('chat-bg').style.backgroundImage = `url('${url}')`; } Swal.fire("Sukses","Diperbarui","success"); } }
         window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
 
-        // UTILS - FIX MODAL MEDIA DISPLAY
+        // UTILS - FIX MODAL MEDIA DISPLAY & CLICK
         window.openDetail = (item, col) => {
             curItem=item; curCollection=col;
             document.getElementById('detail-modal').classList.remove('hidden');
@@ -597,11 +624,22 @@
             document.getElementById('modal-desc').innerText = item.description||'-';
             document.getElementById('modal-date').innerText = item.date;
             document.getElementById('modal-cat').innerText = item.category||'Item';
-            document.getElementById('btn-download').href = item.url || item.image || item.src;
+            // Fallback for download button
+            const mediaUrl = item.image || item.url || item.src || '';
+            document.getElementById('btn-download').href = mediaUrl;
+            
             const m = document.getElementById('modal-media'); m.innerHTML = "";
-            if(item.image || item.src) m.innerHTML = item.type==='video' ? `<video src="${item.image||item.src}" controls class="h-full w-full object-contain"></video>` : `<img src="${item.image||item.src}" class="h-full w-full object-contain">`;
+            if(mediaUrl) {
+                m.innerHTML = item.type==='video' ? 
+                `<video src="${mediaUrl}" controls class="h-full w-full object-contain"></video>` : 
+                `<img src="${mediaUrl}" class="h-full w-full object-contain">`;
+            } else {
+                m.innerHTML = '<div class="text-gray-500 text-xs">No Media</div>';
+            }
+
             if(user.role === 'developer') document.getElementById('admin-controls').classList.remove('hidden');
             else document.getElementById('admin-controls').classList.add('hidden');
+            
             onValue(ref(rtdb,`posts/${item.id}/likes`), s=>document.getElementById('modal-likes').innerText=s.val()||0);
             const l = localStorage.getItem(`liked_${item.id}`); document.getElementById('modal-heart').className = l?"fas fa-heart text-red-500 text-xl":"far fa-heart text-xl";
         }
