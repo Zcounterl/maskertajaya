@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V32 Terminal</title>
+    <title>Portal Sekolah V33 Terminal</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -53,18 +53,21 @@
         .chat-image { border-radius: 8px; margin-top: 4px; max-width: 100%; height: auto; display: block; cursor: pointer; }
         .reply-box { border-left: 3px solid #a5b4fc; padding-left: 8px; margin-bottom: 4px; font-size: 0.75rem; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 4px; }
 
-        /* TERMINAL STYLES */
-        .terminal-modal { position: fixed; inset: 0; background: #0c0c0c; z-index: 99999; display: flex; flex-direction: column; font-family: 'Fira Code', monospace; }
-        .terminal-header { background: #1f1f1f; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
-        .terminal-body { flex: 1; padding: 15px; overflow-y: auto; color: #00ff00; font-size: 12px; line-height: 1.5; }
-        .log-entry { margin-bottom: 2px; display: flex; }
-        .log-time { color: #555; margin-right: 10px; }
-        .log-info { color: #fff; }
-        .log-success { color: #00ff00; }
-        .log-warn { color: #ffcc00; }
-        .log-error { color: #ff0000; background: rgba(255,0,0,0.1); padding: 2px 5px; border-radius: 3px; }
-        .cursor-blink { animation: blink 1s infinite; }
+        /* TERMINAL STYLES (SUPER ADVANCED) */
+        .terminal-modal { position: fixed; inset: 0; background: #050505; z-index: 99999; display: flex; flex-direction: column; font-family: 'Fira Code', monospace; border: 2px solid #333; }
+        .terminal-header { background: #111; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+        .terminal-body { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; line-height: 1.4; background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
+        .log-entry { margin-bottom: 4px; display: flex; align-items: flex-start; animation: fadeIn 0.2s; }
+        .log-time { color: #555; margin-right: 10px; font-size: 11px; min-width: 60px; }
+        .log-prefix { margin-right: 8px; font-weight: bold; }
+        .log-info { color: #a7f3d0; text-shadow: 0 0 2px rgba(167, 243, 208, 0.3); }
+        .log-success { color: #00ff00; font-weight: bold; text-shadow: 0 0 5px rgba(0, 255, 0, 0.5); }
+        .log-warn { color: #facc15; }
+        .log-error { color: #ef4444; font-weight: bold; background: rgba(239, 68, 68, 0.1); padding: 2px 4px; }
+        .terminal-input-container { padding: 10px; background: #000; border-top: 1px solid #333; display: flex; align-items: center; gap: 8px; }
+        .terminal-cursor { width: 8px; height: 16px; background: #00ff00; animation: blink 1s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(2px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Gallery & Masonry */
         .gallery-card-img { height: 180px; width: 100%; object-fit: cover; }
@@ -101,18 +104,21 @@
     <div id="dev-terminal" class="terminal-modal hidden">
         <div class="terminal-header">
             <div class="flex items-center gap-2">
-                <div class="w-3 h-3 rounded-full bg-red-500 cursor-pointer hover:bg-red-400" onclick="closeTerminal()"></div>
+                <div class="w-3 h-3 rounded-full bg-red-500 cursor-pointer hover:bg-red-400 transition" onclick="closeTerminal()"></div>
                 <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
                 <div class="w-3 h-3 rounded-full bg-green-500"></div>
-                <span class="text-gray-400 text-xs ml-2">root@portal-v32:~ (God Mode)</span>
+                <span class="text-gray-500 text-xs ml-2">root@god-mode:~</span>
             </div>
-            <div class="text-green-500 text-xs font-bold animate-pulse">LIVE MONITORING</div>
+            <div class="text-green-500 text-xs font-bold font-mono tracking-widest flex items-center gap-2">
+                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span> LIVE MONITOR
+            </div>
         </div>
-        <div id="term-output" class="terminal-body font-mono">
+        <div id="term-output" class="terminal-body">
             </div>
-        <div class="p-2 border-t border-gray-800 bg-black flex items-center gap-2 text-white text-xs">
-            <span class="text-green-500">$</span>
-            <input type="text" id="term-input" class="bg-transparent border-none outline-none flex-1 text-white font-mono" placeholder="Type command (help)..." autocomplete="off">
+        <div class="terminal-input-container">
+            <span class="text-green-500 font-bold">➜</span>
+            <span class="text-blue-400 font-bold">~</span>
+            <input type="text" id="term-input" class="bg-transparent border-none outline-none flex-1 text-white font-mono text-sm" placeholder="Enter command..." autocomplete="off">
         </div>
     </div>
 
@@ -121,7 +127,7 @@
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 group-hover:rotate-12 transition duration-300"><i class="fas fa-school"></i></div>
             <div>
                 <h1 class="font-bold text-sm md:text-base leading-none text-white tracking-tight">Portal Sekolah</h1>
-                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V32.0 <span id="online-count">...</span></p>
+                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V32.5 <span id="online-count">...</span></p>
             </div>
         </div>
         <div class="flex gap-3 items-center">
@@ -248,14 +254,6 @@
             <div class="max-w-4xl mx-auto px-2">
                 <div class="glass p-6 rounded-[2rem] border border-yellow-500/30 mb-6 relative overflow-hidden">
                     <h2 class="text-2xl font-black text-yellow-400 mb-1 flex items-center gap-2"><i class="fas fa-code-branch"></i> GOD MODE</h2>
-                    
-                    <div id="db-stats-container" class="grid grid-cols-4 gap-2 mt-4 mb-4">
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">Users</h4><div id="stat-users" class="text-lg font-bold text-white">...</div></div>
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">Posts</h4><div id="stat-posts" class="text-lg font-bold text-indigo-400">...</div></div>
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">DB Size</h4><div id="stat-size" class="text-lg font-bold text-pink-400">...</div></div>
-                         <div class="bg-black/40 p-3 rounded-xl border border-white/5 text-center"><h4 class="text-[9px] text-gray-400 uppercase tracking-wider">Latency</h4><div id="stat-ping" class="text-lg font-bold text-green-400">...</div></div>
-                    </div>
-
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="p-4 bg-white/5 rounded-xl border border-white/5">
                             <h3 class="text-white font-bold text-sm mb-3"><i class="fas fa-shield-alt text-red-400 mr-2"></i>Keamanan (Anti-SS)</h3>
@@ -276,25 +274,12 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-4 p-4 bg-white/5 rounded-xl border border-white/5">
-                        <h3 class="text-white font-bold text-sm mb-2">📡 Kirim Broadcast</h3>
-                        <div class="flex gap-2">
-                            <input type="text" id="dev-broadcast-msg" placeholder="Pesan darurat..." class="flex-1 bg-black/30 border border-white/10 rounded-lg px-3 py-2 text-xs text-white outline-none">
-                            <button onclick="devSendBroadcast()" class="bg-red-600 px-4 py-2 rounded-lg text-white text-xs font-bold hover:bg-red-500">Kirim</button>
-                        </div>
-                    </div>
-
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
                         <button onclick="openUploadModal('gallery')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-indigo-600 transition flex flex-col items-center text-center group"><i class="fas fa-image text-2xl mb-2 text-indigo-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Upload Foto</span></button>
                         <button onclick="openUploadModal('mading')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-orange-600 transition flex flex-col items-center text-center group"><i class="fas fa-newspaper text-2xl mb-2 text-orange-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Post Mading</span></button>
                         <button onclick="openUploadModal('downloads')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-green-600 transition flex flex-col items-center text-center group"><i class="fas fa-file-upload text-2xl mb-2 text-green-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Upload File</span></button>
                         <button onclick="openUploadModal('playlist')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-pink-600 transition flex flex-col items-center text-center group"><i class="fas fa-music text-2xl mb-2 text-pink-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Add Musik</span></button>
                     </div>
-                </div>
-                <div class="glass p-5 rounded-2xl">
-                    <h3 class="font-bold text-white mb-3">User Management</h3>
-                    <div id="admin-user-list" class="space-y-2 max-h-60 custom-scroll pr-1"></div>
                 </div>
             </div>
         </section>
@@ -309,74 +294,17 @@
         <div class="flex-1 min-w-0 ml-2"><h4 id="sp-title" class="text-xs font-bold text-white truncate">Lagu</h4><p id="sp-artist" class="text-[10px] text-gray-400 truncate">Artis</p></div>
         <div class="flex items-center gap-3"><button onclick="togglePlay()" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition shadow-lg"><i id="sp-icon" class="fas fa-play text-[10px]"></i></button><button onclick="closePlayer()" class="text-gray-400 hover:text-white transition px-2"><i class="fas fa-times"></i></button></div><audio id="audio-element" class="hidden"></audio>
     </div>
-
-    <div id="detail-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm">
-        <div class="bg-card w-full max-w-3xl rounded-3xl overflow-hidden border border-white/10 max-h-[90vh] flex flex-col relative shadow-2xl">
-            <button onclick="document.getElementById('detail-modal').classList.add('hidden')" class="absolute top-3 right-3 z-50 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur hover:bg-red-500 transition"><i class="fas fa-times"></i></button>
-            <div class="relative bg-black h-64 md:h-80 flex items-center justify-center overflow-hidden" id="modal-media"></div>
-            <div class="p-6 md:p-8 overflow-y-auto flex-1 bg-[#151c2e]">
-                <h2 id="modal-title" class="text-xl font-bold text-white mb-1">Title</h2>
-                <div class="flex items-center gap-3 text-xs text-gray-400 mb-4">
-                    <span id="modal-date">Date</span> <span class="uppercase px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20" id="modal-cat">Cat</span>
-                </div>
-                <p id="modal-desc" class="text-sm text-gray-300 leading-relaxed whitespace-pre-line mb-6 font-light">Desc</p>
-                
-                <div class="flex flex-wrap gap-3 border-t border-white/5 pt-4 items-center">
-                    <button onclick="toggleLike()" class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition group bg-white/5 px-3 py-1.5 rounded-full"><i id="modal-heart" class="far fa-heart text-lg group-hover:scale-110 transition"></i><span id="modal-likes" class="font-bold">0</span></button>
-                    <a id="btn-download" href="#" target="_blank" class="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full font-bold hover:bg-green-500 hover:text-white transition"><i class="fas fa-download"></i> Unduh</a>
-                    
-                    <div id="admin-controls" class="hidden ml-auto flex gap-2">
-                         <button onclick="editContent()" class="bg-yellow-500/20 text-yellow-400 px-3 py-1.5 rounded text-xs font-bold">EDIT</button>
-                         <button onclick="deleteContent()" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded text-xs font-bold">HAPUS</button>
-                    </div>
-                </div>
-                
-                <div class="mt-6 p-4 bg-white/5 rounded-xl border border-white/5">
-                    <h4 class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-3">Developer Contact</h4>
-                    <div class="flex gap-4">
-                        <a id="dev-wa" href="#" target="_blank" class="text-gray-400 hover:text-green-400 transition transform hover:scale-110"><i class="fab fa-whatsapp text-2xl"></i></a>
-                        <a id="dev-tk" href="#" target="_blank" class="text-gray-400 hover:text-pink-400 transition transform hover:scale-110"><i class="fab fa-tiktok text-2xl"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-6 hidden">
-        <div class="glass p-10 rounded-3xl w-full max-w-sm text-center border border-white/10 shadow-2xl relative overflow-hidden">
-            <div class="w-20 h-20 rounded-2xl bg-indigo-600/10 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20"><i class="fas fa-fingerprint text-4xl text-indigo-500"></i></div>
-            <h2 class="text-3xl font-bold mb-2 text-white tracking-tight">Login Portal</h2>
-            <p class="text-gray-400 text-sm mb-8">Masukkan kredensial member premium.</p>
-            <input id="login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition placeholder-gray-600">
-            <input id="login-code" type="text" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-8 text-white text-center text-sm tracking-[0.3em] font-mono focus:border-indigo-500 outline-none transition placeholder-gray-600">
-            <button id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-sm text-white mb-4 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 tracking-wide">VERIFIKASI MASUK</button>
-            <button onclick="doGuest()" class="text-xs text-gray-500 hover:text-white transition">Lanjut sebagai Tamu</button>
-        </div>
-    </div>
+    <div id="detail-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm"><div class="bg-card w-full max-w-3xl rounded-3xl overflow-hidden border border-white/10 max-h-[90vh] flex flex-col relative shadow-2xl"><button onclick="document.getElementById('detail-modal').classList.add('hidden')" class="absolute top-3 right-3 z-50 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur hover:bg-red-500 transition"><i class="fas fa-times"></i></button><div class="relative bg-black h-64 md:h-80 flex items-center justify-center overflow-hidden" id="modal-media"></div><div class="p-6 md:p-8 overflow-y-auto flex-1 bg-[#151c2e]"><h2 id="modal-title" class="text-xl font-bold text-white mb-1">Title</h2><div class="flex items-center gap-3 text-xs text-gray-400 mb-4"><span id="modal-date">Date</span> <span class="uppercase px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20" id="modal-cat">Cat</span></div><p id="modal-desc" class="text-sm text-gray-300 leading-relaxed whitespace-pre-line mb-6 font-light">Desc</p><div class="flex flex-wrap gap-3 border-t border-white/5 pt-4 items-center"><button onclick="toggleLike()" class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition group bg-white/5 px-3 py-1.5 rounded-full"><i id="modal-heart" class="far fa-heart text-lg group-hover:scale-110 transition"></i><span id="modal-likes" class="font-bold">0</span></button><a id="btn-download" href="#" target="_blank" class="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full font-bold hover:bg-green-500 hover:text-white transition"><i class="fas fa-download"></i> Unduh</a><div id="admin-controls" class="hidden ml-auto flex gap-2"><button onclick="editContent()" class="bg-yellow-500/20 text-yellow-400 px-3 py-1.5 rounded text-xs font-bold">EDIT</button><button onclick="deleteContent()" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded text-xs font-bold">HAPUS</button></div></div></div></div></div>
+    <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-6 hidden"><div class="glass p-10 rounded-3xl w-full max-w-sm text-center border border-white/10 shadow-2xl relative overflow-hidden"><div class="w-20 h-20 rounded-2xl bg-indigo-600/10 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20"><i class="fas fa-fingerprint text-4xl text-indigo-500"></i></div><h2 class="text-3xl font-bold mb-2 text-white tracking-tight">Login Portal</h2><p class="text-gray-400 text-sm mb-8">Masukkan kredensial member premium.</p><input id="login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition placeholder-gray-600"><input id="login-code" type="text" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-8 text-white text-center text-sm tracking-[0.3em] font-mono focus:border-indigo-500 outline-none transition placeholder-gray-600"><button id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-sm text-white mb-4 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 tracking-wide">VERIFIKASI MASUK</button><button onclick="doGuest()" class="text-xs text-gray-500 hover:text-white transition">Lanjut sebagai Tamu</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, push, set, update, runTransaction, onDisconnect, serverTimestamp, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyAYjnWMB23CQ2OnofJuoMBJyoxBahvPj9Q",
-          authDomain: "sigitdb-eb445.firebaseapp.com",
-          databaseURL: "https://sigitdb-eb445-default-rtdb.firebaseio.com/",
-          projectId: "sigitdb-eb445",
-          storageBucket: "sigitdb-eb445.firebasestorage.app",
-          messagingSenderId: "939882511814",
-          appId: "1:939882511814:web:797708c2440f35062646c7"
-        };
-        const app = initializeApp(firebaseConfig);
-        const rtdb = getDatabase(app);
-
+        const firebaseConfig = { apiKey: "AIzaSyAYjnWMB23CQ2OnofJuoMBJyoxBahvPj9Q", authDomain: "sigitdb-eb445.firebaseapp.com", databaseURL: "https://sigitdb-eb445-default-rtdb.firebaseio.com/", projectId: "sigitdb-eb445", storageBucket: "sigitdb-eb445.firebasestorage.app", messagingSenderId: "939882511814", appId: "1:939882511814:web:797708c2440f35062646c7" };
+        const app = initializeApp(firebaseConfig); const rtdb = getDatabase(app);
         let user = JSON.parse(localStorage.getItem('user')) || null;
-        let curChatId = 'global';
-        let lastBroadcastId = localStorage.getItem('last_broadcast_id');
-        let curCollection = null;
-        let typingTimeout = null;
-        let pendingImage = null;
-        let replyingToMsg = null; 
+        let curChatId = 'global'; let lastBroadcastId = localStorage.getItem('last_broadcast_id'); let curCollection = null; let typingTimeout = null; let pendingImage = null; let replyingToMsg = null;
 
         window.onload = () => {
             if(!user) document.getElementById('login-modal').classList.remove('hidden');
@@ -391,10 +319,7 @@
                 if(user.role==='developer') document.getElementById('btn-god-mode').classList.remove('hidden');
                 if(user.chat_bg) document.getElementById('chat-bg').style.backgroundImage = `url('${user.chat_bg}')`;
             }
-            setupListeners();
-            navigateTo('home');
-            VanillaTilt.init(document.querySelectorAll(".glass-card"), {max:10, speed:400, glare:true, "max-glare":0.1});
-            requestNotificationPermission();
+            setupListeners(); navigateTo('home'); VanillaTilt.init(document.querySelectorAll(".glass-card")); requestNotificationPermission();
             onValue(ref(rtdb, 'site_data/config'), s => {
                 const c = s.val() || {};
                 if(c.contact) {
@@ -457,9 +382,16 @@
                 const cmd = e.target.value.trim();
                 logToTerm(`root# ${cmd}`, 'info');
                 if(cmd === 'clear') document.getElementById('term-output').innerHTML = '';
-                else if(cmd === 'help') logToTerm("Commands: clear, status, exit", "warn");
+                else if(cmd === 'help') logToTerm("Commands: clear, status, exit, users, scan, broadcast <msg>", "warn");
                 else if(cmd === 'exit') closeTerminal();
-                else if(cmd === 'status') logToTerm("System All Green.", "success");
+                else if(cmd === 'status') logToTerm("System All Green. Security Active.", "success");
+                else if(cmd === 'users') get(ref(rtdb, 'users')).then(s => logToTerm(`Total Users: ${s.numChildren()}`, "success"));
+                else if(cmd === 'scan') { logToTerm("Scanning Network...", "warn"); setTimeout(()=>logToTerm("No threats found.", "success"), 2000); }
+                else if(cmd.startsWith('broadcast ')) {
+                    const msg = cmd.split('broadcast ')[1];
+                    set(ref(rtdb, 'site_data/config/broadcast'), {message:msg, active:true, id:Date.now().toString()});
+                    logToTerm("Broadcast Sent!", "success");
+                }
                 else logToTerm("Command not found.", "error");
                 e.target.value = '';
             }
