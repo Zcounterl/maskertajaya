@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V33 Economy</title>
+    <title>Portal Sekolah V33.5 Stable</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -34,53 +34,64 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap');
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; padding-bottom: 90px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; user-select: none; }
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; padding-bottom: 100px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; user-select: none; }
         
-        .glass { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
-        .glass-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; transition: all 0.3s ease; overflow: hidden; }
-        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #6366f1; }
+        .glass { background: rgba(30, 41, 59, 0.9); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
+        .glass-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; overflow: hidden; }
+        
+        /* FIX LAYOUT MADING/GALLERY */
+        .masonry-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); /* Pastikan 2 kolom di HP */
+            gap: 10px; 
+        }
+        @media (min-width: 768px) { 
+            .masonry-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; } 
+        }
+        .gallery-card-img { 
+            width: 100%; 
+            height: 150px; /* Fixed height agar rapi */
+            object-fit: cover; 
+        }
 
         /* CHAT STYLES */
         .chat-container { height: 75vh; max-height: 700px; display: flex; flex-direction: column; background-color: #111827; position: relative; overflow: hidden; border-radius: 24px; border: 1px solid rgba(255,255,255,0.1); }
         .chat-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 0; background-size: cover; background-position: center; background-repeat: no-repeat; pointer-events: none; }
-        .chat-header { flex: 0 0 auto; z-index: 10; background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .chat-area { flex: 1 1 auto; overflow-y: auto; padding: 1rem; z-index: 5; display: flex; flex-direction: column; gap: 8px; scroll-behavior: smooth; }
-        .chat-input-area { flex: 0 0 auto; z-index: 20; background: #111827; border-top: 1px solid rgba(255,255,255,0.1); position: relative; }
-        .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.9rem; position: relative; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); z-index: 6; }
+        .chat-bubble { max-width: 85%; padding: 8px 12px; border-radius: 12px; font-size: 0.9rem; position: relative; word-wrap: break-word; }
         .chat-me { background: #6366f1; color: white; align-self: flex-end; border-top-right-radius: 0; margin-left: auto; }
         .chat-other { background: #334155; color: white; align-self: flex-start; border-top-left-radius: 0; margin-right: auto; }
-        .reply-box { border-left: 3px solid #a5b4fc; padding-left: 8px; margin-bottom: 4px; font-size: 0.75rem; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 4px; }
+
+        /* SHOP CARD */
+        .shop-card { background: linear-gradient(145deg, #1e293b, #111827); border: 1px solid #334155; border-radius: 16px; overflow: hidden; position: relative; transition: all 0.3s; }
+        .shop-card:active { transform: scale(0.95); }
         
         /* GAME STYLES */
-        .dice-cube { width: 60px; height: 60px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #333; box-shadow: 0 0 15px rgba(255,255,255,0.5); }
-        .dice-rolling { animation: roll 0.5s infinite linear; }
-        @keyframes roll { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .gold-text { background: linear-gradient(to bottom, #FFD700, #FFA500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
-        
-        /* Verified Badge */
-        .verified-badge { color: #3b82f6; margin-left: 4px; font-size: 0.9em; }
-        
+        .dice-cube { width: 70px; height: 70px; background: linear-gradient(135deg, #fff, #e2e8f0); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; font-weight: bold; color: #333; box-shadow: 0 4px 15px rgba(255,255,255,0.2); border: 2px solid #cbd5e1; }
+        .dice-rolling { animation: shake 0.5s infinite; }
+        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 10% { transform: translate(-1px, -2px) rotate(-1deg); } 20% { transform: translate(-3px, 0px) rotate(1deg); } 30% { transform: translate(3px, 2px) rotate(0deg); } 40% { transform: translate(1px, -1px) rotate(1deg); } 50% { transform: translate(-1px, 2px) rotate(-1deg); } 60% { transform: translate(-3px, 1px) rotate(0deg); } 70% { transform: translate(3px, 1px) rotate(-1deg); } 80% { transform: translate(-1px, -1px) rotate(1deg); } 90% { transform: translate(1px, 2px) rotate(0deg); } 100% { transform: translate(1px, -2px) rotate(-1deg); } }
+
         /* Scrollbar & Nav */
-        ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-        .nav-item.active i { color: #6366f1; transform: scale(1.1); } .nav-item.active span { color: white; }
+        ::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .nav-item.active i { color: #6366f1; transform: scale(1.2); text-shadow: 0 0 10px rgba(99, 102, 241, 0.5); } 
+        .nav-item.active span { color: white; font-weight: bold; }
     </style>
 </head>
 <body class="antialiased bg-gradient-to-b from-dark to-[#020617] min-h-screen" id="main-body">
 
     <div id="anti-ss-overlay" class="fixed inset-0 z-[999999] hidden bg-black flex-col items-center justify-center text-center p-5">
-        <i class="fas fa-eye-slash text-8xl text-red-600 mb-6 animate-pulse"></i>
-        <h1 class="text-4xl font-black text-white mb-2">LOCKED</h1>
-        <p class="text-gray-400">Dilarang Screenshot.</p>
+        <i class="fas fa-lock text-6xl text-red-500 mb-4"></i>
+        <h1 class="text-2xl font-bold text-white">LOCKED</h1>
+        <p class="text-gray-500 text-sm">Screenshot Dilarang.</p>
     </div>
 
-    <div class="fixed top-0 w-full z-50 glass border-b border-white/5 px-4 py-3 flex justify-between items-center transition-all">
-        <div class="flex items-center gap-3 cursor-pointer group" onclick="location.reload()">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg group-hover:rotate-12 transition duration-300"><i class="fas fa-school"></i></div>
+    <div class="fixed top-0 w-full z-50 glass border-b border-white/5 px-4 py-3 flex justify-between items-center transition-all shadow-lg">
+        <div class="flex items-center gap-3 cursor-pointer active:scale-95 transition" onclick="location.reload()">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30"><i class="fas fa-school"></i></div>
             <div>
-                <h1 class="font-bold text-sm md:text-base text-white">Portal V33</h1>
+                <h1 class="font-bold text-sm text-white leading-tight">Portal V33.5</h1>
                 <div class="flex items-center gap-2">
-                    <p class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> Online</p>
-                    <div id="nav-coin-display" class="hidden flex items-center gap-1 bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/30">
+                    <div id="nav-coin-display" class="flex items-center gap-1 bg-yellow-500/10 px-2 py-0.5 rounded-full border border-yellow-500/20">
                         <i class="fas fa-coins text-[10px] text-yellow-400"></i>
                         <span id="nav-coin-val" class="text-[10px] font-bold text-yellow-200">0</span>
                     </div>
@@ -88,228 +99,214 @@
             </div>
         </div>
         <div class="flex gap-3 items-center">
-             <button id="btn-god-mode" onclick="navigateTo('admin')" class="hidden px-3 py-1 rounded-full bg-yellow-500/10 border border-yellow-500/50 text-yellow-400 text-[10px] font-bold hover:bg-yellow-500 hover:text-black transition"><i class="fas fa-bolt mr-1"></i> DEV</button>
-             <img id="nav-avatar" src="https://ui-avatars.com/api/?name=?" class="w-9 h-9 rounded-full border-2 border-white/10 bg-gray-800 object-cover cursor-pointer hover:border-indigo-500 transition shadow-md" onclick="navigateTo('profile')">
+             <button id="btn-god-mode-nav" onclick="navigateTo('admin')" class="hidden w-8 h-8 rounded-full bg-yellow-500/20 text-yellow-400 flex items-center justify-center border border-yellow-500/50 animate-pulse"><i class="fas fa-bolt text-xs"></i></button>
+             <img id="nav-avatar" src="https://ui-avatars.com/api/?name=?" class="w-9 h-9 rounded-full border-2 border-white/10 bg-gray-800 object-cover cursor-pointer" onclick="navigateTo('profile')">
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full z-50 glass border-t border-white/5 pb-safe pt-2 px-2 md:top-0 md:left-0 md:w-24 md:h-full md:border-r md:border-t-0 md:flex md:flex-col md:items-center md:pt-24 md:gap-6">
+    <nav class="fixed bottom-0 w-full z-50 glass border-t border-white/5 pb-safe pt-2 px-1 md:top-0 md:left-0 md:w-24 md:h-full md:border-r md:border-t-0 md:flex md:flex-col md:items-center md:pt-24 md:gap-6">
         <div class="flex justify-around items-center md:flex-col md:gap-6 w-full">
-            <button onclick="navigateTo('home')" id="nav-home" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full"><i class="fas fa-home text-xl mb-1"></i><span class="text-[9px] font-medium">Home</span></button>
-            <button onclick="navigateTo('chat-dashboard')" id="nav-chat-dashboard" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full"><i class="fas fa-comments text-xl mb-1"></i><span class="text-[9px] font-medium">Chat</span></button>
-            <button onclick="navigateTo('shop')" id="nav-shop" class="nav-item text-gray-400 hover:text-yellow-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full"><i class="fas fa-store text-xl mb-1"></i><span class="text-[9px] font-medium">Shop</span></button>
-            <button onclick="navigateTo('game')" id="nav-game" class="nav-item text-gray-400 hover:text-red-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full"><i class="fas fa-dice text-xl mb-1"></i><span class="text-[9px] font-medium">Game</span></button>
-            <button onclick="navigateTo('profile')" id="nav-profile" class="nav-item text-gray-400 hover:text-indigo-400 transition flex flex-col items-center p-2 rounded-xl w-14 md:w-full"><i class="fas fa-user text-xl mb-1"></i><span class="text-[9px] font-medium">Saya</span></button>
+            <button onclick="navigateTo('home')" id="nav-home" class="nav-item text-gray-500 transition flex flex-col items-center p-2 w-1/5"><i class="fas fa-home text-lg mb-1"></i><span class="text-[9px]">Home</span></button>
+            <button onclick="navigateTo('chat-dashboard')" id="nav-chat-dashboard" class="nav-item text-gray-500 transition flex flex-col items-center p-2 w-1/5"><i class="fas fa-comments text-lg mb-1"></i><span class="text-[9px]">Chat</span></button>
+            <button onclick="navigateTo('shop')" id="nav-shop" class="nav-item text-gray-500 transition flex flex-col items-center p-2 w-1/5"><i class="fas fa-store text-lg mb-1"></i><span class="text-[9px]">Shop</span></button>
+            <button onclick="navigateTo('game')" id="nav-game" class="nav-item text-gray-500 transition flex flex-col items-center p-2 w-1/5"><i class="fas fa-dice text-lg mb-1"></i><span class="text-[9px]">Game</span></button>
+            <button onclick="navigateTo('profile')" id="nav-profile" class="nav-item text-gray-500 transition flex flex-col items-center p-2 w-1/5"><i class="fas fa-user text-lg mb-1"></i><span class="text-[9px]">Saya</span></button>
         </div>
     </nav>
 
-    <main class="pt-20 px-3 md:pl-32 md:pt-24 max-w-7xl mx-auto min-h-screen pb-24">
+    <main class="pt-20 px-4 md:pl-32 md:pt-24 max-w-7xl mx-auto min-h-screen pb-32">
         
         <section id="view-home" class="view-section transition-opacity duration-300">
-            <div class="swiper mySwiper w-full h-[200px] md:h-[380px] rounded-2xl mb-8 overflow-hidden shadow-2xl border border-white/10 relative group">
+            <div class="swiper mySwiper w-full h-[180px] md:h-[380px] rounded-2xl mb-6 overflow-hidden shadow-lg border border-white/10 relative">
                 <div class="swiper-wrapper" id="hero-slider"></div>
                 <div class="swiper-pagination"></div>
-                <div class="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent pointer-events-none z-10"></div>
-                <div class="absolute bottom-5 left-5 z-20"><h2 class="text-2xl md:text-4xl font-bold text-white drop-shadow-md">Galeri Sekolah</h2><p class="text-xs md:text-sm text-gray-300 drop-shadow">Dokumentasi kegiatan terbaru.</p></div>
+                <div class="absolute inset-0 bg-gradient-to-t from-dark via-transparent to-transparent pointer-events-none z-10"></div>
+                <div class="absolute bottom-4 left-4 z-20"><h2 class="text-xl font-bold text-white shadow-black drop-shadow-md">Galeri Sekolah</h2></div>
             </div>
-            <div class="flex items-center justify-between mb-4"><h3 class="font-bold text-white text-lg flex items-center gap-2"><i class="fas fa-fire text-orange-500"></i> Terbaru</h3><button onclick="navigateTo('mading')" class="text-xs text-indigo-400 font-bold">Lihat Mading -></button></div>
+
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="font-bold text-white text-md flex items-center gap-2"><i class="fas fa-fire text-orange-500"></i> Terbaru</h3>
+                <button onclick="navigateTo('mading')" class="text-xs text-indigo-400 bg-indigo-500/10 px-3 py-1 rounded-full">Mading -></button>
+            </div>
+
             <div id="gallery-container" class="masonry-grid"></div>
         </section>
 
         <section id="view-chat-dashboard" class="view-section hidden">
-            <h2 class="text-2xl font-bold text-white mb-4 px-2">Komunitas</h2>
-            <div class="glass rounded-3xl p-4 border border-white/10 min-h-[60vh]">
-                <div class="space-y-6">
-                    <div onclick="switchChat('global', 'Global Lounge')" class="flex items-center gap-4 p-3 bg-white/5 rounded-2xl hover:bg-white/10 cursor-pointer border border-white/5 transition active:scale-95 hover:border-indigo-500/50"><div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-lg shadow-lg"><i class="fas fa-globe"></i></div><div><div class="font-bold text-white text-base">Global Lounge</div><div class="text-xs text-gray-400">Obrolan Umum</div></div></div>
-                    <div><h3 class="text-xs text-gray-400 uppercase font-bold mb-2 ml-1 tracking-wider">Grup</h3><div id="group-list" class="space-y-2"></div></div>
-                    <div><h3 class="text-xs text-gray-400 uppercase font-bold mb-2 ml-1 tracking-wider">Member Online</h3><div id="member-list" class="space-y-2 max-h-60 custom-scroll"></div></div>
+            <h2 class="text-xl font-bold text-white mb-4">Pesan</h2>
+            <div class="glass rounded-2xl p-1 min-h-[60vh]">
+                <div onclick="switchChat('global', 'Global Lounge')" class="flex items-center gap-4 p-4 border-b border-white/5 active:bg-white/5 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-indigo-600 flex items-center justify-center text-white text-lg"><i class="fas fa-globe"></i></div>
+                    <div><div class="font-bold text-white">Global Lounge</div><div class="text-xs text-gray-400">Chat Semua Member</div></div>
                 </div>
+                <div class="p-4"><h3 class="text-xs text-gray-500 font-bold uppercase mb-2">Grup Lainnya</h3><div id="group-list" class="space-y-1"></div></div>
+                <div class="p-4"><h3 class="text-xs text-gray-500 font-bold uppercase mb-2">Member Online</h3><div id="member-list" class="space-y-1 max-h-60 overflow-y-auto"></div></div>
             </div>
         </section>
 
         <section id="view-chat-room" class="view-section hidden">
             <div class="chat-container">
                 <div id="chat-bg" class="chat-bg-layer"></div>
-                <div class="p-3 bg-[#111827]/90 backdrop-blur-md border-b border-white/10 flex justify-between items-center z-10 chat-header">
-                    <div class="flex items-center gap-3">
-                        <button onclick="navigateTo('chat-dashboard')" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-gray-400 transition"><i class="fas fa-arrow-left"></i></button>
-                        <div><h3 id="chat-header-name" class="font-bold text-white text-sm md:text-base">Room</h3><p class="text-[10px] text-green-400 flex items-center gap-1"><span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span> Online</p></div>
-                    </div>
+                <div class="p-3 bg-[#111827]/95 backdrop-blur border-b border-white/10 flex items-center gap-3 z-10 relative">
+                    <button onclick="navigateTo('chat-dashboard')" class="text-gray-300 p-2"><i class="fas fa-arrow-left"></i></button>
+                    <div><h3 id="chat-header-name" class="font-bold text-white text-sm">Room</h3></div>
                 </div>
-                <div id="chat-messages" class="chat-area custom-scroll"></div>
-                <div id="reply-ui" class="hidden bg-gray-800/90 p-2 border-t border-white/10 flex items-center justify-between z-20"><div class="border-l-2 border-indigo-400 pl-2"><div class="text-[10px] text-indigo-400 font-bold" id="reply-user">User</div><div class="text-xs text-gray-300 truncate w-48" id="reply-text">Text</div></div><button onclick="closeReply()" class="text-gray-400 hover:text-white px-2"><i class="fas fa-times"></i></button></div>
-                <div id="upload-preview" class="hidden absolute bottom-16 left-0 w-full bg-black/90 p-3 flex items-center gap-3 z-30 border-t border-white/10 backdrop-blur-md"><img id="preview-img" src="" class="h-16 rounded border border-white/20"><div class="flex-1"><p class="text-xs text-white mb-1 font-bold">Kirim Gambar?</p><button onclick="cancelUpload()" class="text-[10px] text-red-400 bg-red-900/30 px-2 py-1 rounded hover:bg-red-900/50">Batal</button></div><button onclick="sendImage()" class="w-10 h-10 bg-indigo-600 rounded-full text-white flex items-center justify-center hover:bg-indigo-500 shadow-lg"><i class="fas fa-paper-plane"></i></button></div>
-                <div class="p-2 flex gap-2 items-center chat-input-area"><button onclick="document.getElementById('chat-file-input').click()" class="w-10 h-10 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-white/5 transition flex items-center justify-center"><i class="fas fa-paperclip"></i></button><input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(this)"><input type="text" id="chat-input" onkeypress="if(event.key==='Enter') sendMessage()" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off"><button onclick="sendMessage()" class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:bg-indigo-500 transition active:scale-90"><i class="fas fa-paper-plane text-xs"></i></button></div>
+                <div id="chat-messages" class="chat-area"></div>
+                
+                <div class="p-2 bg-[#111827] border-t border-white/10 flex gap-2 items-center z-20 relative">
+                    <button onclick="document.getElementById('chat-file-input').click()" class="text-gray-400 p-2"><i class="fas fa-paperclip"></i></button>
+                    <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                    <input type="text" id="chat-input" class="flex-1 bg-gray-800 text-white text-sm px-4 py-3 rounded-full border-none outline-none" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter') sendMessage()">
+                    <button onclick="sendMessage()" class="bg-indigo-600 text-white p-3 rounded-full w-10 h-10 flex items-center justify-center"><i class="fas fa-paper-plane text-xs"></i></button>
+                </div>
+                
+                <div id="upload-preview" class="hidden absolute bottom-16 left-0 w-full bg-black/90 p-3 flex items-center gap-3 z-30">
+                    <img id="preview-img" src="" class="h-12 rounded">
+                    <div class="flex-1 text-xs text-white">Kirim Gambar?</div>
+                    <button onclick="sendImage()" class="bg-indigo-600 px-3 py-1 rounded text-white text-xs">Kirim</button>
+                    <button onclick="cancelUpload()" class="bg-red-600 px-3 py-1 rounded text-white text-xs">Batal</button>
+                </div>
             </div>
         </section>
 
         <section id="view-shop" class="view-section hidden">
-            <div class="glass rounded-[2rem] p-6 border border-white/10">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-white"><i class="fas fa-store text-yellow-400 mr-2"></i>Shop</h2>
-                    <div class="bg-yellow-500/20 px-4 py-2 rounded-full border border-yellow-500/30 text-yellow-300 font-bold text-sm"><i class="fas fa-coins mr-1"></i> <span id="shop-balance">0</span></div>
+            <div class="glass rounded-3xl p-5 border border-white/10">
+                <div class="flex justify-between items-center mb-6 bg-black/20 p-4 rounded-2xl">
+                    <div><h2 class="text-xl font-bold text-white">Item Shop</h2><p class="text-xs text-gray-400">Belanjakan koinmu!</p></div>
+                    <div class="text-right"><div class="text-xs text-gray-400">Saldo Anda</div><div class="text-xl font-bold text-yellow-400"><i class="fas fa-coins"></i> <span id="shop-balance">0</span></div></div>
                 </div>
-                <div id="shop-container" class="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    </div>
+                <div id="shop-container" class="grid grid-cols-2 gap-3"></div>
             </div>
         </section>
 
         <section id="view-game" class="view-section hidden">
-            <div class="glass rounded-[2rem] p-8 border border-white/10 text-center min-h-[60vh] flex flex-col items-center justify-center relative overflow-hidden">
-                <div class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-red-900/20 to-black/0 pointer-events-none"></div>
-                <h2 class="text-3xl font-black text-white mb-2 gold-text tracking-wider">🎲 DADU HOKI</h2>
-                <p class="text-gray-400 text-xs mb-8">Taruhan Coin, Menang dapat 2x Lipat!</p>
+            <div class="glass rounded-3xl p-6 text-center min-h-[60vh] flex flex-col items-center justify-center relative overflow-hidden border border-white/10">
+                <h2 class="text-3xl font-black text-white mb-1 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">DADU HOKI</h2>
+                <p class="text-xs text-gray-400 mb-8">Menang = Koin x2</p>
                 
-                <div class="flex gap-8 mb-8 items-center">
-                    <div class="text-center">
-                        <p class="text-xs text-gray-500 mb-2">ANDA</p>
-                        <div id="dice-user" class="dice-cube">?</div>
-                    </div>
-                    <div class="text-xl font-bold text-red-500">VS</div>
-                    <div class="text-center">
-                        <p class="text-xs text-gray-500 mb-2">BOT</p>
-                        <div id="dice-bot" class="dice-cube">?</div>
-                    </div>
+                <div class="flex gap-6 mb-8 items-center justify-center w-full">
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10"><p class="text-[10px] text-gray-500 mb-2 uppercase">Anda</p><div id="dice-user" class="dice-cube">?</div></div>
+                    <div class="text-2xl font-black text-red-500 italic">VS</div>
+                    <div class="bg-white/5 p-4 rounded-xl border border-white/10"><p class="text-[10px] text-gray-500 mb-2 uppercase">Lawan</p><div id="dice-bot" class="dice-cube">?</div></div>
                 </div>
 
-                <div class="bg-black/40 p-4 rounded-xl border border-white/5 w-full max-w-xs mb-6">
-                    <p class="text-xs text-gray-400 mb-2">Jumlah Taruhan:</p>
-                    <div class="flex justify-between gap-2">
-                        <button onclick="setBet(50)" class="flex-1 py-2 bg-white/5 rounded hover:bg-yellow-600/50 text-xs text-white border border-white/10 transition">50</button>
-                        <button onclick="setBet(100)" class="flex-1 py-2 bg-white/5 rounded hover:bg-yellow-600/50 text-xs text-white border border-white/10 transition">100</button>
-                        <button onclick="setBet(500)" class="flex-1 py-2 bg-white/5 rounded hover:bg-yellow-600/50 text-xs text-white border border-white/10 transition">500</button>
+                <div class="w-full max-w-xs mb-6">
+                    <p class="text-xs text-left text-gray-400 mb-2 ml-1">Pilih Taruhan:</p>
+                    <div class="grid grid-cols-3 gap-2 mb-3">
+                        <button onclick="setBet(100)" class="py-2 bg-white/5 rounded hover:bg-yellow-600/20 border border-white/10 text-xs text-white font-bold">100</button>
+                        <button onclick="setBet(500)" class="py-2 bg-white/5 rounded hover:bg-yellow-600/20 border border-white/10 text-xs text-white font-bold">500</button>
+                        <button onclick="setBet(1000)" class="py-2 bg-white/5 rounded hover:bg-yellow-600/20 border border-white/10 text-xs text-white font-bold">1k</button>
                     </div>
-                    <input id="bet-amount" type="number" class="w-full mt-3 bg-black/50 border border-white/10 rounded p-2 text-center text-white font-bold outline-none focus:border-yellow-500" placeholder="Custom..." value="50">
+                    <input id="bet-amount" type="number" class="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-center text-white font-bold focus:border-yellow-500 outline-none transition" value="100">
                 </div>
 
-                <button onclick="playDice()" id="btn-play" class="w-full max-w-xs py-4 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 text-white font-black shadow-lg shadow-red-500/30 hover:scale-105 transition active:scale-95">PUTAR DADU!</button>
-                <p id="game-result" class="mt-6 text-lg font-bold h-6"></p>
+                <button onclick="playDice()" id="btn-play" class="w-full max-w-xs py-4 rounded-xl bg-gradient-to-r from-red-600 to-orange-600 text-white font-bold shadow-lg shadow-orange-500/20 active:scale-95 transition">PUTAR SEKARANG</button>
+                <p id="game-result" class="mt-6 text-sm font-bold h-6 tracking-wide"></p>
             </div>
         </section>
 
         <section id="view-profile" class="view-section hidden">
-            <div class="max-w-md mx-auto glass p-8 rounded-[2rem] text-center relative overflow-hidden mt-6 border border-white/10 shadow-2xl">
+            <div class="glass p-6 rounded-3xl text-center border border-white/10 relative overflow-hidden mt-4">
                 <div id="profile-guest-view" class="hidden">
-                    <div class="w-20 h-20 bg-gray-800 rounded-full mx-auto flex items-center justify-center mb-4 border border-white/10"><i class="fas fa-user-lock text-3xl text-gray-500"></i></div>
-                    <h2 class="text-xl font-bold text-white mb-2">Akses Member</h2>
-                    <div class="space-y-3">
-                        <input id="page-login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition">
-                        <input id="page-login-code" type="text" placeholder="Kode Akses" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white text-center text-sm tracking-widest focus:border-indigo-500 outline-none transition">
-                        <button onclick="doPageLogin()" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3 rounded-xl text-white font-bold shadow-lg transition transform active:scale-95">MASUK</button>
-                    </div>
+                    <div class="w-20 h-20 bg-gray-700 rounded-full mx-auto flex items-center justify-center mb-4"><i class="fas fa-user text-3xl text-gray-400"></i></div>
+                    <h2 class="text-xl font-bold text-white mb-4">Login Member</h2>
+                    <input id="page-login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white mb-2 text-center text-sm">
+                    <input id="page-login-code" type="text" placeholder="Kode Akses" class="w-full bg-black/30 border border-white/10 rounded-xl px-4 py-3 text-white mb-4 text-center text-sm">
+                    <button onclick="doPageLogin()" class="w-full bg-indigo-600 py-3 rounded-xl text-white font-bold shadow-lg">MASUK</button>
                 </div>
                 <div id="profile-member-view" class="hidden">
-                    <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-indigo-600 via-purple-600 to-dark opacity-50"></div>
-                    <div class="relative z-10 mt-10">
+                    <div class="absolute top-0 left-0 w-full h-24 bg-gradient-to-r from-indigo-600 to-purple-600 opacity-80"></div>
+                    <div class="relative z-10 mt-8">
                         <div class="relative inline-block">
-                            <img id="p-avatar" src="" class="w-32 h-32 rounded-full border-4 border-dark mx-auto bg-gray-800 object-cover shadow-xl">
-                            <div id="verified-badge-profile" class="hidden absolute bottom-2 right-2 bg-blue-500 text-white w-8 h-8 rounded-full flex items-center justify-center border-2 border-dark shadow-lg" title="Verified Member"><i class="fas fa-check"></i></div>
+                            <img id="p-avatar" src="" class="w-28 h-28 rounded-full border-4 border-[#0f172a] mx-auto bg-gray-800 object-cover">
+                            <div id="verified-badge-profile" class="hidden absolute bottom-1 right-1 bg-blue-500 text-white w-7 h-7 rounded-full flex items-center justify-center border-2 border-[#0f172a]"><i class="fas fa-check text-xs"></i></div>
                         </div>
-                        <h2 id="p-name" class="text-2xl font-bold mt-3 text-white tracking-tight flex items-center justify-center gap-2">User</h2>
-                        <span id="p-rank" class="text-[10px] font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 uppercase border border-indigo-500/30">Rank</span>
+                        <h2 id="p-name" class="text-2xl font-bold mt-2 text-white">User</h2>
+                        <div class="flex justify-center gap-2 mt-1"><span id="p-rank" class="text-[10px] font-bold px-2 py-0.5 rounded bg-white/10 text-gray-300 border border-white/10">MEMBER</span></div>
                         
-                        <div class="flex justify-center gap-2 mt-4">
-                             <button onclick="editProfile('pic')" class="px-3 py-1 rounded-full bg-white/5 text-[10px] border border-white/10 hover:bg-white/10 transition"><i class="fas fa-camera mr-1"></i> Foto</button>
-                             <button onclick="editProfile('bg')" class="px-3 py-1 rounded-full bg-white/5 text-[10px] border border-white/10 hover:bg-white/10 transition"><i class="fas fa-image mr-1"></i> Wallpaper</button>
-                             <button onclick="requestVerified()" class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/30 text-[10px] hover:bg-blue-500 hover:text-white transition"><i class="fas fa-certificate mr-1"></i> Verified</button>
+                        <div class="grid grid-cols-2 gap-3 mt-6">
+                            <div class="bg-white/5 p-3 rounded-xl border border-white/5"><div class="text-[10px] text-gray-400 uppercase">Koin</div><div id="p-coins" class="text-xl font-bold text-yellow-400">0</div></div>
+                            <div class="bg-white/5 p-3 rounded-xl border border-white/5"><div class="text-[10px] text-gray-400 uppercase">XP</div><div id="p-xp" class="text-xl font-bold text-white">0</div></div>
                         </div>
 
-                        <div class="grid grid-cols-2 gap-4 mt-6">
-                            <div class="bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition"><div id="p-xp" class="text-2xl font-bold text-white mb-1">0</div><div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">XP</div></div>
-                            <div class="bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition"><div id="p-coins" class="text-2xl font-bold text-yellow-400 mb-1">0</div><div class="text-[10px] uppercase text-yellow-600 font-bold tracking-wider">Coins</div></div>
+                        <div class="mt-6 space-y-2">
+                            <button onclick="editProfile('pic')" class="w-full py-2 bg-white/5 rounded-lg text-xs text-gray-300 border border-white/10 hover:bg-white/10">Ganti Foto</button>
+                            <button onclick="editProfile('bg')" class="w-full py-2 bg-white/5 rounded-lg text-xs text-gray-300 border border-white/10 hover:bg-white/10">Ganti Wallpaper Chat</button>
+                            <button onclick="requestVerified()" class="w-full py-2 bg-blue-600/10 text-blue-400 rounded-lg text-xs border border-blue-600/30 hover:bg-blue-600/20">Request Verified</button>
+                        </div>
+
+                        <div id="admin-panel-btn-container" class="hidden mt-6 pt-6 border-t border-white/10">
+                            <button onclick="navigateTo('admin')" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-600 to-orange-600 text-black font-bold text-sm shadow-lg shadow-orange-500/20 mb-2"><i class="fas fa-crown mr-2"></i> GOD MODE PANEL</button>
                         </div>
                         
-                        <div id="admin-panel-btn-container" class="hidden mt-6 pt-6 border-t border-white/10"><button onclick="navigateTo('admin')" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-600/20 to-orange-600/20 text-yellow-400 border border-yellow-500/30 font-bold text-xs hover:bg-yellow-500/30 transition flex items-center justify-center gap-2"><i class="fas fa-shield-alt"></i> AKSES GOD MODE</button></div>
-                        <button onclick="logout()" class="mt-6 w-full py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition text-sm font-bold">Keluar</button>
+                        <button onclick="logout()" class="mt-4 text-xs text-red-400 hover:text-red-300">Log Out</button>
                     </div>
                 </div>
             </div>
         </section>
-
-        <section id="view-admin" class="view-section hidden">
-            <div class="max-w-4xl mx-auto px-2">
-                <div class="glass p-6 rounded-[2rem] border border-yellow-500/30 mb-6 relative overflow-hidden">
-                    <h2 class="text-2xl font-black text-yellow-400 mb-1 flex items-center gap-2"><i class="fas fa-code-branch"></i> GOD MODE</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                        <div class="p-4 bg-white/5 rounded-xl border border-white/5">
-                            <h3 class="text-white font-bold text-sm mb-3"><i class="fas fa-address-book text-blue-400 mr-2"></i>Kontak Developer</h3>
-                            <div class="space-y-2">
-                                <input id="edit-dev-wa" type="text" placeholder="Link WhatsApp" class="w-full bg-black/30 border border-white/10 rounded px-2 py-1 text-xs text-white">
-                                <button onclick="saveContactDev()" class="w-full bg-blue-600/50 text-blue-200 text-[10px] py-1 rounded hover:bg-blue-600">Simpan Kontak</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-4">
-                        <button onclick="openUploadModal('gallery')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-indigo-600 transition flex flex-col items-center text-center group"><i class="fas fa-image text-2xl mb-2 text-indigo-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Upload Foto</span></button>
-                        <button onclick="openUploadModal('mading')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-orange-600 transition flex flex-col items-center text-center group"><i class="fas fa-newspaper text-2xl mb-2 text-orange-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Post Mading</span></button>
-                        <button onclick="openUploadModal('downloads')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-green-600 transition flex flex-col items-center text-center group"><i class="fas fa-file-upload text-2xl mb-2 text-green-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Upload File</span></button>
-                        <button onclick="openUploadModal('playlist')" class="bg-white/5 p-4 rounded-2xl border border-white/10 hover:bg-pink-600 transition flex flex-col items-center text-center group"><i class="fas fa-music text-2xl mb-2 text-pink-400 group-hover:text-white"></i><span class="text-[10px] font-bold">Add Musik</span></button>
-                    </div>
-                </div>
-            </div>
-        </section>
-        <section id="view-playlist" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">Playlist Sekolah</h2><div id="playlist-list" class="space-y-3 pb-24"></div></section>
-        <section id="view-mading" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">E-Mading</h2><div id="mading-list" class="grid grid-cols-1 md:grid-cols-2 gap-5"></div></section>
-        <section id="view-downloads" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">Bank Data</h2><div id="downloads-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></section>
+        
+        <section id="view-playlist" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">Musik</h2><div id="playlist-list" class="space-y-3 pb-24"></div></section>
+        <section id="view-mading" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">Mading</h2><div id="mading-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div></section>
+        <section id="view-downloads" class="view-section hidden"><h2 class="text-xl font-bold mb-4 text-white px-2">File</h2><div id="downloads-grid" class="grid grid-cols-1 gap-3"></div></section>
     </main>
 
-    <div id="sticky-player" class="sticky-player">
-        <img id="sp-img" src="" class="w-10 h-10 rounded-full object-cover bg-gray-800 border-2 border-white/20 shadow-[0_0_10px_rgba(99,102,241,0.5)]">
-        <div class="flex-1 min-w-0 ml-2"><h4 id="sp-title" class="text-xs font-bold text-white truncate">Lagu</h4><p id="sp-artist" class="text-[10px] text-gray-400 truncate">Artis</p></div>
-        <div class="flex items-center gap-3"><button onclick="togglePlay()" class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition shadow-lg"><i id="sp-icon" class="fas fa-play text-[10px]"></i></button><button onclick="closePlayer()" class="text-gray-400 hover:text-white transition px-2"><i class="fas fa-times"></i></button></div><audio id="audio-element" class="hidden"></audio>
+    <div id="detail-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm">
+        <div class="bg-[#1e293b] w-full max-w-lg rounded-2xl overflow-hidden border border-white/10 relative max-h-[85vh] flex flex-col">
+            <button onclick="document.getElementById('detail-modal').classList.add('hidden')" class="absolute top-2 right-2 z-10 bg-black/50 w-8 h-8 rounded-full text-white flex items-center justify-center"><i class="fas fa-times"></i></button>
+            <div class="bg-black h-64 flex items-center justify-center relative" id="modal-media-container">
+                <div id="modal-media" class="w-full h-full flex items-center justify-center"></div>
+            </div>
+            <div class="p-5 overflow-y-auto">
+                <span id="modal-cat" class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-1 rounded uppercase font-bold tracking-wider">INFO</span>
+                <h2 id="modal-title" class="text-lg font-bold text-white mt-2 mb-1">Title</h2>
+                <div class="text-xs text-gray-500 mb-4" id="modal-date">Date</div>
+                <p id="modal-desc" class="text-sm text-gray-300 leading-relaxed">Desc</p>
+                <div class="mt-6 flex gap-3">
+                    <a id="btn-download" href="#" target="_blank" class="flex-1 bg-white/5 border border-white/10 text-white py-2 rounded-lg text-center text-xs font-bold hover:bg-white/10">Download / Lihat</a>
+                    <div id="admin-controls" class="hidden flex gap-2">
+                         <button onclick="deleteContent()" class="bg-red-500/20 text-red-400 px-3 rounded-lg text-xs border border-red-500/30"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="detail-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm"><div class="bg-card w-full max-w-3xl rounded-3xl overflow-hidden border border-white/10 max-h-[90vh] flex flex-col relative shadow-2xl"><button onclick="document.getElementById('detail-modal').classList.add('hidden')" class="absolute top-3 right-3 z-50 bg-black/50 text-white w-8 h-8 rounded-full flex items-center justify-center backdrop-blur hover:bg-red-500 transition"><i class="fas fa-times"></i></button><div class="relative bg-black h-64 md:h-80 flex items-center justify-center overflow-hidden" id="modal-media"></div><div class="p-6 md:p-8 overflow-y-auto flex-1 bg-[#151c2e]"><h2 id="modal-title" class="text-xl font-bold text-white mb-1">Title</h2><div class="flex items-center gap-3 text-xs text-gray-400 mb-4"><span id="modal-date">Date</span> <span class="uppercase px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20" id="modal-cat">Cat</span></div><p id="modal-desc" class="text-sm text-gray-300 leading-relaxed whitespace-pre-line mb-6 font-light">Desc</p><div class="flex flex-wrap gap-3 border-t border-white/5 pt-4 items-center"><button onclick="toggleLike()" class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition group bg-white/5 px-3 py-1.5 rounded-full"><i id="modal-heart" class="far fa-heart text-lg group-hover:scale-110 transition"></i><span id="modal-likes" class="font-bold">0</span></button><a id="btn-download" href="#" target="_blank" class="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full font-bold hover:bg-green-500 hover:text-white transition"><i class="fas fa-download"></i> Unduh</a><div id="admin-controls" class="hidden ml-auto flex gap-2"><button onclick="editContent()" class="bg-yellow-500/20 text-yellow-400 px-3 py-1.5 rounded text-xs font-bold">EDIT</button><button onclick="deleteContent()" class="bg-red-500/20 text-red-400 px-3 py-1.5 rounded text-xs font-bold">HAPUS</button></div></div></div></div></div>
-    <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-6 hidden"><div class="glass p-10 rounded-3xl w-full max-w-sm text-center border border-white/10 shadow-2xl relative overflow-hidden"><div class="w-20 h-20 rounded-2xl bg-indigo-600/10 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20"><i class="fas fa-fingerprint text-4xl text-indigo-500"></i></div><h2 class="text-3xl font-bold mb-2 text-white tracking-tight">Login Portal</h2><p class="text-gray-400 text-sm mb-8">Masukkan kredensial member premium.</p><input id="login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition placeholder-gray-600"><input id="login-code" type="text" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-8 text-white text-center text-sm tracking-[0.3em] font-mono focus:border-indigo-500 outline-none transition placeholder-gray-600"><button id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-sm text-white mb-4 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 tracking-wide">VERIFIKASI MASUK</button><button onclick="doGuest()" class="text-xs text-gray-500 hover:text-white transition">Lanjut sebagai Tamu</button></div></div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, onValue, push, set, update, runTransaction, onDisconnect, serverTimestamp, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-
         const firebaseConfig = { apiKey: "AIzaSyAYjnWMB23CQ2OnofJuoMBJyoxBahvPj9Q", authDomain: "sigitdb-eb445.firebaseapp.com", databaseURL: "https://sigitdb-eb445-default-rtdb.firebaseio.com/", projectId: "sigitdb-eb445", storageBucket: "sigitdb-eb445.firebasestorage.app", messagingSenderId: "939882511814", appId: "1:939882511814:web:797708c2440f35062646c7" };
         const app = initializeApp(firebaseConfig); const rtdb = getDatabase(app);
         let user = JSON.parse(localStorage.getItem('user')) || null;
-        let curChatId = 'global'; let replyingToMsg = null; let developerWA = "";
+        let curChatId = 'global'; let developerWA = ""; let curItem = null; let curCollection = null;
 
-        window.onload = () => {
-            if(!user) document.getElementById('login-modal').classList.remove('hidden');
-            else initApp();
-            document.getElementById('btn-login-submit').addEventListener('click', doLogin);
-        };
+        window.onload = () => { if(!user) document.getElementById('login-modal').classList.remove('hidden'); else initApp(); document.getElementById('btn-login-submit').addEventListener('click', doLogin); };
 
         function initApp() {
             document.getElementById('login-modal').classList.add('hidden');
             if(!user.isGuest) {
                 document.getElementById('nav-avatar').src = user.pic || `https://ui-avatars.com/api/?name=${user.username}`;
                 document.getElementById('nav-coin-display').classList.remove('hidden');
-                if(user.role==='developer') document.getElementById('btn-god-mode').classList.remove('hidden');
+                if(user.role==='developer') {
+                     document.getElementById('btn-god-mode-nav').classList.remove('hidden');
+                     document.getElementById('admin-panel-btn-container').classList.remove('hidden');
+                }
                 if(user.chat_bg) document.getElementById('chat-bg').style.backgroundImage = `url('${user.chat_bg}')`;
             }
             setupListeners(); navigateTo('home'); VanillaTilt.init(document.querySelectorAll(".glass-card"));
-            onValue(ref(rtdb, 'site_data/config/contact'), s => {
-                const c = s.val()||{}; developerWA = c.wa;
-                document.getElementById('dev-wa').href = c.wa||'#'; if(user.role==='developer') document.getElementById('edit-dev-wa').value = c.wa||'';
-            });
+            onValue(ref(rtdb, 'site_data/config/contact'), s => { const c = s.val()||{}; developerWA = c.wa; document.getElementById('dev-wa').href = c.wa||'#'; if(user.role==='developer') document.getElementById('edit-dev-wa').value = c.wa||''; });
         }
 
-        // NEW V33: ECONOMY & GAMIFICATION LOGIC
         function setupListeners() {
-            // Listener Balance User
             if(!user.isGuest) {
                 onValue(ref(rtdb, `users/${user.username}`), s => {
                     const d = s.val(); if(!d) return;
                     user.coins = d.coins || 0; user.verified = d.verified || false; user.xp = d.xp || 0;
-                    document.getElementById('nav-coin-val').innerText = user.coins;
-                    document.getElementById('p-coins').innerText = user.coins;
-                    document.getElementById('shop-balance').innerText = user.coins;
-                    document.getElementById('p-xp').innerText = user.xp;
+                    document.getElementById('nav-coin-val').innerText = user.coins; document.getElementById('p-coins').innerText = user.coins; document.getElementById('shop-balance').innerText = user.coins; document.getElementById('p-xp').innerText = user.xp;
                     if(user.verified) document.getElementById('verified-badge-profile').classList.remove('hidden');
-                    // Save local
                     localStorage.setItem('user', JSON.stringify(user));
                 });
             }
-            // Shop Listener
             onValue(ref(rtdb, 'site_data/shop'), s => renderShop(s.val()));
-            // Standard Listeners...
             onValue(ref(rtdb, 'site_data/gallery'), s => { const d=s.val(); const i=d?Object.entries(d).map(([k,v])=>({id:k,...v})).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)):[]; renderGallery(i); renderSlider(i.filter(x=>x.is_slide)); });
             onValue(ref(rtdb, 'site_data/mading'), s => renderMading(s.val()));
             onValue(ref(rtdb, 'site_data/downloads'), s => renderDownloads(s.val()));
@@ -319,133 +316,106 @@
             onValue(ref(rtdb, 'community/groups'), s => renderGroupList(s.val()));
         }
 
-        // SHOP SYSTEM
+        // SHOP SYSTEM (Real-time Apply)
         function renderShop(items) {
             const c = document.getElementById('shop-container'); c.innerHTML = '';
             if(items) Object.entries(items).forEach(([k,v]) => {
                 c.innerHTML += `
-                <div class="bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-yellow-500/50 transition flex flex-col items-center text-center relative overflow-hidden group">
+                <div class="bg-white/5 p-3 rounded-xl border border-white/10 hover:border-yellow-500/50 transition flex flex-col items-center text-center relative overflow-hidden group">
                     <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-100 transition"></div>
-                    <img src="${v.image||'https://via.placeholder.com/100'}" class="w-16 h-16 rounded-lg mb-3 object-cover">
-                    <h4 class="font-bold text-white text-sm mb-1">${v.name}</h4>
-                    <p class="text-yellow-400 text-xs font-bold mb-3"><i class="fas fa-coins"></i> ${v.price}</p>
-                    <button onclick="buyItem('${k}', ${v.price}, '${v.name}', '${v.type}', '${v.image}')" class="w-full py-1.5 rounded-lg bg-white/10 hover:bg-yellow-600 hover:text-black text-xs font-bold transition text-white border border-white/10">BELI</button>
+                    <img src="${v.image||'https://via.placeholder.com/100'}" class="w-12 h-12 rounded mb-2 object-cover bg-black">
+                    <h4 class="font-bold text-white text-xs mb-1 line-clamp-1">${v.name}</h4>
+                    <p class="text-yellow-400 text-[10px] font-bold mb-2"><i class="fas fa-coins"></i> ${v.price}</p>
+                    <button onclick="buyItem('${k}', ${v.price}, '${v.name}', '${v.type}', '${v.image}')" class="w-full py-1 rounded bg-white/10 hover:bg-yellow-600 hover:text-black text-[10px] font-bold transition text-white border border-white/10">BELI</button>
                 </div>`;
             });
         }
         window.buyItem = (id, price, name, type, val) => {
-            if(user.coins < price) return Swal.fire("Miskin", "Coin tidak cukup!", "error");
-            Swal.fire({title: `Beli ${name}?`, text: `${price} Coin akan dipotong`, icon: 'question', showCancelButton: true, confirmButtonText: 'Gas Beli', background:'#1e293b', color:'#fff'}).then((res) => {
+            if(user.coins < price) return Swal.fire("Gagal", "Koin tidak cukup!", "error");
+            Swal.fire({title: `Beli ${name}?`, text: `-${price} Koin`, icon: 'question', showCancelButton: true, confirmButtonText: 'Beli', background:'#1e293b', color:'#fff'}).then((res) => {
                 if(res.isConfirmed) {
-                    const updates = {};
-                    updates[`users/${user.username}/coins`] = user.coins - price;
-                    
-                    // Auto-equip logic
+                    const updates = {}; updates[`users/${user.username}/coins`] = user.coins - price;
                     if(type === 'chat_bg') { updates[`users/${user.username}/chat_bg`] = val; document.getElementById('chat-bg').style.backgroundImage = `url('${val}')`; }
-                    if(type === 'avatar_frame') { /* Logic for frame overlay */ }
-                    
-                    update(ref(rtdb), updates).then(() => Swal.fire("Berhasil", "Item dibeli!", "success"));
+                    if(type === 'avatar_frame') { updates[`users/${user.username}/profile_pic`] = val; document.getElementById('p-avatar').src = val; }
+                    update(ref(rtdb), updates).then(() => Swal.fire("Berhasil", "Item aktif!", "success"));
                 }
             });
         }
 
-        // GAME SYSTEM: DADU HOKI
+        // GAME SYSTEM
         window.setBet = (val) => document.getElementById('bet-amount').value = val;
         window.playDice = async () => {
             const bet = parseInt(document.getElementById('bet-amount').value);
-            if(isNaN(bet) || bet <= 0) return Swal.fire("Error", "Taruhan tidak valid", "error");
-            if(user.coins < bet) return Swal.fire("Gagal", "Coin kurang bos!", "error");
-
-            // Deduct coin first
+            if(isNaN(bet) || bet <= 0) return Swal.fire("Error", "Taruhan salah", "error");
+            if(user.coins < bet) return Swal.fire("Gagal", "Koin kurang!", "error");
             await update(ref(rtdb, `users/${user.username}`), {coins: user.coins - bet});
-
-            const dUser = document.getElementById('dice-user');
-            const dBot = document.getElementById('dice-bot');
-            const resEl = document.getElementById('game-result');
-            const btn = document.getElementById('btn-play');
-            
-            dUser.classList.add('dice-rolling'); dBot.classList.add('dice-rolling');
-            dUser.innerText = "?"; dBot.innerText = "?"; resEl.innerText = ""; btn.disabled = true;
-
+            const dUser = document.getElementById('dice-user'); const dBot = document.getElementById('dice-bot'); const resEl = document.getElementById('game-result'); const btn = document.getElementById('btn-play');
+            dUser.classList.add('dice-rolling'); dBot.classList.add('dice-rolling'); dUser.innerText = "?"; dBot.innerText = "?"; resEl.innerText = ""; btn.disabled = true; btn.innerText = "ROLLING...";
             setTimeout(() => {
                 dUser.classList.remove('dice-rolling'); dBot.classList.remove('dice-rolling');
-                const scoreUser = Math.floor(Math.random() * 6) + 1;
-                const scoreBot = Math.floor(Math.random() * 6) + 1;
-                dUser.innerText = scoreUser; dBot.innerText = scoreBot;
+                const sU = Math.floor(Math.random() * 6) + 1; const sB = Math.floor(Math.random() * 6) + 1;
+                dUser.innerText = sU; dBot.innerText = sB;
+                if(sU > sB) { const win = bet * 2; update(ref(rtdb, `users/${user.username}`), {coins: user.coins + win}); resEl.innerHTML = `<span class="text-green-400">MENANG! +${win}</span>`; }
+                else if(sU < sB) { resEl.innerHTML = `<span class="text-red-500">KALAH! -${bet}</span>`; }
+                else { update(ref(rtdb, `users/${user.username}`), {coins: user.coins + bet}); resEl.innerHTML = `<span class="text-yellow-400">SERI (Refund)</span>`; }
+                btn.disabled = false; btn.innerText = "PUTAR LAGI";
+            }, 1000);
+        }
 
-                if(scoreUser > scoreBot) {
-                    const winAmount = bet * 2;
-                    update(ref(rtdb, `users/${user.username}`), {coins: user.coins + winAmount});
-                    resEl.innerHTML = `<span class="text-green-400">MENANG! +${winAmount} Coins</span>`;
-                    confetti({particleCount: 100, spread: 70, origin: { y: 0.6 }});
-                } else if(scoreUser < scoreBot) {
-                    resEl.innerHTML = `<span class="text-red-500">KALAH! -${bet} Coins</span>`;
-                } else {
-                    update(ref(rtdb, `users/${user.username}`), {coins: user.coins + bet}); // Refund
-                    resEl.innerHTML = `<span class="text-yellow-400">SERI! Coin Kembali</span>`;
-                }
-                btn.disabled = false;
-            }, 1500);
+        // CORE RENDERERS (FIXED)
+        function renderGallery(items) { const c = document.getElementById('gallery-container'); c.innerHTML = ''; items.forEach(i => { c.innerHTML += `<div class="masonry-item glass-card cursor-pointer group relative overflow-hidden" onclick="openDetail({id:'${i.id}',title:'${i.title}',description:'${i.description}',date:'${i.date}',image:'${i.image}'}, 'site_data/gallery')"><img src="${i.image}" class="gallery-card-img transition duration-500 group-hover:scale-110"><div class="p-2"><h3 class="font-bold text-white text-xs line-clamp-1">${i.title}</h3></div></div>`; }); }
+        
+        // FIX MADING IMAGE CLICK & DISPLAY
+        function renderMading(d) { 
+            const l = document.getElementById('mading-list'); l.innerHTML = ''; 
+            if(d) Object.entries(d).forEach(([k,m]) => { 
+                // Ambil URL gambar dengan prioritas yang benar
+                const imgUrl = m.image || m.url || m.src || 'https://via.placeholder.com/300x200?text=No+Image';
+                l.innerHTML += `<div class="glass-card p-4 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:bg-white/5 transition" onclick="openDetail({id:'${k}',title:'${m.title}',description:'${m.description}',date:'${m.date}',image:'${imgUrl}',category:'Mading'}, 'site_data/mading')"><h3 class="font-bold text-white text-sm mb-1">${m.title}</h3><p class="text-xs text-gray-400 line-clamp-2">${m.description}</p><div class="mt-2 text-[9px] text-gray-500">${m.date}</div></div>`; 
+            }); 
         }
         
-        // REQUEST VERIFIED
-        window.requestVerified = () => {
-            if(!developerWA) return Swal.fire("Error", "Kontak Developer belum diatur.", "error");
-            const text = `Halo Developer, saya ingin request Verified Badge (Lencana Biru).
-
-Username: ${user.username}
-ID: ${user.code || '-'}`;
-            window.open(developerWA + "?text=" + encodeURIComponent(text), '_blank');
-        }
-
-        // --- END OF NEW FEATURES ---
-
-        // AUTH & CORE FUNCTIONS (Keeping existing logic)
-        async function doLogin() {
-            const u = document.getElementById('login-user').value.trim();
-            const c = document.getElementById('login-code').value.trim();
-            if(u==='developer' && c==='dev123') { user={name:'Developer',username:'Developer',role:'developer',isPremium:true,pic:'https://cdn-icons-png.flaticon.com/512/2304/2304226.png'}; localStorage.setItem('user',JSON.stringify(user)); location.reload(); return; }
-            try { const s = await get(ref(rtdb, `users/${u}`)); if(s.exists() && s.val().code === c) { user = { ...s.val(), role: s.val().role || 'member' }; localStorage.setItem('user', JSON.stringify(user)); location.reload(); } else Swal.fire("Gagal","Salah username/kode","error"); } catch(e) { Swal.fire("Error",e.message,"error"); }
-        }
-        window.doGuest = () => { user={name:"Tamu",isGuest:true,pic:"https://ui-avatars.com/api/?name=Tamu"}; localStorage.setItem('user',JSON.stringify(user)); location.reload(); }
-        window.logout = () => { localStorage.removeItem('user'); location.reload(); }
-        window.doPageLogin = async () => {
-             const u = document.getElementById('page-login-user').value.trim(); const c = document.getElementById('page-login-code').value.trim();
-             try { const s = await get(ref(rtdb, `users/${u}`)); if(s.exists() && s.val().code === c) { user = { ...s.val(), role: s.val().role || 'member' }; localStorage.setItem('user', JSON.stringify(user)); location.reload(); } else Swal.fire("Gagal","Error","error"); } catch(e) {}
-        }
-        function renderGallery(items) { const c = document.getElementById('gallery-container'); c.innerHTML = ''; items.forEach(i => { c.innerHTML += `<div class="masonry-item glass-card cursor-pointer group relative" onclick="openDetail({id:'${i.id}',...this.dataset}, 'site_data/gallery')" data-title="${i.title}" data-description="${i.description}" data-date="${i.date}" data-image="${i.image}"><div class="relative overflow-hidden"><img src="${i.image}" class="gallery-card-img transition duration-500 group-hover:scale-110"><div class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">${i.category}</div></div><div class="p-3"><h3 class="font-bold text-white text-sm line-clamp-1">${i.title}</h3></div></div>`; }); }
-        function renderMading(d) { const l = document.getElementById('mading-list'); l.innerHTML = ''; if(d) Object.entries(d).forEach(([k,m]) => l.innerHTML += `<div class="glass-card p-5 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:border-orange-400" onclick="openDetail({id:'${k}',title:'${m.title}',description:'${m.description}',date:'${m.date}',image:'${m.image||m.url}'}, 'site_data/mading')"><h3 class="font-bold text-white mb-1">${m.title}</h3><p class="text-xs text-gray-400 line-clamp-2">${m.description}</p></div>`); }
-        function renderDownloads(d) { const c = document.getElementById('downloads-grid'); c.innerHTML = ''; if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-4 rounded-xl flex items-center gap-3 hover:bg-white/5"><i class="fas fa-file-download text-green-400 text-lg"></i><div><h4 class="text-sm font-bold text-white">${f.title}</h4><p class="text-[10px] text-gray-400">${f.type}</p></div></a>`); }
-        function renderPlaylist(d) { const l = document.getElementById('playlist-list'); l.innerHTML = ''; if(d) Object.entries(d).forEach(([k,v]) => l.innerHTML += `<div onclick="playMusic('${v.src}','${v.title}','${v.artist}','${v.type}')" class="flex items-center gap-3 p-3 glass-card rounded-xl cursor-pointer hover:bg-white/5 transition"><div class="w-10 h-10 bg-indigo-600/20 rounded flex items-center justify-center text-indigo-400"><i class="fas fa-play"></i></div><div><h4 class="text-sm font-bold text-white">${v.title}</h4><p class="text-xs text-gray-400">${v.artist}</p></div></div>`); }
+        function renderDownloads(d) { const c = document.getElementById('downloads-grid'); c.innerHTML = ''; if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-3 rounded-xl flex items-center gap-3 hover:bg-white/5 transition"><div class="w-8 h-8 bg-green-500/20 rounded flex items-center justify-center text-green-400"><i class="fas fa-file-alt"></i></div><div class="min-w-0"><h4 class="text-xs font-bold text-white truncate">${f.title}</h4><p class="text-[9px] text-gray-400">${f.type}</p></div></a>`); }
+        
+        // CHAT LOGIC
         window.switchChat = (id, name) => { curChatId = id; document.getElementById('chat-header-name').innerText = name; loadChatMessages(id); navigateTo('chat-room'); }
-        window.replyMsg = (u,t) => { replyingToMsg={user:u,text:t}; document.getElementById('reply-ui').classList.remove('hidden'); document.getElementById('reply-user').innerText=u; document.getElementById('reply-text').innerText=t; }
-        window.closeReply = () => { replyingToMsg=null; document.getElementById('reply-ui').classList.add('hidden'); }
-        window.sendMessage = () => {
-            const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return;
-            if(user.isGuest) return Swal.fire("Akses","Login Premium!","warning");
-            const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
-            const pay = {text:t, username:user.username, type:'text', timestamp:serverTimestamp()};
-            if(replyingToMsg) pay.replyTo = replyingToMsg;
-            push(ref(rtdb,path), pay).then(()=>{ inp.value=''; replyingToMsg=null; document.getElementById('reply-ui').classList.add('hidden'); runTransaction(ref(rtdb, `users/${user.username}/xp`), x=>(x||0)+5); });
+        function loadChatMessages(id) { const path = id==='global'?'community/messages':(id.startsWith('grp_')?`community/groups/${id}/messages`:`chats/private/${id}`); onValue(ref(rtdb,path), s => { const c = document.getElementById('chat-messages'); c.innerHTML = ''; if(s.val()) Object.values(s.val()).sort((a,b)=>a.timestamp-b.timestamp).slice(-50).forEach(m => { const isMe = m.username === user.username; let content = m.text; if(m.type === 'image') content = `<img src="${m.text}" class="chat-image" onclick="window.open(this.src)">`; c.innerHTML += `<div class="chat-bubble ${isMe?'chat-me':'chat-other'}"><div class="text-[9px] font-bold ${isMe?'text-indigo-200':'text-purple-300'} mb-0.5">${m.username}</div>${content}<div class="text-[8px] opacity-50 text-right mt-0.5">${moment(m.timestamp).format('HH:mm')}</div></div>`; }); c.scrollTop = c.scrollHeight; }); }
+        window.sendMessage = () => { const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return; if(user.isGuest) return Swal.fire("Akses","Login Premium!","warning"); const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`); push(ref(rtdb,path), {text:t, username:user.username, type:'text', timestamp:serverTimestamp()}); inp.value=''; }
+
+        // MODAL DETAIL LOGIC (FIXED)
+        window.openDetail = (i,c) => { 
+            curItem=i; curCollection=c; 
+            document.getElementById('detail-modal').classList.remove('hidden'); 
+            document.getElementById('modal-title').innerText = i.title; 
+            document.getElementById('modal-desc').innerText = i.description||'-'; 
+            document.getElementById('modal-date').innerText = i.date; 
+            document.getElementById('modal-cat').innerText = i.category||'INFO';
+            document.getElementById('btn-download').href = i.image;
+            
+            const m = document.getElementById('modal-media'); 
+            m.innerHTML = `<img src="${i.image}" class="h-full w-full object-contain">`; 
+            
+            if(user.role==='developer') document.getElementById('admin-controls').classList.remove('hidden'); 
+            else document.getElementById('admin-controls').classList.add('hidden');
         }
-        window.handleFileSelect = (input) => { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = (e) => { const img = new Image(); img.src = e.target.result; img.onload = () => { const c=document.createElement('canvas'); const ctx=c.getContext('2d'); const s=800/img.width; c.width=800; c.height=img.height*s; ctx.drawImage(img,0,0,c.width,c.height); pendingImage=c.toDataURL('image/jpeg',0.7); document.getElementById('preview-img').src=pendingImage; document.getElementById('upload-preview').classList.remove('hidden'); }}; reader.readAsDataURL(file); }
-        window.sendImage = () => { if(!pendingImage) return; const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`); push(ref(rtdb,path), {text:pendingImage, username:user.username, type:'image', timestamp:serverTimestamp()}); cancelUpload(); }
-        window.cancelUpload = () => { pendingImage=null; document.getElementById('upload-preview').classList.add('hidden'); document.getElementById('chat-file-input').value=''; }
-        window.editProfile = async (type) => { const {value:u}=await Swal.fire({input:'url',inputLabel:'URL Gambar',background:'#1e293b',color:'#fff'}); if(u){ update(ref(rtdb,`users/${user.username}`), {[type==='pic'?'profile_pic':'chat_bg']:u}); location.reload(); } }
-        window.createGroup = async () => { const {value:n}=await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) set(ref(rtdb,`community/groups/grp_${Date.now()}`),{name:n}); }
-        window.openUploadModal = async (type) => { const {value:m}=await Swal.fire({title:'Metode', html:`<button onclick="Swal.clickConfirm();window.u='url'" class="btn-swal">Link</button> <button onclick="Swal.clickConfirm();window.u='file'" class="btn-swal">File</button>`, showConfirmButton:false, background:'#1e293b', color:'#fff'}); if(window.u){ let url=""; if(window.u==='url'){const{value:l}=await Swal.fire({input:'url',background:'#1e293b',color:'#fff'});url=l;}else{const{value:f}=await Swal.fire({input:'file',background:'#1e293b',color:'#fff'});url=await toBase64(f);} if(url){ const{value:t}=await Swal.fire({input:'text',inputLabel:'Judul',background:'#1e293b',color:'#fff'}); if(t) push(ref(rtdb,`site_data/${type}`),{title:t,image:url,url:url,src:url,date:moment().format('DD MMM'),timestamp:serverTimestamp()}); } } }
-        function renderAdminUserList(u){ const c=document.getElementById('admin-user-list'); c.innerHTML=''; Object.entries(u).forEach(([k,v])=>c.innerHTML+=`<div class="flex justify-between p-2 bg-white/5 rounded mb-1"><span class="text-xs text-white">${v.username}</span><button onclick="kickUser('${k}')" class="text-red-400 text-[10px]">Kick</button></div>`); }
-        window.kickUser=(k)=>remove(ref(rtdb,`users/${k}`)); window.saveContactDev=()=>{const w=document.getElementById('edit-dev-wa').value; update(ref(rtdb,'site_data/config/contact'),{wa:w}); Swal.fire("OK","","success");}; window.toggleAntiSSDB=()=>{const e=document.getElementById('anti-ss-toggle'); set(ref(rtdb,'site_data/config/anti_ss'),e.checked);}
-        function renderContactList(u){const c=document.getElementById('member-list');c.innerHTML='';Object.values(u).forEach(v=>{if(v.username!==user.username)c.innerHTML+=`<div onclick="switchChat('${[user.username,v.username].sort().join('_')}','${v.username}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer"><img src="${v.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover"><div class="text-sm font-bold text-white">${v.username}</div></div>`});}
-        function renderGroupList(g){const c=document.getElementById('group-list');c.innerHTML='';if(g)Object.entries(g).forEach(([k,v])=>c.innerHTML+=`<div onclick="switchChat('${k}','${v.name}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer"><div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs"><i class="fas fa-users"></i></div><div class="text-sm font-bold text-white">${v.name}</div></div>`);}
-        window.openDetail=(i,c)=>{curItem=i;curCollection=c;document.getElementById('detail-modal').classList.remove('hidden');document.getElementById('modal-title').innerText=i.title;document.getElementById('modal-desc').innerText=i.description||'-';document.getElementById('modal-date').innerText=i.date; const m=document.getElementById('modal-media');m.innerHTML=i.type==='video'?`<video src="${i.image}" controls class="h-full w-full object-contain"></video>`:`<img src="${i.image}" class="h-full w-full object-contain">`; if(user.role==='developer')document.getElementById('admin-controls').classList.remove('hidden');}
-        window.deleteContent=()=>{remove(ref(rtdb,`${curCollection}/${curItem.id}`));document.getElementById('detail-modal').classList.add('hidden');}; window.editContent=async()=>{const{value:t}=await Swal.fire({input:'text',inputValue:curItem.title,background:'#1e293b',color:'#fff'});if(t)update(ref(rtdb,`${curCollection}/${curItem.id}`),{title:t});}
-        window.playMusic=(s,t,a,tp)=>{if(tp==='video')window.open(s);else{const p=document.getElementById('sticky-player');document.getElementById('sp-title').innerText=t;document.getElementById('sp-artist').innerText=a;document.getElementById('sp-img').src="https://cdn-icons-png.flaticon.com/512/3844/3844724.png";document.getElementById('audio-element').src=s;document.getElementById('audio-element').play();p.classList.add('active');document.getElementById('sp-img').classList.add('vinyl-spin');document.getElementById('sp-icon').className="fas fa-pause text-[10px]";}}
-        window.togglePlay=()=>{const a=document.getElementById('audio-element');if(a.paused){a.play();document.getElementById('sp-icon').className="fas fa-pause text-[10px]";document.getElementById('sp-img').classList.add('vinyl-spin');}else{a.pause();document.getElementById('sp-icon').className="fas fa-play text-[10px]";document.getElementById('sp-img').classList.remove('vinyl-spin');}}
-        window.closePlayer=()=>{document.getElementById('audio-element').pause();document.getElementById('sticky-player').classList.remove('active');}
-        window.navigateTo=(p)=>{if(p==='admin'&&user.role!=='developer')return Swal.fire("No","Dev only","error");document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden'));document.getElementById('view-'+p).classList.remove('hidden');window.scrollTo(0,0);if(p==='profile'){if(user.isGuest){document.getElementById('profile-guest-view').classList.remove('hidden');document.getElementById('profile-member-view').classList.add('hidden');}else{document.getElementById('profile-guest-view').classList.add('hidden');document.getElementById('profile-member-view').classList.remove('hidden');document.getElementById('p-name').innerText=user.username;document.getElementById('p-avatar').src=user.profile_pic;if(user.role==='developer')document.getElementById('admin-panel-btn-container').classList.remove('hidden');}}}
-        const toBase64=f=>new Promise((r,j)=>{const a=new FileReader();a.readAsDataURL(f);a.onload=()=>r(a.result);a.onerror=e=>j(e);});
-        /* Confetti Lib */ import "https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js";
+        window.deleteContent = () => { if(confirm("Hapus?")) { remove(ref(rtdb, `${curCollection}/${curItem.id}`)); document.getElementById('detail-modal').classList.add('hidden'); } }
+
+        // NAVIGATION
+        window.navigateTo = (p) => { 
+            if(p==='admin' && user.role!=='developer') return Swal.fire("No","Dev only","error"); 
+            document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden')); 
+            document.getElementById('view-'+p).classList.remove('hidden'); 
+            document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active'); b.querySelector('i').classList.remove('text-indigo-400');}); 
+            const b = document.getElementById('nav-'+p); if(b) {b.classList.add('active'); b.querySelector('i').classList.add('text-indigo-400');} 
+            window.scrollTo(0,0); 
+            if(p==='profile') {
+                if(user.isGuest) { document.getElementById('profile-guest-view').classList.remove('hidden'); document.getElementById('profile-member-view').classList.add('hidden'); }
+                else { document.getElementById('profile-guest-view').classList.add('hidden'); document.getElementById('profile-member-view').classList.remove('hidden'); document.getElementById('p-name').innerText = user.username; document.getElementById('p-avatar').src = user.profile_pic; }
+            }
+        }
+        window.requestVerified = () => { if(!developerWA) return Swal.fire("Error", "Kontak Developer kosong", "error"); window.open(developerWA + "?text=" + encodeURIComponent(`Req Verified: ${user.username}`), '_blank'); }
+        async function doLogin() { const u=document.getElementById('login-user').value; const c=document.getElementById('login-code').value; if(u==='developer'&&c==='dev123'){user={name:'Dev',username:'Developer',role:'developer',isPremium:true,pic:'https://via.placeholder.com/100',coins:999999};localStorage.setItem('user',JSON.stringify(user));location.reload();return;} try{const s=await get(ref(rtdb,`users/${u}`));if(s.exists()&&s.val().code===c){user={...s.val(),role:s.val().role||'member'};localStorage.setItem('user',JSON.stringify(user));location.reload();}else Swal.fire("Gagal","Cek Username/Kode","error");}catch(e){Swal.fire("Error",e.message,"error");}}
+        window.doPageLogin = doLogin; window.logout = () => { localStorage.removeItem('user'); location.reload(); }
     </script>
 </body>
 </html>
