@@ -40,17 +40,44 @@
         .glass-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; transition: all 0.3s ease; overflow: hidden; }
         .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #6366f1; }
 
-        /* CHAT STYLES V4.5 (Fixed Layout) */
-        .chat-container { height: calc(100vh - 140px); display: flex; flex-direction: column; background-color: #111827; position: relative; overflow: hidden; }
+        /* CHAT STYLES V5.0 (Stability Fix) */
+        .chat-container { 
+            height: 75vh; 
+            max-height: 700px;
+            display: flex; 
+            flex-direction: column; 
+            background-color: #111827; 
+            position: relative; 
+            overflow: hidden;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
         .chat-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 0; background-size: cover; background-position: center; background-repeat: no-repeat; pointer-events: none; }
         .chat-header { flex: 0 0 auto; z-index: 10; background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .chat-area { flex: 1 1 auto; overflow-y: auto; padding: 1rem; z-index: 5; display: flex; flex-direction: column; gap: 8px; }
-        .chat-input-area { flex: 0 0 auto; z-index: 20; background: #111827; border-top: 1px solid rgba(255,255,255,0.1); position: relative; }
+        .chat-area { 
+            flex: 1 1 auto; 
+            overflow-y: auto; 
+            padding: 1rem; 
+            z-index: 5; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 8px; 
+            scroll-behavior: smooth;
+            overscroll-behavior: contain; /* Mencegah scroll body saat mentok */
+        }
+        .chat-input-area { 
+            flex: 0 0 auto; 
+            z-index: 20; 
+            background: #111827; 
+            border-top: 1px solid rgba(255,255,255,0.1); 
+            position: relative; 
+        }
         
         .chat-bubble { max-width: 80%; padding: 8px 12px; border-radius: 12px; font-size: 0.9rem; position: relative; word-wrap: break-word; box-shadow: 0 1px 2px rgba(0,0,0,0.3); z-index: 6; }
         .chat-me { background: #6366f1; color: white; align-self: flex-end; border-top-right-radius: 0; margin-left: auto; }
         .chat-other { background: #334155; color: white; align-self: flex-start; border-top-left-radius: 0; margin-right: auto; }
         .chat-image { border-radius: 8px; margin-top: 4px; max-width: 100%; height: auto; display: block; cursor: pointer; }
+        .reply-box { border-left: 3px solid #a5b4fc; padding-left: 8px; margin-bottom: 4px; font-size: 0.75rem; background: rgba(0,0,0,0.2); padding: 4px; border-radius: 4px; }
         
         .typing-indicator span { display: inline-block; width: 4px; height: 4px; background-color: #4ade80; border-radius: 50%; animation: typing 1.4s infinite both; margin: 0 1px; }
         .typing-indicator span:nth-child(1) { animation-delay: 0s; } .typing-indicator span:nth-child(2) { animation-delay: 0.2s; } .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
@@ -138,7 +165,7 @@
         </section>
 
         <section id="view-chat-room" class="view-section hidden">
-            <div class="glass rounded-3xl overflow-hidden border border-white/10 shadow-2xl chat-container">
+            <div class="chat-container">
                 <div id="chat-bg" class="chat-bg-layer"></div>
                 
                 <div class="p-3 bg-[#111827]/90 backdrop-blur-md border-b border-white/10 flex justify-between items-center z-10 chat-header">
@@ -155,6 +182,14 @@
                 </div>
                 
                 <div id="chat-messages" class="chat-area custom-scroll"></div>
+                
+                <div id="reply-ui" class="hidden bg-gray-800/90 p-2 border-t border-white/10 flex items-center justify-between z-20">
+                     <div class="border-l-2 border-indigo-400 pl-2">
+                        <div class="text-[10px] text-indigo-400 font-bold" id="reply-user">User</div>
+                        <div class="text-xs text-gray-300 truncate w-48" id="reply-text">Text</div>
+                     </div>
+                     <button onclick="closeReply()" class="text-gray-400 hover:text-white px-2"><i class="fas fa-times"></i></button>
+                </div>
 
                 <div id="upload-preview" class="hidden absolute bottom-16 left-0 w-full bg-black/90 p-3 flex items-center gap-3 z-30 border-t border-white/10 backdrop-blur-md">
                     <img id="preview-img" src="" class="h-16 rounded border border-white/20">
@@ -165,7 +200,7 @@
                 <div class="p-2 flex gap-2 items-center chat-input-area">
                     <button onclick="document.getElementById('chat-file-input').click()" class="w-10 h-10 rounded-full text-gray-400 hover:text-indigo-400 hover:bg-white/5 transition flex items-center justify-center"><i class="fas fa-paperclip"></i></button>
                     <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
-                    <input type="text" id="chat-input" oninput="handleTyping()" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off">
+                    <input type="text" id="chat-input" oninput="handleTyping()" onkeypress="if(event.key==='Enter') sendMessage()" class="flex-1 bg-black/30 text-white text-sm px-4 py-3 rounded-full border border-white/10 focus:border-indigo-500 outline-none transition placeholder-gray-500" placeholder="Ketik pesan..." autocomplete="off">
                     <button onclick="sendMessage()" class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shadow-lg hover:bg-indigo-500 transition active:scale-90"><i class="fas fa-paper-plane text-xs"></i></button>
                 </div>
             </div>
@@ -337,6 +372,7 @@
         let curCollection = null;
         let typingTimeout = null;
         let pendingImage = null;
+        let replyingToMsg = null; // FIXED: Added this variable declaration
 
         window.onload = () => {
             if(!user) document.getElementById('login-modal').classList.remove('hidden');
@@ -538,13 +574,17 @@
             const l = document.getElementById('playlist-list'); l.innerHTML = '';
             if(d) Object.entries(d).forEach(([k,v]) => l.innerHTML += `<div onclick="playMusic('${v.src}','${v.title}','${v.artist}','${v.type}')" class="flex items-center gap-3 p-3 glass-card rounded-xl cursor-pointer hover:bg-white/5 transition"><div class="w-10 h-10 bg-indigo-600/20 rounded flex items-center justify-center text-indigo-400"><i class="fas fa-play"></i></div><div><h4 class="text-sm font-bold text-white">${v.title}</h4><p class="text-xs text-gray-400">${v.artist}</p></div></div>`);
         }
+        
+        // FIX MADING IMAGE DISPLAY
         function renderMading(d) {
             const l = document.getElementById('mading-list'); l.innerHTML = '';
             if(d) Object.entries(d).forEach(([k,m]) => { 
                 m.id = k;
-                l.innerHTML += `<div class="glass-card p-5 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:border-orange-400" onclick="openDetail({title:'${m.title}', description:'${m.description}', date:'${m.date}', category:'Mading', id:'${k}'}, 'site_data/mading')"><h3 class="font-bold text-white mb-1">${m.title}</h3><p class="text-xs text-gray-400 line-clamp-2">${m.description}</p></div>`;
+                // FIX: Menambahkan properti image/url ke objek openDetail agar modal bisa menampilkannya
+                l.innerHTML += `<div class="glass-card p-5 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:border-orange-400" onclick="openDetail({title:'${m.title}', description:'${m.description}', date:'${m.date}', category:'Mading', id:'${k}', image:'${m.image||m.url||m.src}'}, 'site_data/mading')"><h3 class="font-bold text-white mb-1">${m.title}</h3><p class="text-xs text-gray-400 line-clamp-2">${m.description}</p></div>`;
             });
         }
+        
         function renderDownloads(d) {
             const c = document.getElementById('downloads-grid'); c.innerHTML = '';
             if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-4 rounded-xl flex items-center gap-3 hover:bg-white/5"><i class="fas fa-file-download text-green-400 text-lg"></i><div><h4 class="text-sm font-bold text-white">${f.title}</h4><p class="text-[10px] text-gray-400">${f.type}</p></div></a>`);
@@ -618,15 +658,26 @@
         }
 
         window.replyMsg = (u,t) => { replyingToMsg={user:u,text:t}; document.getElementById('reply-ui').classList.remove('hidden'); document.getElementById('reply-user').innerText=u; document.getElementById('reply-text').innerText=t; }
+        window.closeReply = () => { replyingToMsg=null; document.getElementById('reply-ui').classList.add('hidden'); }
+
         window.sendMessage = () => {
             const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return;
             if(user.isGuest) return Swal.fire("Akses","Login Premium!","warning");
             const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
             const pay = {text:t, username:user.username, type:'text', timestamp:serverTimestamp()};
             if(replyingToMsg) pay.replyTo = replyingToMsg;
-            push(ref(rtdb,path), pay); inp.value=''; 
-            runTransaction(ref(rtdb, `users/${user.username}/xp`), x=>(x||0)+5);
+            
+            push(ref(rtdb,path), pay).then(() => {
+                inp.value='';
+                // Reset reply after send
+                replyingToMsg = null;
+                document.getElementById('reply-ui').classList.add('hidden');
+                runTransaction(ref(rtdb, `users/${user.username}/xp`), x=>(x||0)+5);
+            }).catch(e => {
+                Swal.fire("Gagal", e.message, "error");
+            });
         }
+
         window.promptMedia = async () => {
              const {value:url} = await Swal.fire({input:'url', inputLabel:'URL Gambar', background:'#1e293b', color:'#fff'});
              if(url) {
