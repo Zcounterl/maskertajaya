@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Portal Sekolah V33 God Tier</title>
+    <title>Portal Sekolah V33 Ultimate</title>
     <meta name="theme-color" content="#0f172a">
     <link rel="manifest" href="manifest.json">
     
@@ -26,7 +26,11 @@
                 extend: {
                     fontFamily: { sans: ['Inter', 'sans-serif'], mono: ['Fira Code', 'monospace'] },
                     colors: { dark: "#0f172a", card: "#1e293b", primary: "#6366f1", accent: "#8b5cf6" },
-                    animation: { 'spin-slow': 'spin 4s linear infinite', 'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite', 'neon': 'neon 1.5s ease-in-out infinite alternate' },
+                    animation: { 
+                        'spin-slow': 'spin 4s linear infinite', 
+                        'pulse-fast': 'pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'neon': 'neon 1.5s ease-in-out infinite alternate'
+                    },
                     keyframes: {
                         neon: {
                             '0%': { boxShadow: '0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff00de, 0 0 35px #ff00de, 0 0 40px #ff00de' },
@@ -40,8 +44,13 @@
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;700&display=swap');
-        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; padding-bottom: 90px; overflow-x: hidden; -webkit-tap-highlight-color: transparent; user-select: none; }
         
+        /* UI FIXES */
+        body { background-color: #0f172a; color: #f8fafc; font-family: 'Inter', sans-serif; overflow-x: hidden; -webkit-tap-highlight-color: transparent; user-select: none; }
+        
+        /* Padding untuk menghindari tumpang tindih */
+        main { padding-top: 100px; padding-bottom: 100px; } 
+
         .glass { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .glass-card { background: #1e293b; border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 16px; transition: all 0.3s ease; overflow: hidden; }
         .glass-card:hover { transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); border-color: #6366f1; }
@@ -52,8 +61,8 @@
         body.rgb-mode .text-white { text-shadow: 0 0 5px rgba(255,255,255,0.8); }
         @keyframes rgbBorder { 0% { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; } 33% { border-color: #00ff00; box-shadow: 0 0 10px #00ff00; } 66% { border-color: #0000ff; box-shadow: 0 0 10px #0000ff; } 100% { border-color: #ff0000; box-shadow: 0 0 10px #ff0000; } }
 
-        /* CHAT STYLES V5.0 (Voice & View Once) */
-        .chat-container { height: calc(100vh - 160px); display: flex; flex-direction: column; background-color: #111827; position: relative; overflow: hidden; }
+        /* CHAT STYLES */
+        .chat-container { height: calc(100vh - 180px); display: flex; flex-direction: column; background-color: #111827; position: relative; overflow: hidden; }
         .chat-bg-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0.4; z-index: 0; background-size: cover; background-position: center; background-repeat: no-repeat; pointer-events: none; }
         .chat-header { flex: 0 0 auto; z-index: 10; background: rgba(17, 24, 39, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.1); }
         .chat-area { flex: 1 1 auto; overflow-y: auto; padding: 1rem; z-index: 5; display: flex; flex-direction: column; gap: 8px; }
@@ -65,32 +74,34 @@
         .chat-image { border-radius: 8px; margin-top: 4px; max-width: 100%; height: auto; display: block; cursor: pointer; }
         .view-once-blur { filter: blur(20px); cursor: not-allowed; pointer-events: none; transition: filter 0.5s; }
         .view-once-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.6); border-radius: 8px; cursor: pointer; }
-        
-        .typing-indicator span { display: inline-block; width: 4px; height: 4px; background-color: #4ade80; border-radius: 50%; animation: typing 1.4s infinite both; margin: 0 1px; }
-        @keyframes typing { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        .reply-box { border-left: 3px solid #a5b4fc; padding-left: 8px; margin-bottom: 4px; background: rgba(0,0,0,0.2); border-radius: 4px; padding: 4px; font-size: 0.8em; cursor: pointer; }
 
         /* HIDDEN TERMINAL */
         #terminal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; font-family: 'Fira Code', monospace; padding: 20px; display: none; flex-direction: column; }
         #terminal-output { flex: 1; overflow-y: auto; color: #00ff00; margin-bottom: 10px; white-space: pre-wrap; font-size: 14px; }
         #terminal-input { background: transparent; border: none; border-top: 1px solid #333; color: #fff; padding: 10px; width: 100%; font-family: 'Fira Code', monospace; outline: none; }
 
-        /* RUNNING TEXT */
-        .breaking-news { position: fixed; top: 60px; left: 0; width: 100%; background: #dc2626; color: white; z-index: 40; overflow: hidden; white-space: nowrap; padding: 5px 0; font-size: 12px; font-weight: bold; display: none; }
+        /* BREAKING NEWS */
+        .breaking-news { position: fixed; top: 64px; left: 0; width: 100%; background: #dc2626; color: white; z-index: 40; overflow: hidden; white-space: nowrap; padding: 5px 0; font-size: 12px; font-weight: bold; display: none; }
         .breaking-content { display: inline-block; animation: marquee 20s linear infinite; padding-left: 100%; }
         @keyframes marquee { 0% { transform: translate(0, 0); } 100% { transform: translate(-100%, 0); } }
 
-        /* AUDIO PLAYER & RECORDING */
+        /* AUDIO & REC */
         .audio-msg { display: flex; align-items: center; gap: 10px; background: rgba(0,0,0,0.2); padding: 5px 10px; border-radius: 20px; margin-top: 5px; }
         .rec-active { animation: pulse-red 1s infinite; background-color: #ef4444 !important; }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* Custom Scrollbar */
+        /* SCROLLBAR */
         ::-webkit-scrollbar { width: 5px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         .nav-item.active i { color: #6366f1; transform: scale(1.1); } .nav-item.active span { color: white; }
         
         .toggle-checkbox:checked { right: 0; border-color: #68D391; }
         .toggle-checkbox:checked + .toggle-label { background-color: #68D391; }
         .verified-badge { color: #3b82f6; margin-left: 4px; font-size: 12px; }
+        
+        /* Like Animation */
+        .like-active { animation: likeBounce 0.4s; color: #ef4444 !important; }
+        @keyframes likeBounce { 0% { transform: scale(1); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
     </style>
 </head>
 <body class="antialiased bg-gradient-to-b from-dark to-[#020617] min-h-screen" id="main-body">
@@ -108,14 +119,14 @@
     </div>
 
     <div id="anti-ss-overlay" class="fixed inset-0 z-[999999] hidden bg-black flex-col items-center justify-center text-center p-5">
-        <i class="fas fa-eye-slash text-8xl text-red-600 mb-6 animate-pulse"></i>
+        <i class="fas fa-ban text-8xl text-red-600 mb-6 animate-pulse"></i>
         <h1 class="text-4xl font-black text-white mb-2 tracking-tighter">BLOCKED</h1>
-        <p class="text-gray-400 text-lg" id="block-msg">Tangkapan layar & Perekaman tidak diizinkan.</p>
+        <p class="text-gray-400 text-lg" id="block-msg">Akses Anda dibatasi atau fitur keamanan aktif.</p>
         <p class="text-gray-600 text-xs mt-4">System ID: Security-V33</p>
     </div>
 
     <div id="breaking-news" class="breaking-news">
-        <div class="breaking-content" id="breaking-text">BREAKING: Selamat Datang di Portal Sekolah V33 - Fitur Baru Telah Hadir!</div>
+        <div class="breaking-content" id="breaking-text">BREAKING: Selamat Datang di Portal Sekolah V33!</div>
     </div>
 
     <div class="fixed top-0 w-full z-50 glass border-b border-white/5 px-4 py-3 flex justify-between items-center transition-all" id="top-nav">
@@ -123,7 +134,7 @@
             <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-bold shadow-lg shadow-indigo-500/30 group-hover:rotate-12 transition duration-300"><i class="fas fa-school"></i></div>
             <div>
                 <h1 class="font-bold text-sm md:text-base leading-none text-white tracking-tight">Portal Sekolah</h1>
-                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.0 <span id="online-count">...</span></p>
+                <p class="text-[10px] text-green-400 flex items-center gap-1 mt-0.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> V33.5 <span id="online-count">...</span></p>
             </div>
         </div>
         <div class="flex gap-3 items-center">
@@ -142,7 +153,7 @@
         </div>
     </nav>
 
-    <main class="pt-24 px-3 md:pl-32 max-w-7xl mx-auto min-h-screen pb-24">
+    <main class="px-3 md:pl-32 max-w-7xl mx-auto min-h-screen">
         
         <section id="view-home" class="view-section transition-opacity duration-300">
             <div class="swiper mySwiper w-full h-[200px] md:h-[380px] rounded-2xl mb-8 overflow-hidden shadow-2xl border border-white/10 relative group">
@@ -194,6 +205,14 @@
                     <div class="text-xs text-gray-400" id="radar-viewing"><i class="fas fa-eye mr-1"></i> <span id="radar-count">0</span></div>
                 </div>
                 
+                <div id="reply-ui" class="hidden bg-gray-800/90 p-2 border-b border-white/10 flex justify-between items-center z-20">
+                    <div class="text-xs text-gray-300 border-l-2 border-indigo-500 pl-2">
+                        <div class="font-bold text-indigo-400" id="reply-user">User</div>
+                        <div class="truncate max-w-[200px]" id="reply-text">Text</div>
+                    </div>
+                    <button onclick="cancelReply()" class="text-gray-400 hover:text-white"><i class="fas fa-times"></i></button>
+                </div>
+
                 <div id="chat-messages" class="chat-area custom-scroll"></div>
 
                 <div id="upload-preview" class="hidden absolute bottom-16 left-0 w-full bg-black/90 p-3 flex items-center gap-3 z-30 border-t border-white/10 backdrop-blur-md">
@@ -236,7 +255,7 @@
                         <h2 class="text-2xl font-bold mt-3 text-white tracking-tight flex items-center justify-center gap-1"><span id="p-name">User</span> <i id="p-verified" class="fas fa-check-circle text-blue-400 text-sm hidden" title="Verified Student"></i></h2>
                         <span id="p-rank" class="text-[10px] font-bold px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 uppercase border border-indigo-500/30">Rank</span>
                         
-                        <div class="flex justify-center gap-2 mt-4 flex-wrap">
+                        <div id="premium-controls" class="flex justify-center gap-2 mt-4 flex-wrap hidden">
                              <button onclick="editProfile('pic')" class="px-3 py-1 rounded-full bg-white/5 text-[10px] border border-white/10 hover:bg-white/10 transition"><i class="fas fa-camera mr-1"></i> Foto</button>
                              <button onclick="editProfile('bg')" class="px-3 py-1 rounded-full bg-white/5 text-[10px] border border-white/10 hover:bg-white/10 transition"><i class="fas fa-image mr-1"></i> Chat BG</button>
                              <button onclick="navigateTo('bio')" class="px-3 py-1 rounded-full bg-white/5 text-[10px] border border-white/10 hover:bg-white/10 transition"><i class="fas fa-link mr-1"></i> Bio Link</button>
@@ -254,7 +273,20 @@
                             <div class="bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition"><div id="p-xp" class="text-2xl font-bold text-white mb-1">0</div><div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">XP Points</div></div>
                             <div class="bg-black/30 p-4 rounded-2xl border border-white/5 hover:border-white/10 transition"><div id="p-inventory" class="text-2xl font-bold text-indigo-400 mb-1">0</div><div class="text-[10px] uppercase text-gray-400 font-bold tracking-wider">Items</div></div>
                         </div>
-                        <div id="admin-panel-btn-container" class="hidden mt-6 pt-6 border-t border-white/10"><button onclick="navigateTo('admin')" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-600/20 to-orange-600/20 text-yellow-400 border border-yellow-500/30 font-bold text-xs hover:bg-yellow-500/30 transition flex items-center justify-center gap-2"><i class="fas fa-shield-alt"></i> AKSES GOD MODE</button></div>
+
+                        <div id="dev-stats-panel" class="hidden mt-6 bg-black/40 p-4 rounded-xl border border-red-500/30">
+                            <h4 class="text-red-400 font-bold text-xs mb-2 uppercase tracking-widest">GOD MODE STATS</h4>
+                            <div class="grid grid-cols-2 gap-2 text-left text-xs text-gray-300">
+                                <div>Total User: <span id="god-stat-users" class="text-white font-bold">...</span></div>
+                                <div>DB Size: <span id="god-stat-size" class="text-white font-bold">...</span></div>
+                            </div>
+                            <div class="mt-3">
+                                <input type="text" id="ban-ip-input" placeholder="Ban IP Address..." class="w-full bg-black/50 border border-red-500/20 rounded px-2 py-1 text-xs text-white mb-1">
+                                <button onclick="banIP()" class="w-full bg-red-600/50 text-white text-[10px] py-1 rounded hover:bg-red-600">BAN IP</button>
+                            </div>
+                        </div>
+
+                        <div id="admin-panel-btn-container" class="hidden mt-6 pt-6 border-t border-white/10"><button onclick="navigateTo('admin')" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-600/20 to-orange-600/20 text-yellow-400 border border-yellow-500/30 font-bold text-xs hover:bg-yellow-500/30 transition flex items-center justify-center gap-2"><i class="fas fa-shield-alt"></i> AKSES ADMIN FULL</button></div>
                         <button onclick="logout()" class="mt-6 w-full py-2 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition text-sm font-bold">Keluar</button>
                     </div>
                 </div>
@@ -307,7 +339,14 @@
             <div class="relative bg-black h-64 md:h-80 flex items-center justify-center overflow-hidden" id="modal-media"></div>
             <div class="p-6 md:p-8 overflow-y-auto flex-1 bg-[#151c2e]">
                 <h2 id="modal-title" class="text-xl font-bold text-white mb-1">Title</h2>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3 text-xs text-gray-400"><span id="modal-date">Date</span> <span class="uppercase px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-300 border border-indigo-500/20" id="modal-cat">Cat</span></div>
+                </div>
                 <p id="modal-desc" class="text-sm text-gray-300 leading-relaxed whitespace-pre-line mb-6 font-light">Desc</p>
+                <div class="flex flex-wrap gap-3 border-t border-white/5 pt-4 items-center">
+                    <button onclick="toggleLike()" class="flex items-center gap-1.5 text-gray-400 hover:text-red-500 transition group bg-white/5 px-3 py-1.5 rounded-full"><i id="modal-heart" class="far fa-heart text-lg group-hover:scale-110 transition"></i><span id="modal-likes" class="font-bold">0</span></button>
+                    <a id="btn-download" href="#" target="_blank" class="flex items-center gap-1.5 bg-green-500/10 text-green-400 px-3 py-1.5 rounded-full font-bold hover:bg-green-500 hover:text-white transition"><i class="fas fa-download"></i> Unduh</a>
+                </div>
             </div>
         </div>
     </div>
@@ -321,17 +360,6 @@
                 <button onclick="closeGacha()" class="bg-gray-700 px-4 py-2 rounded-lg text-white text-xs">Tutup</button>
                 <button onclick="spinGacha()" class="bg-yellow-500 text-black font-bold px-6 py-2 rounded-lg hover:bg-yellow-400 shadow-[0_0_15px_rgba(234,179,8,0.6)]">SPIN!</button>
             </div>
-        </div>
-    </div>
-
-    <div id="login-modal" class="fixed inset-0 z-[9999] bg-black/95 flex items-center justify-center p-6 hidden">
-        <div class="glass p-10 rounded-3xl w-full max-w-sm text-center border border-white/10 shadow-2xl relative overflow-hidden">
-            <div class="w-20 h-20 rounded-2xl bg-indigo-600/10 flex items-center justify-center mx-auto mb-6 border border-indigo-500/20"><i class="fas fa-fingerprint text-4xl text-indigo-500"></i></div>
-            <h2 class="text-3xl font-bold mb-2 text-white tracking-tight">Portal Sekolah</h2>
-            <input id="login-user" type="text" placeholder="Username" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-3 text-white text-center text-sm focus:border-indigo-500 outline-none transition">
-            <input id="login-code" type="text" placeholder="Kode Akses (6 Digit)" class="w-full bg-black/30 border border-white/10 rounded-xl px-5 py-3.5 mb-8 text-white text-center text-sm tracking-[0.3em] font-mono focus:border-indigo-500 outline-none transition">
-            <button id="btn-login-submit" class="w-full bg-indigo-600 hover:bg-indigo-500 py-3.5 rounded-xl font-bold text-sm text-white mb-4 shadow-lg shadow-indigo-500/30 transition transform active:scale-95 tracking-wide">VERIFIKASI MASUK</button>
-            <button onclick="doGuest()" class="text-xs text-gray-500 hover:text-white transition">Lanjut sebagai Tamu</button>
         </div>
     </div>
 
@@ -357,13 +385,17 @@
         let audioChunks = [];
         let typingTimeout = null;
         let pendingImage = null;
+        let replyingToMsg = null;
 
         // IP CHECKER & BLACKLIST
         fetch('https://api.ipify.org?format=json').then(r=>r.json()).then(d=>{
             onValue(ref(rtdb, 'site_data/blacklist'), s => {
                 const bl = s.val() || {};
                 if(Object.values(bl).includes(d.ip)) {
-                    document.body.innerHTML = "<h1 style='color:red;text-align:center;margin-top:20%'>ACCESS DENIED (IP BANNED)</h1>";
+                    document.body.innerHTML = "";
+                    document.getElementById('anti-ss-overlay').classList.remove('hidden');
+                    document.getElementById('anti-ss-overlay').classList.add('flex');
+                    document.getElementById('block-msg').innerText = "IP BANNED BY ADMIN";
                 }
             });
         });
@@ -373,7 +405,6 @@
             else initApp();
             document.getElementById('btn-login-submit').addEventListener('click', doLogin);
             
-            // HIDDEN TERMINAL KEYBIND (Ctrl+Shift+X)
             document.addEventListener('keydown', (e) => {
                 if(e.ctrlKey && e.shiftKey && e.key === 'X') toggleTerminal();
                 if(e.key === 'Enter' && document.getElementById('terminal-overlay').style.display === 'flex') runCommand();
@@ -387,25 +418,27 @@
                 if(user.role==='developer') document.getElementById('btn-god-mode').classList.remove('hidden');
                 if(user.chat_bg) document.getElementById('chat-bg').style.backgroundImage = `url('${user.chat_bg}')`;
                 if(user.rgb_mode) document.body.classList.add('rgb-mode');
-                document.getElementById('rgb-toggle').checked = !!user.rgb_mode;
+                if(document.getElementById('rgb-toggle')) document.getElementById('rgb-toggle').checked = !!user.rgb_mode;
             }
             setupListeners();
             navigateTo('home');
             VanillaTilt.init(document.querySelectorAll(".glass-card"), {max:10, speed:400, glare:true, "max-glare":0.1});
             
-            // Radar Pengunjung (Who's Viewing)
+            // Radar
             const viewRef = ref(rtdb, 'status/viewing');
-            onValue(viewRef, s => {
-                const count = s.numChildren();
-                document.getElementById('radar-count').innerText = count;
-            });
-            const myView = push(viewRef);
-            onDisconnect(myView).remove();
-            set(myView, {user: user.username, page: 'home'});
+            onValue(viewRef, s => { document.getElementById('radar-count').innerText = s.numChildren(); });
+            const myView = push(viewRef); onDisconnect(myView).remove(); set(myView, {user: user.username});
+
+            // Load DB Health for Dev in Profile
+            if(user.role === 'developer') {
+                onValue(ref(rtdb, 'site_data/db_health'), s => {
+                    const h = s.val() || {};
+                    if(document.getElementById('god-stat-size')) document.getElementById('god-stat-size').innerText = h.size || 'N/A';
+                });
+                onValue(ref(rtdb, 'users'), s => { if(document.getElementById('god-stat-users')) document.getElementById('god-stat-users').innerText = s.numChildren(); });
+            }
         }
 
-        // --- CORE FUNCTIONS ---
-        
         // AUTH
         async function doLogin() {
             const u = document.getElementById('login-user').value.trim();
@@ -425,95 +458,50 @@
         }
         window.doGuest = () => { user={name:"Tamu",isGuest:true,pic:"https://ui-avatars.com/api/?name=Tamu"}; localStorage.setItem('user',JSON.stringify(user)); location.reload(); }
         window.logout = () => { localStorage.removeItem('user'); location.reload(); }
+        window.doPageLogin = doLogin; // Reuse logic
 
-        window.doPageLogin = async () => {
-             const u = document.getElementById('page-login-user').value.trim();
-             const c = document.getElementById('page-login-code').value.trim();
-             try {
-                 const snap = await get(ref(rtdb, `users/${u}`));
-                 if(snap.exists() && snap.val().code === c) {
-                     user = { ...snap.val(), role: snap.val().role || 'member' };
-                     localStorage.setItem('user', JSON.stringify(user)); location.reload();
-                 } else Swal.fire("Gagal","Username/Kode Salah","error");
-             } catch(e) { Swal.fire("Error",e.message,"error"); }
-        }
-
-        // LISTENERS
         function setupListeners() {
             onValue(ref(rtdb, 'site_data/gallery'), s => {
                 const d=s.val(); const i=d?Object.entries(d).map(([k,v])=>({id:k,...v})).sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)):[];
                 renderGallery(i); renderSlider(i.filter(x=>x.is_slide));
-                if(user.role==='developer') document.getElementById('stat-posts').innerText = i.length;
+                if(user.role==='developer' && document.getElementById('stat-posts')) document.getElementById('stat-posts').innerText = i.length;
             });
             onValue(ref(rtdb, 'site_data/mading'), s => renderMading(s.val()));
             onValue(ref(rtdb, 'site_data/downloads'), s => renderDownloads(s.val()));
             onValue(ref(rtdb, 'site_data/playlist'), s => renderPlaylist(s.val()));
-            
             loadChatMessages('global');
-            
             onValue(ref(rtdb, 'users'), s => {
                 const u = s.val()||{}; renderContactList(u);
-                if(user.role==='developer') { renderAdminUserList(u); document.getElementById('stat-users').innerText = Object.keys(u).length; }
+                if(user.role==='developer' && document.getElementById('stat-users')) document.getElementById('stat-users').innerText = Object.keys(u).length;
             });
             onValue(ref(rtdb, 'community/groups'), s => renderGroupList(s.val()));
-            const con=ref(rtdb,".info/connected"); 
-            onValue(con, s=>{ 
-                if(s.val()===true&&!user.isGuest){ 
-                    const m=ref(rtdb,`status/online/${user.username}`); onDisconnect(m).remove(); set(m,{time:serverTimestamp()});
-                    if(user.role==='developer') document.getElementById('stat-ping').innerText = "Online";
-                } else if(user.role==='developer') document.getElementById('stat-ping').innerText = "Offline";
-            });
-            onValue(ref(rtdb,"status/online"), s=>document.getElementById('online-count').innerText=s.numChildren());
             
-            onValue(ref(rtdb, 'community/typing'), s => {
-                const d = s.val();
-                const el = document.getElementById('typing-status');
-                if (d && d.user !== user.username) el.classList.remove('hidden'); else el.classList.add('hidden');
-            });
-
-            // Breaking News Listener
             onValue(ref(rtdb, 'site_data/config/breaking'), s => {
-                if(s.val()) {
-                    document.getElementById('breaking-text').innerText = s.val();
-                    document.getElementById('breaking-news').style.display = 'block';
-                } else document.getElementById('breaking-news').style.display = 'none';
+                if(s.val()) { document.getElementById('breaking-text').innerText = s.val(); document.getElementById('breaking-news').style.display = 'block'; } 
+                else document.getElementById('breaking-news').style.display = 'none';
             });
         }
 
-        // --- FEATURE IMPLEMENTATIONS ---
-
-        // 1. VOICE NOTE
+        // CHAT SYSTEM
         window.startRecording = async () => {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
+                mediaRecorder = new MediaRecorder(stream); audioChunks = [];
                 mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
                 mediaRecorder.onstop = async () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    const reader = new FileReader();
-                    reader.readAsDataURL(audioBlob);
-                    reader.onloadend = () => {
-                        const base64Audio = reader.result;
-                        sendVoiceNote(base64Audio);
-                    };
+                    const reader = new FileReader(); reader.readAsDataURL(audioBlob);
+                    reader.onloadend = () => sendVoiceNote(reader.result);
                 };
-                mediaRecorder.start();
-                document.getElementById('btn-mic').classList.add('rec-active');
-            } catch(e) { console.error(e); alert("Mic Error"); }
+                mediaRecorder.start(); document.getElementById('btn-mic').classList.add('rec-active');
+            } catch(e) { alert("Mic Error"); }
         }
-        window.stopRecording = () => {
-            if(mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
-                document.getElementById('btn-mic').classList.remove('rec-active');
-            }
-        }
+        window.stopRecording = () => { if(mediaRecorder) mediaRecorder.stop(); document.getElementById('btn-mic').classList.remove('rec-active'); }
         function sendVoiceNote(base64) {
             const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
             push(ref(rtdb,path), {text:base64, username:user.username, type:'voice', timestamp:serverTimestamp()});
         }
 
-        // 2. CHAT & VIEW ONCE
         function loadChatMessages(id) {
              const path = id==='global'?'community/messages':(id.startsWith('grp_')?`community/groups/${id}/messages`:`chats/private/${id}`);
              onValue(ref(rtdb,path), s => {
@@ -521,49 +509,39 @@
                  if(s.val()) Object.entries(s.val()).sort((a,b)=>a[1].timestamp-b[1].timestamp).slice(-50).forEach(([key, m]) => {
                      const isMe = m.username === user.username;
                      let content = m.text;
-                     
-                     // View Once Logic
                      if(m.isViewOnce && m.type === 'image') {
                          const viewedBy = m.viewedBy || [];
                          if(viewedBy.includes(user.username) && !isMe) {
                              content = `<div class="p-2 bg-gray-700 rounded text-gray-400 italic"><i class="fas fa-eye-slash"></i> Foto sudah dilihat</div>`;
                          } else {
-                             content = `<div class="relative w-40 h-40 bg-gray-800 rounded flex flex-col items-center justify-center cursor-pointer border border-dashed border-indigo-500" onclick="openViewOnce('${path}/${key}', '${m.text}')">
-                                <div class="view-once-overlay"><i class="fas fa-fire text-3xl text-orange-500"></i></div>
-                                <span class="text-xs text-white mt-2">1x Lihat</span>
-                             </div>`;
-                             if(isMe) content = `<img src="${m.text}" class="chat-image opacity-50">`; // Sender sees it faded
+                             content = `<div class="relative w-40 h-40 bg-gray-800 rounded flex flex-col items-center justify-center cursor-pointer border border-dashed border-indigo-500" onclick="openViewOnce('${path}/${key}', '${m.text}')"><div class="view-once-overlay"><i class="fas fa-fire text-3xl text-orange-500"></i></div><span class="text-xs text-white mt-2">1x Lihat</span></div>`;
+                             if(isMe) content = `<img src="${m.text}" class="chat-image opacity-50">`; 
                          }
-                     } else if(m.type === 'image') {
-                         content = `<img src="${m.text}" class="chat-image" onclick="window.open(this.src)">`;
-                     } else if(m.type === 'voice') {
-                         content = `<div class="audio-msg"><button onclick="this.nextElementSibling.play()" class="text-green-400"><i class="fas fa-play"></i></button><audio src="${m.text}"></audio><span class="text-xs text-white">Pesan Suara</span></div>`;
-                     }
-
-                     c.innerHTML += `<div class="chat-bubble ${isMe?'chat-me':'chat-other'}"><div class="text-[10px] font-bold ${isMe?'text-indigo-200':'text-purple-300'} mb-1">${m.username} ${m.isVerified?'<i class="fas fa-check-circle text-[9px]"></i>':''}</div>${content}<div class="text-[9px] opacity-50 text-right mt-1">${moment(m.timestamp).format('HH:mm')}</div></div>`;
+                     } else if(m.type === 'image') content = `<img src="${m.text}" class="chat-image" onclick="window.open(this.src)">`;
+                     else if(m.type === 'voice') content = `<div class="audio-msg"><button onclick="this.nextElementSibling.play()" class="text-green-400"><i class="fas fa-play"></i></button><audio src="${m.text}"></audio><span class="text-xs text-white">Pesan Suara</span></div>`;
+                     
+                     let reply = m.replyTo ? `<div class="reply-box"><div class="font-bold text-indigo-300 mb-0.5">${m.replyTo.user}</div><div class="truncate opacity-70">${m.replyTo.text}</div></div>` : '';
+                     c.innerHTML += `<div class="chat-bubble ${isMe?'chat-me':'chat-other'}">${reply}<div class="text-[10px] font-bold ${isMe?'text-indigo-200':'text-purple-300'} mb-1 cursor-pointer" onclick="replyMsg('${m.username}','${m.type=='text'?m.text:'Media'}')">${m.username} ${m.isVerified?'<i class="fas fa-check-circle text-[9px]"></i>':''}</div>${content}<div class="text-[9px] opacity-50 text-right mt-1">${moment(m.timestamp).format('HH:mm')}</div></div>`;
                  });
                  c.scrollTop = c.scrollHeight;
              });
         }
         window.openViewOnce = (dbPath, url) => {
             window.open(url, '_blank');
-            // Update DB to mark as viewed
             get(ref(rtdb, dbPath)).then(snap => {
-                const data = snap.val();
-                const viewedBy = data.viewedBy || [];
-                if(!viewedBy.includes(user.username)) {
-                    viewedBy.push(user.username);
-                    update(ref(rtdb, dbPath), {viewedBy: viewedBy});
-                }
+                const data = snap.val(); const viewedBy = data.viewedBy || [];
+                if(!viewedBy.includes(user.username)) { viewedBy.push(user.username); update(ref(rtdb, dbPath), {viewedBy: viewedBy}); }
             });
         }
-
+        window.replyMsg = (u,t) => { replyingToMsg={user:u,text:t}; document.getElementById('reply-ui').classList.remove('hidden'); document.getElementById('reply-user').innerText=u; document.getElementById('reply-text').innerText=t; }
+        window.cancelReply = () => { replyingToMsg=null; document.getElementById('reply-ui').classList.add('hidden'); }
         window.sendMessage = () => {
-            const inp = document.getElementById('chat-input'); const t = inp.value.trim();
-            if(!t) return;
+            const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return;
             const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
-            push(ref(rtdb,path), {text:t, username:user.username, type:'text', isVerified: user.isVerified||false, timestamp:serverTimestamp()});
-            inp.value='';
+            const pay = {text:t, username:user.username, type:'text', isVerified: user.isVerified||false, timestamp:serverTimestamp()};
+            if(replyingToMsg) pay.replyTo = replyingToMsg;
+            push(ref(rtdb,path), pay); inp.value=''; cancelReply();
+            runTransaction(ref(rtdb, `users/${user.username}/xp`), x=>(x||0)+5);
         }
         window.handleFileSelect = (input) => {
             const file = input.files[0]; if (!file) return;
@@ -579,38 +557,28 @@
             if(!pendingImage) return;
             const isVO = document.getElementById('check-view-once').checked;
             const path = curChatId==='global'?'community/messages':(curChatId.startsWith('grp_')?`community/groups/${curChatId}/messages`:`chats/private/${curChatId}`);
-            push(ref(rtdb,path), {text:pendingImage, username:user.username, type:'image', isViewOnce: isVO, timestamp:serverTimestamp()});
+            push(ref(rtdb,path), {text:pendingImage, username:user.username, type:'image', isViewOnce: isVO, isVerified: user.isVerified||false, timestamp:serverTimestamp()});
             cancelUpload();
         }
         window.cancelUpload = () => { pendingImage=null; document.getElementById('upload-preview').classList.add('hidden'); document.getElementById('check-view-once').checked=false; }
 
-        // 3. HIDDEN TERMINAL
+        // FEATURES
         window.toggleTerminal = () => {
-            const t = document.getElementById('terminal-overlay');
-            t.style.display = t.style.display === 'flex' ? 'none' : 'flex';
+            const t = document.getElementById('terminal-overlay'); t.style.display = t.style.display === 'flex' ? 'none' : 'flex';
             if(t.style.display === 'flex') document.getElementById('terminal-input').focus();
         }
         window.runCommand = () => {
-            const inp = document.getElementById('terminal-input');
-            const cmd = inp.value.trim().toLowerCase();
-            const out = document.getElementById('terminal-output');
-            out.innerHTML += `
+            const inp = document.getElementById('terminal-input'); const cmd = inp.value.trim().toLowerCase();
+            const out = document.getElementById('terminal-output'); out.innerHTML += `
 root@portal:~# ${cmd}
 `;
-            
-            if(cmd === 'help') out.innerHTML += "Available: help, clear, gacha, rgb on/off, whoami";
+            if(cmd === 'help') out.innerHTML += "Available: help, clear, gacha, whoami";
             else if(cmd === 'clear') out.innerHTML = "";
             else if(cmd === 'whoami') out.innerHTML += `User: ${user.username} | Role: ${user.role}`;
             else if(cmd === 'gacha') openGacha();
-            else if(cmd === 'rgb on') { document.body.classList.add('rgb-mode'); out.innerHTML += "RGB Mode Enabled"; }
-            else if(cmd === 'rgb off') { document.body.classList.remove('rgb-mode'); out.innerHTML += "RGB Mode Disabled"; }
             else out.innerHTML += `Command not found: ${cmd}`;
-            
-            inp.value = '';
-            out.scrollTop = out.scrollHeight;
+            inp.value = ''; out.scrollTop = out.scrollHeight;
         }
-
-        // 4. GACHA SYSTEM
         window.openGacha = () => document.getElementById('gacha-modal').classList.remove('hidden');
         window.closeGacha = () => document.getElementById('gacha-modal').classList.add('hidden');
         window.spinGacha = () => {
@@ -618,85 +586,56 @@ root@portal:~# ${cmd}
             const items = ["zonk", "xp_100", "badge_vip", "zonk", "xp_500", "zonk"];
             const res = items[Math.floor(Math.random() * items.length)];
             const resDiv = document.getElementById('gacha-result');
-            
-            // Animation
-            let i = 0;
-            const interval = setInterval(() => {
-                resDiv.innerText = ["🍎","💎","💩","🚀"][i%4]; i++;
-            }, 100);
-
+            let i = 0; const interval = setInterval(() => { resDiv.innerText = ["🍎","💎","💩","🚀"][i%4]; i++; }, 100);
             setTimeout(() => {
                 clearInterval(interval);
-                // Deduct XP
                 update(ref(rtdb, `users/${user.username}`), {xp: (user.xp||0) - 50});
-                
                 if(res === 'zonk') { resDiv.innerText = "💩"; alert("ZONK!"); }
                 else if(res.startsWith('xp')) { 
-                    const val = parseInt(res.split('_')[1]);
-                    resDiv.innerText = "💎";
-                    update(ref(rtdb, `users/${user.username}`), {xp: (user.xp||0) + val});
-                    alert(`Dapat ${val} XP!`);
-                } else {
-                    resDiv.innerText = "👑"; alert("ITEM LANGKA!");
-                }
-                // Refresh UI locally
-                user.xp -= 50;
-                document.getElementById('p-xp').innerText = user.xp;
+                    const val = parseInt(res.split('_')[1]); resDiv.innerText = "💎";
+                    update(ref(rtdb, `users/${user.username}`), {xp: (user.xp||0) + val}); alert(`Dapat ${val} XP!`);
+                } else { resDiv.innerText = "👑"; alert("ITEM LANGKA!"); }
+                user.xp -= 50; document.getElementById('p-xp').innerText = user.xp;
             }, 2000);
         }
 
-        // 5. PROFILE & RGB & BIO
+        // PROFILE EDIT & GOD MODE
         window.editProfile = async (type) => {
-            // FIX: Correctly updating profile picture and checking user object
-            const {value:url} = await Swal.fire({input:'url', inputLabel: type==='pic'?'URL Foto Baru':'URL Wallpaper Chat (GIF/JPG)', background:'#1e293b', color:'#fff'});
+            if(!user.isPremium && user.role !== 'developer') return Swal.fire("Akses Ditolak","Fitur Premium/Dev Only","warning");
+            const {value:url} = await Swal.fire({input:'url', inputLabel: type==='pic'?'URL Foto Baru':'URL Wallpaper (GIF/JPG)', background:'#1e293b', color:'#fff'});
             if(url) {
                 if(type==='pic') {
                     await update(ref(rtdb, `users/${user.username}`), {profile_pic: url});
-                    user.pic = url; user.profile_pic = url; // Update local object
-                    document.getElementById('p-avatar').src = url;
-                    document.getElementById('nav-avatar').src = url;
+                    user.pic = url; user.profile_pic = url; document.getElementById('p-avatar').src = url; document.getElementById('nav-avatar').src = url;
                 } else {
                     await update(ref(rtdb, `users/${user.username}`), {chat_bg: url});
-                    user.chat_bg = url; 
-                    document.getElementById('chat-bg').style.backgroundImage = `url('${url}')`;
+                    user.chat_bg = url; document.getElementById('chat-bg').style.backgroundImage = `url('${url}')`;
                 }
-                localStorage.setItem('user', JSON.stringify(user));
-                Swal.fire("Sukses","Diperbarui","success");
+                localStorage.setItem('user', JSON.stringify(user)); Swal.fire("Sukses","Diperbarui","success");
             }
         }
-
         window.toggleRGB = () => {
             const chk = document.getElementById('rgb-toggle').checked;
             if(chk) document.body.classList.add('rgb-mode'); else document.body.classList.remove('rgb-mode');
             update(ref(rtdb, `users/${user.username}`), {rgb_mode: chk});
             user.rgb_mode = chk; localStorage.setItem('user', JSON.stringify(user));
         }
-
-        // BIO LINKS LOGIC
         window.addBioLink = async () => {
             const {value:title} = await Swal.fire({input:'text', inputLabel:'Nama Link', background:'#1e293b', color:'#fff'});
             const {value:url} = await Swal.fire({input:'url', inputLabel:'URL Link', background:'#1e293b', color:'#fff'});
-            if(title && url) {
-                const id = Date.now();
-                update(ref(rtdb, `users/${user.username}/bio_links/${id}`), {title, url});
-                renderBioLinks();
-            }
+            if(title && url) { const id = Date.now(); update(ref(rtdb, `users/${user.username}/bio_links/${id}`), {title, url}); renderBioLinks(); }
         }
         function renderBioLinks() {
             onValue(ref(rtdb, `users/${user.username}/bio_links`), s => {
-                const d = s.val();
-                const c = document.getElementById('bio-list'); c.innerHTML = '';
-                if(d) Object.values(d).forEach(l => {
-                    c.innerHTML += `<a href="${l.url}" target="_blank" class="block w-full bg-white/5 p-3 rounded-xl text-white font-bold hover:bg-indigo-600 transition mb-2 border border-white/10 text-center">${l.title}</a>`;
-                });
+                const d = s.val(); const c = document.getElementById('bio-list'); c.innerHTML = '';
+                if(d) Object.values(d).forEach(l => { c.innerHTML += `<a href="${l.url}" target="_blank" class="block w-full bg-white/5 p-3 rounded-xl text-white font-bold hover:bg-indigo-600 transition mb-2 border border-white/10 text-center">${l.title}</a>`; });
             });
         }
-        
-        // 6. BREAKING NEWS UPDATE
-        window.updateBreaking = () => {
-            const msg = document.getElementById('dev-breaking-msg').value;
-            if(msg) set(ref(rtdb, 'site_data/config/breaking'), msg);
+        window.banIP = () => {
+            const ip = document.getElementById('ban-ip-input').value;
+            if(ip) { push(ref(rtdb, 'site_data/blacklist'), ip); alert("IP Banned!"); }
         }
+        window.updateBreaking = () => { const msg = document.getElementById('dev-breaking-msg').value; if(msg) set(ref(rtdb, 'site_data/config/breaking'), msg); }
 
         // RENDERERS (Standard)
         function renderGallery(items) {
@@ -734,7 +673,6 @@ root@portal:~# ${cmd}
             const c = document.getElementById('downloads-grid'); c.innerHTML = '';
             if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-4 rounded-xl flex items-center gap-3 hover:bg-white/5"><i class="fas fa-file-download text-green-400 text-lg"></i><div><h4 class="text-sm font-bold text-white">${f.title}</h4><p class="text-[10px] text-gray-400">${f.type}</p></div></a>`);
         }
-        
         function renderContactList(users) {
             const c = document.getElementById('member-list'); c.innerHTML = '';
             Object.values(users).forEach(u => {
@@ -748,10 +686,6 @@ root@portal:~# ${cmd}
         function renderGroupList(groups) {
             const c = document.getElementById('group-list'); c.innerHTML = '';
             if(groups) Object.entries(groups).forEach(([k,g]) => c.innerHTML += `<div onclick="switchChat('${k}', '${g.name}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer"><div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs"><i class="fas fa-users"></i></div><div class="text-sm font-bold text-white">${g.name}</div></div>`);
-        }
-        function renderAdminUserList(users) {
-             const c = document.getElementById('admin-user-list'); c.innerHTML = '';
-             if(users) Object.entries(users).forEach(([k,u]) => c.innerHTML += `<div class="flex justify-between p-2 bg-white/5 rounded mb-1 items-center"><span class="text-xs font-bold text-white">${u.username}</span><div class="flex gap-1"><button onclick="kickUser('${k}')" class="text-red-400 text-[10px] hover:text-red-200">Kick</button></div></div>`);
         }
 
         window.switchChat = (id, name) => { 
@@ -773,10 +707,34 @@ root@portal:~# ${cmd}
             document.getElementById('detail-modal').classList.remove('hidden');
             document.getElementById('modal-title').innerText = item.title;
             document.getElementById('modal-desc').innerText = item.description||'-';
+            document.getElementById('modal-date').innerText = item.date || '-';
+            document.getElementById('modal-cat').innerText = item.category || 'Info';
+            document.getElementById('btn-download').href = item.url || item.image || item.src;
             const m = document.getElementById('modal-media'); m.innerHTML = "";
             if(item.image || item.src) m.innerHTML = item.type==='video' ? `<video src="${item.image||item.src}" controls class="h-full w-full object-contain"></video>` : `<img src="${item.image||item.src}" class="h-full w-full object-contain">`;
+            
+            onValue(ref(rtdb,`posts/${item.id}/likes`), s=>document.getElementById('modal-likes').innerText=s.val()||0);
+            const l = localStorage.getItem(`liked_${item.id}`); document.getElementById('modal-heart').className = l?"fas fa-heart text-red-500 text-xl":"far fa-heart text-xl";
         }
         
+        window.toggleLike = () => {
+            if(!curItem||user.isGuest) return Swal.fire("Login","Member only.","warning");
+            const k=`liked_${curItem.id}`; const r=ref(rtdb,`posts/${curItem.id}/likes`);
+            // Transaction logic adjusted for reliability
+            runTransaction(r, (currentLikes) => {
+                if (localStorage.getItem(k)) { return (currentLikes || 1) - 1; } 
+                else { return (currentLikes || 0) + 1; }
+            }).then(() => {
+                if(localStorage.getItem(k)) {
+                    localStorage.removeItem(k); 
+                    document.getElementById('modal-heart').className="far fa-heart text-xl";
+                } else {
+                    localStorage.setItem(k,'1'); 
+                    document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active";
+                }
+            });
+        }
+
         window.playMusic = (src,t,a,type) => {
             if(type==='video') return window.open(src,'_blank');
             const p=document.getElementById('sticky-player'), aud=document.getElementById('audio-element'), img=document.getElementById('sp-img');
@@ -807,18 +765,18 @@ root@portal:~# ${cmd}
                     document.getElementById('p-name').innerText = user.username; 
                     document.getElementById('p-avatar').src = user.profile_pic;
                     if(user.isVerified) document.getElementById('p-verified').classList.remove('hidden');
+                    if(user.role==='developer' || user.isPremium) document.getElementById('premium-controls').classList.remove('hidden');
                     if(user.role==='developer') document.getElementById('admin-panel-btn-container').classList.remove('hidden');
+                    if(user.role==='developer') document.getElementById('dev-stats-panel').classList.remove('hidden');
                     onValue(ref(rtdb,`users/${user.username}`),s=>{const d=s.val();if(d){document.getElementById('p-xp').innerText=d.xp||0;document.getElementById('p-inventory').innerText=d.level||0;}});
                 }
             } else if (p==='bio') {
                 renderBioLinks();
             }
-
             document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active'); b.querySelector('i').classList.remove('text-indigo-400');});
             const b = document.getElementById('nav-'+p); if(b) {b.classList.add('active'); b.querySelector('i').classList.add('text-indigo-400');}
             window.scrollTo(0,0);
         }
-        window.kickUser = (uid) => { if(confirm("Hapus User?")) remove(ref(rtdb, `users/${uid}`)); }
         window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
     </script>
 </body>
