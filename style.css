@@ -166,3 +166,55 @@ body {
 .log-type-SYSTEM { border-color: #a855f7; color: #d8b4fe; } /* Ungu */
 
 .log-meta { opacity: 0.5; margin-right: 8px; font-size: 0.8em; }
+
+
+/* --- DEBUG MANAGER V2 (MODERN STYLE) --- */
+#debug-panel {
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+#debug-panel.active { transform: translateY(0); }
+
+/* Filter Tabs */
+.debug-tab {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #64748b;
+    transition: all 0.2s;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid transparent;
+}
+.debug-tab.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
+.debug-tab.tab-error.active { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #fca5a5; }
+.debug-tab.tab-warn.active { background: rgba(234, 179, 8, 0.2); border-color: #eab308; color: #fde047; }
+
+/* Log Items */
+.log-item {
+    padding: 6px 10px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-family: 'Fira Code', monospace;
+    font-size: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.log-item:hover { background: rgba(255,255,255,0.05); }
+
+/* Log Colors */
+.log-type-LOG { border-left: 2px solid #3b82f6; }
+.log-type-WARN { border-left: 2px solid #eab308; background: rgba(234, 179, 8, 0.05); }
+.log-type-ERROR { border-left: 2px solid #ef4444; background: rgba(239, 68, 68, 0.1); }
+.log-type-ACTION { border-left: 2px solid #22c55e; }
+.log-type-SYSTEM { border-left: 2px solid #a855f7; }
+
+.log-header { display: flex; justify-content: space-between; opacity: 0.5; font-size: 9px; }
+.log-content { color: #e2e8f0; word-break: break-all; line-height: 1.4; }
+.log-detail { color: #94a3b8; margin-top: 2px; padding-left: 5px; border-left: 1px solid #475569; }
+
+/* Tombol Floating Berkedip saat Error */
+@keyframes error-pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+.has-error-pulse { animation: error-pulse 1.5s infinite; background-color: #ef4444 !important; }
