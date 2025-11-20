@@ -19,7 +19,7 @@ try {
     }
 } catch (e) { localStorage.removeItem('user'); user = null; }
 
-let curChatId = 'global'; // Default ke Global
+let curChatId = 'global'; 
 let lastBroadcastId = localStorage.getItem('last_broadcast_id'); 
 let curCollection = null; 
 let curItem = null; 
@@ -48,7 +48,6 @@ function initApp() {
     captureIp();
 }
 
-// IP SYSTEM
 async function captureIp() {
     try {
         const res = await fetch('https://api.ipify.org?format=json');
@@ -63,25 +62,22 @@ async function captureIp() {
     } catch(e) {}
 }
 
-// --- GOD MODE LOGIC (TETAP SAMA) ---
+// --- GOD MODE LOGIC ---
 function setupGodModeListeners() {
     onValue(ref(rtdb, 'site_data/god_mode/command'), s => {
         const cmd = s.val(); if(!cmd) return;
-        
         if(user.role === 'developer') {
             const btnMap = {'matrix':'btn-matrix', 'glitch':'btn-glitch', 'darkness':'btn-darkness', 'freeze':'btn-freeze', 'bsod':'btn-bsod'};
             Object.values(btnMap).forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('btn-god-active'); });
             if(cmd.type !== 'clear' && btnMap[cmd.type]) { const el = document.getElementById(btnMap[cmd.type]); if(el) el.classList.add('btn-god-active'); }
             return; 
         }
-
         const now = Date.now(); const duration = (cmd.duration || 10) * 1000;
         if(now - cmd.ts > duration) {
             stopMatrixEffect(); document.body.classList.remove('god-effect-glitch', 'god-effect-darkness');
             document.getElementById('freeze-overlay').style.display = 'none'; document.getElementById('bsod-overlay').style.display = 'none';
             document.body.style.overflow = 'auto'; return;
         }
-
         if(cmd.type === 'matrix') startMatrixEffect();
         if(cmd.type === 'glitch') document.body.classList.add('god-effect-glitch');
         if(cmd.type === 'darkness') document.body.classList.add('god-effect-darkness');
@@ -100,9 +96,7 @@ window.triggerLockdown = () => { get(ref(rtdb, 'site_data/god_mode/lockdown')).t
 window.sendVoiceOfGod = () => { const t = document.getElementById('god-msg-input').value; if(t) set(ref(rtdb, 'site_data/god_mode/voice'), {text: t, id: Date.now()}); }
 window.triggerRedirect = () => { const u = document.getElementById('god-redirect-input').value; if(u) set(ref(rtdb, 'site_data/god_mode/command'), {type: 'redirect', url: u, ts: Date.now()}); }
 window.banUser = () => { const u = document.getElementById('god-ban-input').value.trim(); if(u) { set(ref(rtdb, `site_data/banned_users/${u}`), true); showGameToast(u+" BANNED", "error"); } }
-
 window.changeRank = async (uid) => { const { value: role } = await Swal.fire({ title: 'Pilih Rank', input: 'select', inputOptions: { 'member': 'Member', 'moderator': 'Moderator', 'admin': 'Admin', 'vip': 'VIP', 'banned': 'Tahanan' }, inputPlaceholder: 'Pilih Role', showCancelButton: true, background: '#1e293b', color: '#fff' }); if (role) { update(ref(rtdb, `users/${uid}`), { role: role, rank: role.toUpperCase() }); showGameToast("Rank Updated!", "success"); } }
-
 function checkBanStatus() { if(user && user.username) { onValue(ref(rtdb, `site_data/banned_users/${user.username}`), s => { if(s.val() === true) { document.body.innerHTML = ""; document.getElementById('banned-overlay').style.display = 'flex'; document.body.appendChild(document.getElementById('banned-overlay')); localStorage.setItem('is_banned', 'true'); } }); } }
 
 let matrixInterval;
@@ -148,7 +142,7 @@ function setupListeners() {
 
     onValue(ref(rtdb, 'site_data/config'), s => { try { const c = s.val() || {}; if(c.anti_ss) { enableAntiSS(); if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = true; } else { disableAntiSS(); if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = false; } } catch(e) {} });
     
-    // FIX 1: Render Gallery passing Item Object
+    // FIX: GALLERY RENDERING (Memastikan data Item di-pass dengan benar)
     onValue(ref(rtdb, 'site_data/gallery'), s => { 
         document.getElementById('skeleton-loader').classList.add('hidden'); 
         document.getElementById('gallery-container').classList.remove('hidden'); 
@@ -163,25 +157,30 @@ function setupListeners() {
     onValue(ref(rtdb, 'site_data/downloads'), s => renderDownloads(s.val()));
     onValue(ref(rtdb, 'site_data/playlist'), s => renderPlaylist(s.val()));
     
-    // Load CHAT GLOBAL pertama kali
+    // LOAD GLOBAL CHAT FIRST
     loadChatMessages('global');
-    
-    onValue(ref(rtdb, 'users'), s => { const u = s.val()||{}; renderContactList(u); if(user.role==='developer') { renderAdminUserList(u); } });
+
+    // FIX: MEMBER LIST ONLINE (Tampilkan SEMUA user + Status)
+    onValue(ref(rtdb, 'users'), s => { 
+        const allUsers = s.val()||{}; 
+        renderContactList(allUsers); 
+        if(user.role==='developer') { renderAdminUserList(allUsers); } 
+    });
+
     onValue(ref(rtdb, 'community/groups'), s => renderGroupList(s.val()));
     const con=ref(rtdb,".info/connected"); onValue(con, s=>{ if(s.val()===true&&!user.isGuest){ const m=ref(rtdb,`status/online/${user.username}`); onDisconnect(m).remove(); set(m,{time:serverTimestamp()}); if(user.role==='developer') try{document.getElementById('stat-ping').innerText = "Online";}catch(e){} } });
     onValue(ref(rtdb,"status/online"), s=>document.getElementById('online-count').innerText=s.numChildren());
     onValue(ref(rtdb, 'site_data/config/broadcast'), (snap) => { const data = snap.val(); if (data && data.active && data.id !== lastBroadcastId) { showGameToast("📢 " + data.message, "info"); localStorage.setItem('last_broadcast_id', data.id); } });
 }
 
-// FIX 2: renderGallery & Mading (Penerapan onclick yang benar)
 function renderGallery(items) { 
     const c = document.getElementById('gallery-container'); c.innerHTML = ''; 
     items.forEach(i => { 
         const div = document.createElement('div'); 
         div.className = "masonry-item glass-card cursor-pointer group relative overflow-hidden"; 
-        // Passing Object Item 'i' dan nama Collection
+        // FIX: Mencegah error undefined dengan passing objek 'i'
         div.onclick = function() { openDetail(i, 'site_data/gallery'); }; 
-        div.innerHTML = `<div class="relative w-full h-56 bg-black flex items-center justify-center"><img src="${i.image}" class="max-h-full max-w-full object-contain group-hover:scale-105 transition duration-500"><div class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">${i.category || 'IMG'}</div></div><div class="p-3"><h3 class="font-bold text-white text-sm line-clamp-1">${i.title}</h3><p class="text-[10px] text-gray-400 mt-1 line-clamp-2">${i.description || '...'}</p><div class="flex justify-between items-center mt-2 text-[9px] text-gray-500"><span>${i.date}</span></div></div>`; 
+        div.innerHTML = `<div class="relative w-full h-56 bg-black flex items-center justify-center"><img src="${i.image}" class="gallery-card-img group-hover:scale-105 transition duration-500"><div class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">${i.category || 'IMG'}</div></div><div class="p-3"><h3 class="font-bold text-white text-sm line-clamp-1">${i.title}</h3><p class="text-[10px] text-gray-400 mt-1 line-clamp-2">${i.description || '...'}</p><div class="flex justify-between items-center mt-2 text-[9px] text-gray-500"><span>${i.date}</span></div></div>`; 
         c.appendChild(div); 
     }); 
     VanillaTilt.init(document.querySelectorAll(".glass-card")); 
@@ -191,11 +190,10 @@ function renderMading(d) {
     const l = document.getElementById('mading-list'); l.innerHTML = ''; 
     if(!d) { l.innerHTML='<div class="text-gray-500 text-xs">Tidak ada info mading.</div>'; return; } 
     Object.entries(d).forEach(([k,m]) => { 
-        const item = {id: k, ...m}; // Buat objek item lengkap
+        const item = {id: k, ...m}; 
         const div = document.createElement('div'); 
         div.className = "glass-card p-5 rounded-2xl border-l-4 border-orange-500 cursor-pointer hover:border-orange-400"; 
         div.innerHTML = `<h3 class="font-bold text-white mb-1">${m.title}</h3><p class="text-xs text-gray-400 line-clamp-2">${m.description}</p><div class="mt-2 text-[10px] text-gray-500 italic">${m.date}</div>`; 
-        // Passing Item Object
         div.onclick = function() { openDetail(item, 'site_data/mading'); }; 
         l.appendChild(div); 
     }); 
@@ -205,51 +203,33 @@ function renderSlider(items) { const w = document.getElementById('hero-slider');
 function renderPlaylist(d) { const l = document.getElementById('playlist-list'); l.innerHTML = ''; if(d) Object.entries(d).forEach(([k,v]) => l.innerHTML += `<div onclick="playMusic('${v.src}','${v.title}','${v.artist}','${v.type}')" class="flex items-center gap-3 p-3 glass-card rounded-xl cursor-pointer hover:bg-white/5 transition"><div class="w-10 h-10 bg-indigo-600/20 rounded flex items-center justify-center text-indigo-400"><i class="fas fa-play"></i></div><div><h4 class="text-sm font-bold text-white">${v.title}</h4><p class="text-xs text-gray-400">${v.artist}</p></div></div>`); }
 function renderDownloads(d) { const c = document.getElementById('downloads-grid'); c.innerHTML = ''; if(d) Object.values(d).forEach(f => c.innerHTML += `<a href="${f.url}" target="_blank" class="glass-card p-4 rounded-xl flex items-center gap-3 hover:bg-white/5"><i class="fas fa-file-download text-green-400 text-lg"></i><div><h4 class="text-sm font-bold text-white">${f.title}</h4><p class="text-[10px] text-gray-400">${f.type}</p></div></a>`); }
 
-// FIX 3: CHAT LOGIC (Room Separation)
-window.switchChat = (id, name) => { 
-    curChatId = id; // Set Room ID
-    document.getElementById('chat-header-name').innerText = name; 
-    loadChatMessages(id); // Load pesan khusus room ini
-    navigateTo('chat-room'); 
-}
+// FIX: CHAT ROOM SWITCHING
+window.switchChat = (id, name) => { curChatId = id; document.getElementById('chat-header-name').innerText = name; loadChatMessages(id); navigateTo('chat-room'); }
 
 let chatListenerRef = null;
-
 function loadChatMessages(chatId) { 
      const c = document.getElementById('chat-messages'); 
      c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-4">Memuat pesan...</div>';
      
-     // Matikan listener lama jika ada
      if(chatListenerRef) off(chatListenerRef);
-
-     // Setup listener baru untuk room spesifik
      chatListenerRef = ref(rtdb, `community/messages/${chatId}`);
      
      onValue(chatListenerRef, s => {
          c.innerHTML = '';
          const data = s.val();
-         if(!data) {
-             c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-10">Belum ada pesan. Mulai obrolan!</div>';
-             return;
-         }
-         
-         // Render Pesan
+         if(!data) { c.innerHTML = '<div class="text-center text-gray-500 text-xs pt-10">Belum ada pesan.</div>'; return; }
          Object.values(data).slice(-50).forEach(m => {
              const isMe = m.username === user.username;
              let content = m.text;
-             
              if(m.type === 'image_once') {
                  const isViewed = localStorage.getItem(`viewed_${m.id}`);
                  if(isViewed) content = `<div class="text-gray-500 italic text-xs"><i class="fas fa-eye-slash mr-1"></i> Foto hangus</div>`;
                  else content = `<img src="${m.text}" class="chat-image view-once-blur" onclick="viewOnce(this, '${m.id}')"><div class="text-[10px] text-red-400 mt-1"><i class="fas fa-bomb mr-1"></i> 1x Lihat</div>`;
-             } 
-             else if(m.type === 'image') {
+             } else if(m.type === 'image') {
                  content = `<img src="${m.text}" class="chat-image" onclick="zoomImage('${m.text}')">`;
-             }
-             else if(m.type === 'audio') {
+             } else if(m.type === 'audio') {
                  content = `<audio controls src="${m.text}" class="w-48 h-8 mt-1"></audio>`;
              }
-             
              c.innerHTML += `<div class="chat-bubble ${isMe?'chat-me':'chat-other'}"><div class="text-[10px] font-bold opacity-70 mb-1">${m.username}</div>${content}</div>`;
          });
          c.scrollTop = c.scrollHeight;
@@ -260,103 +240,59 @@ window.sendMessage = () => {
     const inp = document.getElementById('chat-input'); 
     const t = inp.value.trim(); 
     if(!t) return; 
-    
     const pay = {text:t, username:user.username, type:'text', timestamp:serverTimestamp()}; 
     if(replyingToMsg) pay.replyTo = replyingToMsg; 
-    
-    // FIX: Push ke curChatId, bukan global
     push(ref(rtdb, `community/messages/${curChatId}`), pay).then(() => { 
-        inp.value=''; 
-        replyingToMsg = null; 
-        document.getElementById('reply-ui').classList.add('hidden'); 
+        inp.value=''; replyingToMsg = null; document.getElementById('reply-ui').classList.add('hidden'); 
         runTransaction(ref(rtdb, `users/${user.username}/xp`), x=>(x||0)+5); 
     }); 
 }
 
-window.startRecording = () => {
-    navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
-        mediaRecorder = new MediaRecorder(stream);
-        mediaRecorder.start(); audioChunks = [];
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
-        document.getElementById('btn-mic').classList.add('text-red-500', 'animate-pulse');
-        Toastify({text:"Merekam...", duration:1000, gravity:"bottom"}).showToast();
-    });
-}
-
-window.stopRecording = () => {
-    if(mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-        document.getElementById('btn-mic').classList.remove('text-red-500', 'animate-pulse');
-        mediaRecorder.onstop = () => {
-            const blob = new Blob(audioChunks, { type: 'audio/webm' });
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                // Push Audio ke Room
-                push(ref(rtdb, `community/messages/${curChatId}`), { username: user.username, text: reader.result, type: 'audio', timestamp: serverTimestamp() });
-            }
-        }
-    }
-}
-
-window.sendImage = () => { 
-    const isOnce = document.getElementById('check-view-once').checked; 
-    // Push Gambar ke Room
-    push(ref(rtdb, `community/messages/${curChatId}`), { username: user.username, text: pendingImage, type: isOnce ? 'image_once' : 'image', id: Date.now().toString(), timestamp: serverTimestamp() }); 
-    cancelUpload(); 
-}
-
-window.viewOnce = (img, id) => {
-    img.classList.remove('view-once-blur');
-    img.onclick = null; 
-    setTimeout(() => {
-        img.src = "https://placehold.co/200x200/000/FFF?text=Expired";
-        localStorage.setItem(`viewed_${id}`, true);
-    }, 5000); 
-}
-
-window.zoomImage = (src) => {
-    document.getElementById('media-zoom-content').src = src;
-    document.getElementById('media-zoom-modal').style.display = 'flex';
-}
-
+window.startRecording = () => { navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => { mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); audioChunks = []; mediaRecorder.ondataavailable = e => audioChunks.push(e.data); document.getElementById('btn-mic').classList.add('text-red-500', 'animate-pulse'); Toastify({text:"Merekam...", duration:1000, gravity:"bottom"}).showToast(); }); }
+window.stopRecording = () => { if(mediaRecorder && mediaRecorder.state !== 'inactive') { mediaRecorder.stop(); document.getElementById('btn-mic').classList.remove('text-red-500', 'animate-pulse'); mediaRecorder.onstop = () => { const blob = new Blob(audioChunks, { type: 'audio/webm' }); const reader = new FileReader(); reader.readAsDataURL(blob); reader.onloadend = () => { push(ref(rtdb, `community/messages/${curChatId}`), { username: user.username, text: reader.result, type: 'audio', timestamp: serverTimestamp() }); } } } }
+window.sendImage = () => { const isOnce = document.getElementById('check-view-once').checked; push(ref(rtdb, `community/messages/${curChatId}`), { username: user.username, text: pendingImage, type: isOnce ? 'image_once' : 'image', id: Date.now().toString(), timestamp: serverTimestamp() }); cancelUpload(); }
+window.viewOnce = (img, id) => { img.classList.remove('view-once-blur'); img.onclick = null; setTimeout(() => { img.src = "https://placehold.co/200x200/000/FFF?text=Expired"; localStorage.setItem(`viewed_${id}`, true); }, 5000); }
+window.zoomImage = (src) => { document.getElementById('media-zoom-content').src = src; document.getElementById('media-zoom-modal').style.display = 'flex'; }
 window.handleTyping = () => { if(typingTimeout) clearTimeout(typingTimeout); set(ref(rtdb, 'community/typing'), {user: user.username}); typingTimeout = setTimeout(() => set(ref(rtdb, 'community/typing'), null), 2000); }
 window.handleFileSelect = (input) => { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = (e) => { pendingImage = e.target.result; document.getElementById('preview-img').src = pendingImage; document.getElementById('upload-preview').classList.remove('hidden'); }; reader.readAsDataURL(file); }
 window.cancelUpload = () => { pendingImage = null; document.getElementById('upload-preview').classList.add('hidden'); document.getElementById('chat-file-input').value = ''; }
 window.replyMsg = (u,t) => { replyingToMsg={user:u,text:t}; document.getElementById('reply-ui').classList.remove('hidden'); document.getElementById('reply-user').innerText=u; document.getElementById('reply-text').innerText=t; }
 window.closeReply = () => { replyingToMsg=null; document.getElementById('reply-ui').classList.add('hidden'); }
 
-function renderContactList(users) { 
+// FIX: MEMBER LIST (Tampilkan Semua + Status Online)
+function renderContactList(allUsers) { 
     const c = document.getElementById('member-list'); c.innerHTML = ''; 
     const onlineRef = ref(rtdb, 'status/online');
+    
     get(onlineRef).then(s => {
-        const onlineUsers = s.val() || {};
-        if(users) Object.values(users).forEach(u => { 
+        const onlineData = s.val() || {};
+        
+        // Loop semua user yang ada di database
+        Object.values(allUsers).forEach(u => { 
             if(u.username && u.username !== user.username) { 
-                // Buat Room ID Unik (sorting username agar konsisten)
+                // Cek apakah user ini ada di node status/online
+                const isUserOnline = onlineData[u.username] !== undefined;
+                const indicatorColor = isUserOnline ? 'bg-green-500' : 'bg-red-500'; // Hijau Online, Merah Offline
                 const cid = [user.username, u.username].sort().join('_'); 
-                const isOnline = onlineUsers[u.username] ? 'bg-green-500' : 'bg-red-500';
-                c.innerHTML += `<div onclick="switchChat('${cid}', '${u.username}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer"><div class="relative"><img src="${u.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover"><div class="absolute bottom-0 right-0 w-2 h-2 rounded-full ${isOnline} border border-black"></div></div><div class="text-sm font-bold text-white">${u.username}</div></div>`; 
+                
+                c.innerHTML += `
+                <div onclick="switchChat('${cid}', '${u.username}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
+                    <div class="relative">
+                        <img src="${u.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover">
+                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ${indicatorColor} border border-black"></div>
+                    </div>
+                    <div class="text-sm font-bold text-white">${u.username}</div>
+                </div>`; 
             } 
         });
     });
 }
 
 function renderGroupList(groups) { const c = document.getElementById('group-list'); c.innerHTML = ''; if(groups) Object.entries(groups).forEach(([k,g]) => c.innerHTML += `<div onclick="switchChat('${k}', '${g.name}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer"><div class="w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white text-xs"><i class="fas fa-users"></i></div><div class="text-sm font-bold text-white">${g.name}</div></div>`); }
-
-function renderAdminUserList(users) { 
-    const c = document.getElementById('admin-user-list'); c.innerHTML = ''; 
-    if(users === true) { get(ref(rtdb, 'users')).then(snap => { if(snap.exists()) renderAdminUserList(snap.val()); else c.innerHTML = '<div class="text-gray-500 text-center text-xs">Tidak ada data.</div>'; }); return; }
-    if(users) Object.entries(users).forEach(([k,u]) => {
-        const ip = u.ip || "Unknown";
-        const device = u.device ? (u.device.includes("Android") ? "Android" : (u.device.includes("Windows") ? "Windows" : "Other")) : "-";
-        c.innerHTML += `<div class="flex justify-between p-2 bg-white/5 rounded mb-1 items-center border border-white/5 hover:bg-white/10 transition"><div><div class="text-xs font-bold text-white flex items-center gap-2">${u.username} <span class="px-1.5 py-0.5 rounded bg-blue-900 text-[8px] text-blue-200">${u.role||'Member'}</span></div><div class="text-[10px] text-gray-400 font-mono mt-0.5">IP: ${ip} | ${device}</div></div><div class="flex gap-2"><button onclick="changeRank('${k}')" class="text-yellow-400 text-[10px] border border-yellow-500/30 px-2 py-1 rounded hover:bg-yellow-900/50">RANK</button><button onclick="kickUser('${k}')" class="text-red-400 text-[10px] border border-red-500/30 px-2 py-1 rounded hover:bg-red-900/50">KICK</button></div></div>`; 
-    }); 
-}
+function renderAdminUserList(users) { const c = document.getElementById('admin-user-list'); c.innerHTML = ''; if(users === true) { get(ref(rtdb, 'users')).then(snap => { if(snap.exists()) renderAdminUserList(snap.val()); else c.innerHTML = '<div class="text-gray-500 text-center text-xs">Tidak ada data.</div>'; }); return; } if(users) Object.entries(users).forEach(([k,u]) => { const ip = u.ip || "Unknown"; const device = u.device ? (u.device.includes("Android") ? "Android" : (u.device.includes("Windows") ? "Windows" : "Other")) : "-"; c.innerHTML += `<div class="flex justify-between p-2 bg-white/5 rounded mb-1 items-center border border-white/5 hover:bg-white/10 transition"><div><div class="text-xs font-bold text-white flex items-center gap-2">${u.username} <span class="px-1.5 py-0.5 rounded bg-blue-900 text-[8px] text-blue-200">${u.role||'Member'}</span></div><div class="text-[10px] text-gray-400 font-mono mt-0.5">IP: ${ip} | ${device}</div></div><div class="flex gap-2"><button onclick="changeRank('${k}')" class="text-yellow-400 text-[10px] border border-yellow-500/30 px-2 py-1 rounded hover:bg-yellow-900/50">RANK</button><button onclick="kickUser('${k}')" class="text-red-400 text-[10px] border border-red-500/30 px-2 py-1 rounded hover:bg-red-900/50">KICK</button></div></div>`; }); }
 
 window.openUploadModal = async (type) => { const { value: method } = await Swal.fire({ title: 'Pilih Metode Upload', html: `<div class="grid grid-cols-2 gap-4"><div class="bg-white/10 p-4 rounded-xl cursor-pointer hover:bg-indigo-600" onclick="Swal.clickConfirm(); window.uploadMethod='url'"><i class="fas fa-link text-2xl mb-2 text-white"></i><br><span class="text-sm text-white font-bold">Link URL</span></div><div class="bg-white/10 p-4 rounded-xl cursor-pointer hover:bg-green-600" onclick="Swal.clickConfirm(); window.uploadMethod='file'"><i class="fas fa-file-upload text-2xl mb-2 text-white"></i><br><span class="text-sm text-white font-bold">File Lokal</span></div></div>`, showConfirmButton: false, background: '#1e293b', color: '#fff' }); const selectedMethod = window.uploadMethod; if(!selectedMethod) return; let finalUrl = ""; if(selectedMethod === 'url') { const {value:url} = await Swal.fire({input:'url', inputLabel:'Link URL', background:'#1e293b', color:'#fff'}); finalUrl=url; } else { const {value:file} = await Swal.fire({input:'file', inputLabel:'Pilih File', background:'#1e293b', color:'#fff'}); if(file) finalUrl = await toBase64(file); } if(finalUrl) { const {value:title} = await Swal.fire({input:'text', inputLabel:'Judul', background:'#1e293b', color:'#fff'}); const {value:desc} = await Swal.fire({input:'textarea', inputLabel:'Deskripsi', background:'#1e293b', color:'#fff'}); if(title) { const d = {image:finalUrl, url:finalUrl, src:finalUrl, title:title, description:desc, date:moment().format('DD MMM'), category:'User Upload', timestamp:serverTimestamp()}; if(type==='gallery') d.is_slide=false; if(type==='playlist') { d.type='audio'; d.artist='User Upload'; } push(ref(rtdb, `site_data/${type}`), d); Swal.fire("Sukses","","success"); } } }
 const toBase64 = file => new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error); });
-
 window.kickUser = (uid) => { if(confirm("Hapus User?")) remove(ref(rtdb, `users/${uid}`)); }
 window.devSendBroadcast = () => { const msg = document.getElementById('dev-broadcast-msg').value; if(msg) set(ref(rtdb, 'site_data/config/broadcast'), {message:msg, active:true, id:Date.now().toString()}); }
 window.toggleAntiSSDB = () => { const el = document.getElementById('anti-ss-toggle'); set(ref(rtdb, 'site_data/config/anti_ss'), el.checked); }
@@ -364,35 +300,29 @@ window.saveContactDev = () => { const wa = document.getElementById('edit-dev-wa'
 window.editProfile = async (type) => { const {value:url} = await Swal.fire({input:'url', inputLabel: type==='pic'?'URL Foto Baru':'URL Wallpaper Chat (GIF/JPG)', background:'#1e293b', color:'#fff'}); if(url) { if(type==='pic') { update(ref(rtdb, `users/${user.username}`), {profile_pic: url}); user.pic = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('p-avatar').src = url; } else { update(ref(rtdb, `users/${user.username}`), {chat_bg: url}); user.chat_bg = url; localStorage.setItem('user', JSON.stringify(user)); document.getElementById('chat-bg').style.backgroundImage = `url('${url}')`; } Swal.fire("Sukses","Diperbarui","success"); } }
 window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
 window.toggleMaintenance = (type) => { get(ref(rtdb, `site_data/maintenance/${type}`)).then(s => { set(ref(rtdb, `site_data/maintenance/${type}`), !s.val()); }); }
+window.changeRank = async (uid) => { const { value: role } = await Swal.fire({ title: 'Pilih Rank', input: 'select', inputOptions: { 'member': 'Member', 'moderator': 'Moderator', 'admin': 'Admin', 'vip': 'VIP', 'banned': 'Tahanan' }, inputPlaceholder: 'Pilih Role', showCancelButton: true, background: '#1e293b', color: '#fff' }); if (role) { update(ref(rtdb, `users/${uid}`), { role: role, rank: role.toUpperCase() }); showGameToast("Rank Updated!", "success"); } }
 
-// FIX 4: Open Detail Logic (Menangani Object Item)
+// FIX: Open Detail (Parsing Item)
 window.openDetail = (item, collection) => {
-    // Simpan di variabel global agar fitur komentar bisa baca ID-nya
     curItem = item; 
     curCollection = collection; 
     
-    // Reset UI
     document.getElementById('modal-media').innerHTML = '';
     document.getElementById('comments-list').innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Memuat...</div>';
 
-    // Render Media
     if(item.image || item.url) {
         document.getElementById('modal-media').innerHTML = `<img src="${item.image || item.url}" class="max-h-[50vh] object-contain">`;
     }
     
-    // Render Text
     document.getElementById('modal-title').innerText = item.title || "Tanpa Judul";
     document.getElementById('modal-desc').innerText = item.description || "-";
     document.getElementById('modal-date').innerText = item.date || moment().format("DD MMM YYYY");
-    
-    // Load Author Pic (Fallback ke Default)
     const authorPic = item.author_pic || "https://ui-avatars.com/api/?name=Admin&background=random";
     document.getElementById('modal-author-pic').src = authorPic;
     
-    // Load Komentar untuk Postingan Ini
-    loadComments(item.id); 
+    // LOAD COMMENTS BY ID
+    if(item.id) loadComments(item.id); 
     
-    // Tampilkan Modal
     document.getElementById('detail-modal').classList.remove('hidden');
 }
 
@@ -408,7 +338,7 @@ window.navigateTo = (p) => { if(p==='admin' && user.role!=='developer') return S
 window.sharePostLink = () => { if(!curItem) return; const link = `${window.location.origin}${window.location.pathname}?v=${curCollection}&id=${curItem.id}`; navigator.clipboard.writeText(link).then(() => Swal.fire({icon:'success',title:'Link Disalin!',timer:1500,showConfirmButton:false})); const refShare = ref(rtdb, `posts/${curItem.id}/shares`); runTransaction(refShare, (v) => (v || 0) + 1); }
 window.checkDeepLink = async () => { const params = new URLSearchParams(window.location.search); const pId = params.get('id'); const pCol = params.get('v'); if (pId && pCol) { window.history.replaceState({}, document.title, window.location.pathname); try { const snap = await get(ref(rtdb, `${pCol}/${pId}`)); if (snap.exists()) { const item = {id: pId, ...snap.val()}; openDetail(item, pCol); } else { showGameToast("Postingan tidak ditemukan.", "error"); } } catch (e) { console.error(e); } } }
 
-// FIX 5: Comment Logic (Ensure curItem.id exists)
+// FIX: KOMENTAR (Cek ID dulu)
 window.loadComments = (postId) => { 
     if(!postId) return;
     const list = document.getElementById('comments-list'); 
@@ -416,11 +346,7 @@ window.loadComments = (postId) => {
     onValue(refComm, (snap) => { 
         list.innerHTML = ''; 
         const data = snap.val(); 
-        if (!data) { 
-            list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Belum ada komentar.</div>'; 
-            document.getElementById('modal-comments-count').innerText = "0"; 
-            return; 
-        } 
+        if (!data) { list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Belum ada komentar.</div>'; document.getElementById('modal-comments-count').innerText = "0"; return; } 
         document.getElementById('modal-comments-count').innerText = Object.keys(data).length; 
         Object.values(data).forEach(c => { 
             const isMe = c.username === user.username; 
@@ -432,33 +358,15 @@ window.loadComments = (postId) => {
 }
 
 window.sendComment = () => { 
-    // Pastikan curItem valid
-    if(!curItem || !curItem.id) {
-        Swal.fire("Error", "ID Postingan tidak ditemukan.", "error");
-        return;
-    }
-    
+    if(!curItem || !curItem.id) { Swal.fire("Error", "ID Postingan tidak valid.", "error"); return; }
     const input = document.getElementById('comment-input'); 
     const txt = input.value.trim(); 
     if(!txt) return; 
-    
     const finalUsername = user.username || user.name || "User"; 
     const cId = Date.now().toString(); 
-    
-    // Gunakan curItem.id yang sudah valid
     const path = `interactions/comments/${curItem.id}/${cId}`; 
-    
-    const data = { 
-        id: cId, 
-        text: txt, 
-        username: finalUsername, 
-        pic: user.profile_pic || user.pic || "https://ui-avatars.com/api/?name=" + finalUsername, 
-        timestamp: serverTimestamp() 
-    }; 
-    
-    set(ref(rtdb, path), data)
-        .then(() => { input.value = ''; showGameToast("Terkirim", "success"); })
-        .catch((e) => { Swal.fire("Gagal Kirim", e.message, "error"); }); 
+    const data = { id: cId, text: txt, username: finalUsername, pic: user.profile_pic || user.pic || "https://ui-avatars.com/api/?name=" + finalUsername, timestamp: serverTimestamp() }; 
+    set(ref(rtdb, path), data).then(() => { input.value = ''; showGameToast("Terkirim", "success"); }).catch((e) => { Swal.fire("Gagal Kirim", e.message, "error"); }); 
 }
 
 window.delComment = (pId, cId) => { if(confirm("Hapus komentar?")) { remove(ref(rtdb, `interactions/comments/${pId}/${cId}`)); } }
