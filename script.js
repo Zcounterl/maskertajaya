@@ -196,7 +196,14 @@ async function captureIp() {
     } catch(e) {}
 }
 
-// --- FIREBASE LISTENERS (CORE DATA) ---
+
+
+
+
+
+
+
+// --- GANTI SATU BLOK FUNGSI INI ---
 
 function setupListeners() {
     // 1. Config & Maintenance
@@ -215,14 +222,9 @@ function setupListeners() {
 
     onValue(ref(rtdb, 'site_data/maintenance'), s => {
         const m = s.val() || {};
-        // Lockdown Global
-        if(m.all && user.role !== 'developer') {
-            document.getElementById('lockdown-overlay').style.display = 'flex';
-        } else {
-            document.getElementById('lockdown-overlay').style.display = 'none';
-        }
+        if(m.all && user.role !== 'developer') document.getElementById('lockdown-overlay').style.display = 'flex';
+        else document.getElementById('lockdown-overlay').style.display = 'none';
         
-        // Fitur Spesifik
         if(m.chat && user.role !== 'developer') { 
             document.getElementById('maintenance-chat').classList.remove('hidden'); 
             document.getElementById('chat-dash-content').classList.add('hidden'); 
@@ -239,14 +241,10 @@ function setupListeners() {
             document.getElementById('gallery-container').classList.remove('hidden'); 
         }
         
-        // Dev Toggle Update
         if(user.role === 'developer') {
             ['all','chat','gallery','upload'].forEach(k => {
                 const el = document.getElementById('mt-'+k);
-                if(el) { 
-                    if(m[k]) el.classList.add('toggle-active'); 
-                    else el.classList.remove('toggle-active'); 
-                }
+                if(el) { if(m[k]) el.classList.add('toggle-active'); else el.classList.remove('toggle-active'); }
             });
         }
     });
@@ -271,19 +269,17 @@ function setupListeners() {
     onValue(ref(rtdb, 'site_data/playlist'), s => renderPlaylist(s.val()));
     
     // 4. Chat & Users
-    loadChatMessages('global'); // Default room
+    loadChatMessages('global');
     
     onValue(ref(rtdb, 'users'), s => { 
         const allUsers = s.val() || {}; 
         renderContactList(allUsers); 
-        if(user.role === 'developer') { 
-            renderAdminUserList(allUsers); 
-        } 
+        if(user.role === 'developer') { renderAdminUserList(allUsers); } 
     });
 
     onValue(ref(rtdb, 'community/groups'), s => renderGroupList(s.val()));
     
-    // 5. Presence System
+    // 5. Presence System (Online Status)
     const con = ref(rtdb, ".info/connected"); 
     onValue(con, s => { 
         if(s.val() === true && !user.isGuest) { 
@@ -293,7 +289,13 @@ function setupListeners() {
             if(user.role === 'developer') try{document.getElementById('stat-ping').innerText = "Online";}catch(e){} 
         } 
     });
-    onValue(ref(rtdb, "status/online"), s => document.getElementById('online-count').innerText = s.numChildren());
+
+    // --- [PERBAIKAN ERROR MERAH DI SINI] ---
+    // Dulu pakai s.numChildren(), sekarang pakai s.size agar lebih aman
+    onValue(ref(rtdb, "status/online"), s => {
+        const count = s.exists() ? s.size : 0;
+        document.getElementById('online-count').innerText = count;
+    });
     
     // 6. Broadcast System
     onValue(ref(rtdb, 'site_data/config/broadcast'), (snap) => { 
@@ -304,6 +306,17 @@ function setupListeners() {
         } 
     });
 }
+
+
+
+
+
+
+
+
+
+
+
 
 // --- RENDERING FUNCTIONS ---
 
@@ -354,17 +367,26 @@ function renderMading(d) {
     }); 
 }
 
+// GANTI FUNGSI renderSlider DENGAN INI:
 function renderSlider(items) { 
     const w = document.getElementById('hero-slider'); 
-    w.innerHTML = items && items.length 
-        ? items.map(i => `<div class="swiper-slide"><img src="${i.image}" class="w-full h-full object-cover"></div>`).join('') 
-        : `<div class="swiper-slide"><img src="https://via.placeholder.com/800x400/1e293b/ffffff?text=Portal+Sekolah" class="w-full h-full object-cover"></div>`; 
     
+    // Cek apakah ada item
+    if (items && items.length > 0) {
+        w.innerHTML = items.map(i => `<div class="swiper-slide"><img src="${i.image}" class="w-full h-full object-cover"></div>`).join('');
+    } else {
+        // Gambar Default jika kosong
+        w.innerHTML = `<div class="swiper-slide"><img src="https://via.placeholder.com/800x400/1e293b/ffffff?text=Portal+Sekolah" class="w-full h-full object-cover"></div>`;
+    }
+
+    // Hanya aktifkan loop jika gambar lebih dari 1
+    const enableLoop = items && items.length > 1;
+
     new Swiper(".mySwiper", { 
-        loop: true, 
-        autoplay: {delay:4000}, 
-        pagination: {el:".swiper-pagination"}, 
-        effect:'fade' 
+        loop: enableLoop, 
+        autoplay: { delay: 4000, disableOnInteraction: false }, 
+        pagination: { el: ".swiper-pagination", clickable: true }, 
+        effect: 'fade' 
     }); 
 }
 
@@ -713,16 +735,33 @@ window.deleteContent = () => { if(confirm("Hapus Permanen?")) { remove(ref(rtdb,
 window.toggleLike = () => { const k=`liked_${curItem.id}`; const r=ref(rtdb,`posts/${curItem.id}/likes`); if(localStorage.getItem(k)) { runTransaction(r,v=>(v||0)-1); localStorage.removeItem(k); document.getElementById('modal-heart').className="far fa-heart text-xl"; } else { runTransaction(r,v=>(v||0)+1); localStorage.setItem(k,'1'); document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active"; } }
 
 // --- MODERN MUSIC PLAYER (DYNAMIC ISLAND) ---
-window.playMusic = (src,t,a,type) => { 
-    const p=document.getElementById('sticky-player'), aud=document.getElementById('audio-element');
+// GANTI FUNGSI playMusic DENGAN INI:
+window.playMusic = (src, t, a, type) => { 
+    const p = document.getElementById('sticky-player');
+    
+    // Update tampilan Player (Dan sertakan <audio> di dalamnya agar tidak hilang)
     p.innerHTML = `
         <img src="https://cdn-icons-png.flaticon.com/512/3844/3844724.png" class="music-cover-spin">
-        <div class="music-info"><div class="music-title">${t}</div><div class="music-artist">${a}</div></div>
-        <div class="visualizer playing"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+        <div class="music-info">
+            <div class="music-title">${t}</div>
+            <div class="music-artist">${a}</div>
+        </div>
+        <div class="visualizer playing">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        </div>
         <button onclick="togglePlay()" class="btn-play-modern"><i id="sp-icon" class="fas fa-pause"></i></button>
         <button onclick="closePlayer()" class="text-gray-500 hover:text-white ml-2"><i class="fas fa-times"></i></button>
+        <audio id="audio-element" class="hidden"></audio> 
     `;
-    p.classList.add('active'); aud.src=src; aud.play(); 
+    
+    p.classList.add('active'); 
+    
+    // Ambil elemen audio SETELAH dibuat ulang oleh innerHTML di atas
+    const aud = document.getElementById('audio-element');
+    if(aud) {
+        aud.src = src; 
+        aud.play().catch(e => showGameToast("Gagal memutar audio", "error")); 
+    }
 }
 window.togglePlay = () => { const a=document.getElementById('audio-element'), viz = document.querySelector('.visualizer'), cov = document.querySelector('.music-cover-spin'); if(a.paused) { a.play(); document.getElementById('sp-icon').className="fas fa-pause"; if(viz) { viz.classList.remove('paused'); viz.classList.add('playing'); } if(cov) cov.classList.remove('paused'); } else { a.pause(); document.getElementById('sp-icon').className="fas fa-play"; if(viz) { viz.classList.remove('playing'); viz.classList.add('paused'); } if(cov) cov.classList.add('paused'); } }
 window.closePlayer = () => { document.getElementById('audio-element').pause(); document.getElementById('sticky-player').classList.remove('active'); }
@@ -845,27 +884,83 @@ const preventCapture = e => { if (e.key === 'PrintScreen' || (e.ctrlKey && (e.ke
 
 
 // ==========================================
-// 🐞 SISTEM DEBUG MANAJER (MANAJER KUMBANG)
+// 🐞 SISTEM DEBUG MANAJER V2 (MODERN)
 // ==========================================
 // Tempel ini di baris paling akhir script.js
 
 const debugContainer = document.getElementById('debug-logs-container');
-const MAX_LOGS = 200;
+const MAX_LOGS = 300;
+let currentFilter = 'ALL';
 
-// Fungsi nambah log ke panel hitam
+// Fungsi Nambah Log
 function addLog(type, message, detail = '') {
     if (!debugContainer) return;
+
     const div = document.createElement('div');
     div.className = `log-item log-type-${type}`;
+    // Tambahkan atribut data-type untuk filtering
+    div.dataset.type = type; 
+    
+    // Logic Filter: Sembunyikan jika tidak sesuai filter aktif
+    if (currentFilter !== 'ALL' && currentFilter !== type) {
+        div.style.display = 'none';
+    }
+
     const time = new Date().toLocaleTimeString().split(' ')[0];
-    if (typeof message === 'object') { try { message = JSON.stringify(message); } catch(e) { message = '[Object]'; } }
-    div.innerHTML = `<span class="log-meta">[${time}] ${type}</span><span class="font-bold">${message}</span>${detail ? `<div class="text-[9px] text-gray-400 mt-1 pl-2 border-l border-white/20">${detail}</div>` : ''}`;
+    if (typeof message === 'object') { try { message = JSON.stringify(message, null, 2); } catch(e) { message = '[Object]'; } }
+
+    div.innerHTML = `
+        <div class="log-header">
+            <span>${type}</span>
+            <span>${time}</span>
+        </div>
+        <div class="log-content">${message}</div>
+        ${detail ? `<div class="log-detail">${detail}</div>` : ''}
+    `;
+
+    // Auto Scroll jika user ada di bawah
+    const isAtBottom = debugContainer.scrollHeight - debugContainer.scrollTop === debugContainer.clientHeight;
     debugContainer.appendChild(div);
-    debugContainer.scrollTop = debugContainer.scrollHeight;
+    if (isAtBottom) debugContainer.scrollTop = debugContainer.scrollHeight;
+
+    // Limit Logs
     if (debugContainer.childElementCount > MAX_LOGS) debugContainer.removeChild(debugContainer.firstChild);
+
+    // Efek Visual Error di Tombol
+    if (type === 'ERROR') {
+        const btn = document.getElementById('debug-floating-btn');
+        const badge = document.getElementById('debug-badge');
+        if(btn) btn.classList.add('has-error-pulse');
+        if(badge) badge.classList.remove('hidden');
+    }
 }
 
-// Bajak Console (Supaya error tampil di layar HP)
+// Logic Filter Tab
+window.filterLogs = (type) => {
+    currentFilter = type;
+    // Update UI Tombol
+    document.querySelectorAll('.debug-tab').forEach(b => b.classList.remove('active'));
+    if(type==='ALL') document.getElementById('tab-all').classList.add('active');
+    else if(type==='LOG') document.getElementById('tab-log').classList.add('active');
+    else if(type==='WARN') document.getElementById('tab-warn').classList.add('active');
+    else if(type==='ERROR') document.getElementById('tab-error').classList.add('active');
+
+    // Filter Elemen
+    const logs = debugContainer.children;
+    for (let log of logs) {
+        if (type === 'ALL' || log.dataset.type === type) log.style.display = 'flex';
+        else log.style.display = 'none';
+    }
+    // Auto scroll to bottom on filter change
+    debugContainer.scrollTop = debugContainer.scrollHeight;
+}
+
+window.copyDebugLogs = () => {
+    const text = debugContainer.innerText;
+    navigator.clipboard.writeText(text).then(() => showGameToast("Log disalin!", "success"));
+}
+
+// Bajak Console
 const originalLog = console.log;
 const originalWarn = console.warn;
 const originalError = console.error;
@@ -874,70 +969,50 @@ console.log = function(...args) { originalLog(...args); if (isDev()) addLog('LOG
 console.warn = function(...args) { originalWarn(...args); if (isDev()) addLog('WARN', args.join(' ')); };
 console.error = function(...args) { originalError(...args); if (isDev()) addLog('ERROR', args.join(' ')); };
 
-// Deteksi User Developer / God Mode
 function isDev() {
     return user && (user.role === 'developer' || user.rank === 'GOD MODE' || user.username === 'sigit123');
 }
 
-// Spy Klik (Melacak apa yang dipencet)
 document.addEventListener('click', (e) => {
     if (isDev()) {
         const target = e.target;
-        const text = target.innerText ? `"${target.innerText.substring(0, 15)}..."` : '';
-        addLog('ACTION', `Click: ${target.tagName}`, text);
+        const elName = target.tagName + (target.id ? `#${target.id}` : '') + (target.className ? `.${target.className.split(' ')[0]}` : '');
+        addLog('ACTION', `Click: ${elName}`);
     }
 }, true);
 
-// Tangkap Error Merah
 window.onerror = function(msg, url, lineNo) {
-    if (isDev()) addLog('ERROR', 'SYSTEM CRASH', `${msg}\nLine: ${lineNo}`);
+    if (isDev()) addLog('ERROR', 'CRASH', `${msg}\n@Line: ${lineNo}`);
     return false;
 };
 
-// Fungsi Tombol UI
-// Fungsi Tombol UI (FIXED V34.13)
+// UI Control (Fixed Hidden Logic)
 window.toggleDebugPanel = () => {
     const panel = document.getElementById('debug-panel');
+    const btn = document.getElementById('debug-floating-btn');
+    const badge = document.getElementById('debug-badge');
     
-    // Logika Baru: Cek apakah sedang sembunyi?
     if (panel.classList.contains('hidden')) {
-        // 1. Hapus hidden dulu biar muncul
         panel.classList.remove('hidden');
-        // 2. Tunggu dikit, baru geser ke atas (biar animasi jalan)
         setTimeout(() => panel.classList.add('active'), 10);
+        // Reset notifikasi error saat dibuka
+        btn.classList.remove('has-error-pulse');
+        badge.classList.add('hidden');
     } else {
-        // 1. Geser ke bawah dulu
         panel.classList.remove('active');
-        // 2. Tunggu animasi selesai (300ms), baru sembunyikan total
         setTimeout(() => panel.classList.add('hidden'), 300);
     }
-
-    // Cek Memori HP
-    if (performance && performance.memory) {
-        const mem = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
-        document.getElementById('debug-memory').innerText = `Mem: ${mem}MB`;
-    }
 }
-window.clearDebugLogs = () => { if(debugContainer) debugContainer.innerHTML = ''; addLog('SYSTEM', 'Log dibersihkan.'); }
+window.clearDebugLogs = () => { if(debugContainer) debugContainer.innerHTML = ''; addLog('SYSTEM', 'Log Cleared.'); }
 window.execDebugCmd = (input) => {
     const cmd = input.value; addLog('SYSTEM', 'Exec:', cmd);
     try { const result = eval(cmd); addLog('LOG', 'Result:', result); } catch (e) { addLog('ERROR', 'Exec Failed:', e.message); }
     input.value = '';
 }
 
-// FUNGSI UTAMA: MUNCULKAN TOMBOL
-// Jalan otomatis setiap 2 detik untuk ngecek status login
+// Auto Init
 setInterval(() => {
     const btn = document.getElementById('debug-floating-btn');
-    if (btn && isDev()) {
-        btn.classList.remove('hidden'); // Hapus class hidden biar muncul
-    }
+    if (btn && isDev()) btn.classList.remove('hidden');
 }, 2000);
-
-// Cek awal saat load
-setTimeout(() => {
-    if(isDev()) {
-        addLog('SYSTEM', 'Debug Manajer Siap', 'Selamat datang, Developer!');
-        document.getElementById('debug-floating-btn').classList.remove('hidden');
-    }
-}, 1000);
+setTimeout(() => { if(isDev()) { addLog('SYSTEM', 'Debug V2 Ready.'); document.getElementById('debug-floating-btn').classList.remove('hidden'); } }, 1000);
