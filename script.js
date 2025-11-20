@@ -6,7 +6,7 @@ const app = initializeApp(firebaseConfig); const rtdb = getDatabase(app);
 let user = null;
 let mediaRecorder, audioChunks = [];
 
-// SESSION REPAIR
+// SESSION
 try {
     const saved = localStorage.getItem('user');
     if (saved) {
@@ -53,16 +53,12 @@ async function captureIp() {
         const res = await fetch('https://api.ipify.org?format=json');
         const json = await res.json();
         if(user && user.username) {
-            const updates = {};
-            updates[`users/${user.username}/ip`] = json.ip;
-            updates[`users/${user.username}/last_seen`] = new Date().toISOString();
-            updates[`users/${user.username}/device`] = navigator.userAgent;
-            update(ref(rtdb), updates);
+            update(ref(rtdb, `users/${user.username}`), { ip: json.ip, last_seen: new Date().toISOString(), device: navigator.userAgent });
         }
     } catch(e) {}
 }
 
-// --- GOD MODE LOGIC ---
+// GOD MODE
 function setupGodModeListeners() {
     onValue(ref(rtdb, 'site_data/god_mode/command'), s => {
         const cmd = s.val(); if(!cmd) return;
@@ -86,7 +82,6 @@ function setupGodModeListeners() {
         if(cmd.type === 'clear') { stopMatrixEffect(); document.body.classList.remove('god-effect-glitch', 'god-effect-darkness'); document.getElementById('freeze-overlay').style.display = 'none'; document.getElementById('bsod-overlay').style.display = 'none'; document.body.style.overflow = 'auto'; }
         if(cmd.type === 'redirect' && cmd.url) window.location.href = cmd.url;
     });
-
     onValue(ref(rtdb, 'site_data/god_mode/voice'), s => { const msg = s.val(); if(msg && msg.text && msg.id !== sessionStorage.getItem('last_voice_id')) { sessionStorage.setItem('last_voice_id', msg.id); if(user.role === 'developer') return; try { const u = new SpeechSynthesisUtterance(msg.text); u.lang = 'id-ID'; u.rate = 0.9; window.speechSynthesis.speak(u); } catch(e) {} } });
     onValue(ref(rtdb, 'site_data/god_mode/lockdown'), s => { if(s.val() === true) { const btn = document.getElementById('btn-lockdown'); if(btn) btn.classList.add('btn-god-active'); if(user.role !== 'developer') document.getElementById('lockdown-overlay').style.display = 'flex'; } else { const btn = document.getElementById('btn-lockdown'); if(btn) btn.classList.remove('btn-god-active'); document.getElementById('lockdown-overlay').style.display = 'none'; } });
 }
@@ -102,7 +97,6 @@ function checkBanStatus() { if(user && user.username) { onValue(ref(rtdb, `site_
 let matrixInterval;
 function startMatrixEffect() { const c = document.getElementById('god-layer-matrix'); const ctx = c.getContext('2d'); c.style.display = 'block'; c.width = window.innerWidth; c.height = window.innerHeight; const cols = Array(Math.floor(c.width/20)).fill(0); matrixInterval = setInterval(() => { ctx.fillStyle = '#0001'; ctx.fillRect(0,0,c.width,c.height); ctx.fillStyle = '#0f0'; ctx.font = '15pt monospace'; cols.forEach((y,i) => { const text = String.fromCharCode(Math.random()*128); ctx.fillText(text, i*20, y); cols[i] = y > 100 + Math.random()*10000 ? 0 : y + 20; }); }, 50); }
 function stopMatrixEffect() { clearInterval(matrixInterval); document.getElementById('god-layer-matrix').style.display = 'none'; }
-
 window.openTerminal = () => { document.getElementById('dev-terminal').classList.remove('hidden'); }
 window.closeTerminal = () => { document.getElementById('dev-terminal').classList.add('hidden'); }
 function logToTerm(msg, type='info') { const t = document.getElementById('term-output'); const time = new Date().toLocaleTimeString(); let colorClass = 'log-info'; if(type==='success') colorClass = 'log-success'; if(type==='warn') colorClass = 'log-warn'; if(type==='error') colorClass = 'log-error'; const row = document.createElement('div'); row.className = 'log-entry'; row.innerHTML = `<span class="log-time">[${time}]</span><span class="${colorClass}">${msg}</span>`; t.appendChild(row); t.scrollTop = t.scrollHeight; }
@@ -141,6 +135,7 @@ function setupListeners() {
 
     onValue(ref(rtdb, 'site_data/config'), s => { try { const c = s.val() || {}; if(c.anti_ss) { enableAntiSS(); if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = true; } else { disableAntiSS(); if(user.role === 'developer') document.getElementById('anti-ss-toggle').checked = false; } } catch(e) {} });
     
+    // RENDER GALLERY (FIX UNDEFINED)
     onValue(ref(rtdb, 'site_data/gallery'), s => { 
         document.getElementById('skeleton-loader').classList.add('hidden'); 
         document.getElementById('gallery-container').classList.remove('hidden'); 
@@ -154,6 +149,7 @@ function setupListeners() {
     onValue(ref(rtdb, 'site_data/mading'), s => renderMading(s.val()));
     onValue(ref(rtdb, 'site_data/downloads'), s => renderDownloads(s.val()));
     onValue(ref(rtdb, 'site_data/playlist'), s => renderPlaylist(s.val()));
+    
     loadChatMessages('global');
     onValue(ref(rtdb, 'users'), s => { const allUsers = s.val()||{}; renderContactList(allUsers); if(user.role==='developer') { renderAdminUserList(allUsers); } });
     onValue(ref(rtdb, 'community/groups'), s => renderGroupList(s.val()));
@@ -166,9 +162,19 @@ function renderGallery(items) {
     const c = document.getElementById('gallery-container'); c.innerHTML = ''; 
     items.forEach(i => { 
         const div = document.createElement('div'); 
-        div.className = "masonry-item glass-card cursor-pointer group relative overflow-hidden"; 
+        div.className = "glass-card cursor-pointer group relative"; 
         div.onclick = function() { openDetail(i, 'site_data/gallery'); }; 
-        div.innerHTML = `<div class="relative w-full h-56 bg-black flex items-center justify-center"><img src="${i.image}" class="gallery-card-img group-hover:scale-105 transition duration-500"><div class="absolute top-2 right-2 bg-black/60 text-white text-[10px] px-2 py-1 rounded font-bold uppercase">${i.category || 'IMG'}</div></div><div class="p-3"><h3 class="font-bold text-white text-sm line-clamp-1">${i.title}</h3><p class="text-[10px] text-gray-400 mt-1 line-clamp-2">${i.description || '...'}</p><div class="flex justify-between items-center mt-2 text-[9px] text-gray-500"><span>${i.date}</span></div></div>`; 
+        div.innerHTML = `
+            <div class="relative">
+                <img src="${i.image}" class="gallery-card-img group-hover:scale-105 transition duration-500" loading="lazy">
+                <div class="absolute top-2 left-2 bg-black/70 backdrop-blur-md text-white text-[9px] px-2 py-1 rounded-md font-bold border border-white/10 shadow-lg">${i.category || 'GALERI'}</div>
+            </div>
+            <div class="p-3 flex flex-col gap-1">
+                <h3 class="font-bold text-white text-sm line-clamp-1 leading-tight">${i.title || 'Tanpa Judul'}</h3>
+                <p class="text-[10px] text-gray-400 line-clamp-2 leading-relaxed">${i.description || '...'}</p>
+                <div class="mt-2 pt-2 border-t border-white/5 flex justify-between items-center text-[9px] text-gray-500"><span>${i.date}</span></div>
+            </div>
+        `; 
         c.appendChild(div); 
     }); 
     VanillaTilt.init(document.querySelectorAll(".glass-card")); 
@@ -215,20 +221,13 @@ function loadChatMessages(chatId) {
              } else if(m.type === 'audio') {
                  content = `<audio controls src="${m.text}" class="w-48 h-8 mt-1"></audio>`;
              }
-             
-             // FIX: RENDER AVATAR UNTUK SEMUA (Gaya IG/WA)
-             // Ambil foto user dari pesan (jika ada), atau fallback ke UI Avatar
+             // AVATAR LOGIC
              const userPic = m.pic || `https://ui-avatars.com/api/?name=${m.username}&background=random`;
-             
              const rowClass = isMe ? 'chat-row me' : 'chat-row other';
              const bubbleClass = isMe ? 'chat-me' : 'chat-other';
-             
-             // Logic: Jika "Saya", foto di kanan (opsional, tapi requested). Jika "Other", foto di kiri.
-             const avatarHtml = `<img src="${userPic}" class="chat-avatar-img">`;
-             
              c.innerHTML += `
                 <div class="${rowClass}">
-                    ${avatarHtml}
+                    <img src="${userPic}" class="chat-avatar-img">
                     <div class="chat-bubble ${bubbleClass}">
                         ${!isMe ? `<span class="chat-username-label">${m.username}</span>` : ''}
                         ${content}
@@ -241,16 +240,11 @@ function loadChatMessages(chatId) {
 }
 
 window.sendMessage = () => { 
-    const inp = document.getElementById('chat-input'); 
-    const t = inp.value.trim(); 
-    if(!t) return; 
+    const inp = document.getElementById('chat-input'); const t = inp.value.trim(); if(!t) return; 
     const pay = {
-        text: t, 
-        username: user.username, 
-        // KIRIM URL FOTO PROFIL SAAT INI JUGA
-        pic: user.profile_pic || user.pic || "https://ui-avatars.com/api/?name="+user.username, 
-        type: 'text', 
-        timestamp: serverTimestamp()
+        text:t, username:user.username, 
+        pic: user.profile_pic || user.pic || `https://ui-avatars.com/api/?name=${user.username}`,
+        type:'text', timestamp:serverTimestamp()
     }; 
     if(replyingToMsg) pay.replyTo = replyingToMsg; 
     push(ref(rtdb, `community/messages/${curChatId}`), pay).then(() => { 
@@ -259,57 +253,9 @@ window.sendMessage = () => {
     }); 
 }
 
-// FIX: HIGH QUALITY AUDIO
-window.startRecording = () => { 
-    // Konfigurasi Audio High Quality
-    const constraints = { audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } };
-    navigator.mediaDevices.getUserMedia(constraints).then(stream => { 
-        // Coba gunakan codec yang lebih baik jika didukung browser
-        const options = { mimeType: 'audio/webm;codecs=opus', audioBitsPerSecond: 128000 }; 
-        try { mediaRecorder = new MediaRecorder(stream, options); } 
-        catch (e) { mediaRecorder = new MediaRecorder(stream); } // Fallback
-
-        mediaRecorder.start(); 
-        audioChunks = []; 
-        mediaRecorder.ondataavailable = e => audioChunks.push(e.data); 
-        document.getElementById('btn-mic').classList.add('text-red-500', 'animate-pulse'); 
-        Toastify({text:"Merekam Audio HD...", duration:1000, gravity:"bottom"}).showToast(); 
-    }); 
-}
-window.stopRecording = () => { 
-    if(mediaRecorder && mediaRecorder.state !== 'inactive') { 
-        mediaRecorder.stop(); 
-        document.getElementById('btn-mic').classList.remove('text-red-500', 'animate-pulse'); 
-        mediaRecorder.onstop = () => { 
-            const blob = new Blob(audioChunks, { type: 'audio/webm' }); 
-            const reader = new FileReader(); 
-            reader.readAsDataURL(blob); 
-            reader.onloadend = () => { 
-                push(ref(rtdb, `community/messages/${curChatId}`), { 
-                    username: user.username, 
-                    pic: user.profile_pic || user.pic,
-                    text: reader.result, 
-                    type: 'audio', 
-                    timestamp: serverTimestamp() 
-                }); 
-            } 
-        } 
-    } 
-}
-
-window.sendImage = () => { 
-    const isOnce = document.getElementById('check-view-once').checked; 
-    push(ref(rtdb, `community/messages/${curChatId}`), { 
-        username: user.username, 
-        pic: user.profile_pic || user.pic,
-        text: pendingImage, 
-        type: isOnce ? 'image_once' : 'image', 
-        id: Date.now().toString(), 
-        timestamp: serverTimestamp() 
-    }); 
-    cancelUpload(); 
-}
-
+window.startRecording = () => { navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }).then(stream => { mediaRecorder = new MediaRecorder(stream); mediaRecorder.start(); audioChunks = []; mediaRecorder.ondataavailable = e => audioChunks.push(e.data); document.getElementById('btn-mic').classList.add('text-red-500', 'animate-pulse'); Toastify({text:"Merekam Audio HD...", duration:1000, gravity:"bottom"}).showToast(); }); }
+window.stopRecording = () => { if(mediaRecorder && mediaRecorder.state !== 'inactive') { mediaRecorder.stop(); document.getElementById('btn-mic').classList.remove('text-red-500', 'animate-pulse'); mediaRecorder.onstop = () => { const blob = new Blob(audioChunks, { type: 'audio/webm' }); const reader = new FileReader(); reader.readAsDataURL(blob); reader.onloadend = () => { push(ref(rtdb, `community/messages/${curChatId}`), { username: user.username, pic: user.profile_pic, text: reader.result, type: 'audio', timestamp: serverTimestamp() }); } } } }
+window.sendImage = () => { const isOnce = document.getElementById('check-view-once').checked; push(ref(rtdb, `community/messages/${curChatId}`), { username: user.username, pic: user.profile_pic, text: pendingImage, type: isOnce ? 'image_once' : 'image', id: Date.now().toString(), timestamp: serverTimestamp() }); cancelUpload(); }
 window.viewOnce = (img, id) => { img.classList.remove('view-once-blur'); img.onclick = null; setTimeout(() => { img.src = "https://placehold.co/200x200/000/FFF?text=Expired"; localStorage.setItem(`viewed_${id}`, true); }, 5000); }
 window.zoomImage = (src) => { document.getElementById('media-zoom-content').src = src; document.getElementById('media-zoom-modal').style.display = 'flex'; }
 window.handleTyping = () => { if(typingTimeout) clearTimeout(typingTimeout); set(ref(rtdb, 'community/typing'), {user: user.username}); typingTimeout = setTimeout(() => set(ref(rtdb, 'community/typing'), null), 2000); }
@@ -330,10 +276,7 @@ function renderContactList(allUsers) {
                 const cid = [user.username, u.username].sort().join('_'); 
                 c.innerHTML += `
                 <div onclick="switchChat('${cid}', '${u.username}')" class="flex items-center gap-3 p-2 hover:bg-white/5 rounded cursor-pointer">
-                    <div class="relative">
-                        <img src="${u.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover">
-                        <div class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ${indicatorColor} border border-black"></div>
-                    </div>
+                    <div class="relative"><img src="${u.profile_pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover"><div class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ${indicatorColor} border border-black"></div></div>
                     <div class="text-sm font-bold text-white">${u.username}</div>
                 </div>`; 
             } 
@@ -353,56 +296,27 @@ window.editProfile = async (type) => { const {value:url} = await Swal.fire({inpu
 window.createGroup = async () => { const {value:n} = await Swal.fire({input:'text',inputLabel:'Nama Grup',background:'#1e293b',color:'#fff'}); if(n) { const id=`grp_${Date.now()}`; await set(ref(rtdb,`community/groups/${id}`),{name:n,createdBy:user.username}); Swal.fire("OK","","success"); } }
 window.toggleMaintenance = (type) => { get(ref(rtdb, `site_data/maintenance/${type}`)).then(s => { set(ref(rtdb, `site_data/maintenance/${type}`), !s.val()); }); }
 window.changeRank = async (uid) => { const { value: role } = await Swal.fire({ title: 'Pilih Rank', input: 'select', inputOptions: { 'member': 'Member', 'moderator': 'Moderator', 'admin': 'Admin', 'vip': 'VIP', 'banned': 'Tahanan' }, inputPlaceholder: 'Pilih Role', showCancelButton: true, background: '#1e293b', color: '#fff' }); if (role) { update(ref(rtdb, `users/${uid}`), { role: role, rank: role.toUpperCase() }); showGameToast("Rank Updated!", "success"); } }
-window.openDetail = (item, collection) => { curItem = item; curCollection = collection; document.getElementById('modal-media').innerHTML = ''; document.getElementById('comments-list').innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Memuat...</div>'; if(item.image || item.url) { document.getElementById('modal-media').innerHTML = `<img src="${item.image || item.url}" class="max-h-[50vh] object-contain">`; } document.getElementById('modal-title').innerText = item.title || "Tanpa Judul"; document.getElementById('modal-desc').innerText = item.description || "-"; document.getElementById('modal-date').innerText = item.date || moment().format("DD MMM YYYY"); const authorPic = item.author_pic || "https://ui-avatars.com/api/?name=Admin&background=random"; document.getElementById('modal-author-pic').src = authorPic; if(item.id) loadComments(item.id); document.getElementById('detail-modal').classList.remove('hidden'); }
+window.openDetail = (item, collection) => { curItem = item; curCollection = collection; document.getElementById('modal-media').innerHTML = item.image||item.url ? `<img src="${item.image||item.url}" class="max-h-[50vh] object-contain">` : ''; document.getElementById('modal-title').innerText = item.title||"Tanpa Judul"; document.getElementById('modal-desc').innerText = item.description||"-"; document.getElementById('modal-date').innerText = item.date; document.getElementById('modal-author-pic').src = item.author_pic || "https://ui-avatars.com/api/?name=Admin"; if(item.id) loadComments(item.id); document.getElementById('detail-modal').classList.remove('hidden'); }
 window.toggleDesc = () => { const d = document.getElementById('modal-desc'); const b = document.getElementById('btn-read-more'); if(d.classList.contains('expanded')) { d.classList.remove('expanded'); d.classList.add('line-clamp-2'); b.innerText = "... lihat selengkapnya"; } else { d.classList.add('expanded'); d.classList.remove('line-clamp-2'); b.innerText = "sembunyikan"; } }
 window.toggleCommentSection = () => { const c = document.getElementById('comment-section'); c.classList.toggle('hidden'); if(!c.classList.contains('hidden')) { setTimeout(() => document.getElementById('comment-input').focus(), 300); const cont = document.querySelector('#detail-modal .custom-scroll'); cont.scrollTop = cont.scrollHeight; } }
 window.deleteContent = () => { if(confirm("Hapus Permanen?")) { remove(ref(rtdb, `${curCollection}/${curItem.id}`)); document.getElementById('detail-modal').classList.add('hidden'); Swal.fire("Terhapus","","success"); } }
 window.toggleLike = () => { const k=`liked_${curItem.id}`; const r=ref(rtdb,`posts/${curItem.id}/likes`); if(localStorage.getItem(k)) { runTransaction(r,v=>(v||0)-1); localStorage.removeItem(k); document.getElementById('modal-heart').className="far fa-heart text-xl"; } else { runTransaction(r,v=>(v||0)+1); localStorage.setItem(k,'1'); document.getElementById('modal-heart').className="fas fa-heart text-red-500 text-xl like-active"; } }
 
-// MODERN MUSIC PLAYER LOGIC (ISLAND)
 window.playMusic = (src,t,a,type) => { 
-    const p=document.getElementById('sticky-player'), aud=document.getElementById('audio-element'), img=document.getElementById('sp-img'); 
-    document.getElementById('sp-title').innerText=t; 
-    document.getElementById('sp-artist').innerText=a; 
-    img.src="https://cdn-icons-png.flaticon.com/512/3844/3844724.png"; 
-    
-    // Tampilkan UI Island Baru
+    const p=document.getElementById('sticky-player'), aud=document.getElementById('audio-element');
     p.innerHTML = `
         <img src="https://cdn-icons-png.flaticon.com/512/3844/3844724.png" class="music-cover-spin">
-        <div class="music-info">
-            <div class="music-title">${t}</div>
-            <div class="music-artist">${a}</div>
-        </div>
-        <div class="visualizer playing">
-            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
-        </div>
+        <div class="music-info"><div class="music-title">${t}</div><div class="music-artist">${a}</div></div>
+        <div class="visualizer playing"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
         <button onclick="togglePlay()" class="btn-play-modern"><i id="sp-icon" class="fas fa-pause"></i></button>
-        <button onclick="closePlayer()" class="text-gray-500 hover:text-white"><i class="fas fa-times"></i></button>
+        <button onclick="closePlayer()" class="text-gray-500 hover:text-white ml-2"><i class="fas fa-times"></i></button>
     `;
-
-    p.classList.add('active'); 
-    aud.src=src; aud.play(); 
+    p.classList.add('active'); aud.src=src; aud.play(); 
 }
-window.togglePlay = () => { 
-    const a=document.getElementById('audio-element'); 
-    const viz = document.querySelector('.visualizer');
-    const cov = document.querySelector('.music-cover-spin');
-    
-    if(a.paused) { 
-        a.play(); 
-        document.getElementById('sp-icon').className="fas fa-pause"; 
-        if(viz) { viz.classList.remove('paused'); viz.classList.add('playing'); }
-        if(cov) cov.classList.remove('paused');
-    } else { 
-        a.pause(); 
-        document.getElementById('sp-icon').className="fas fa-play"; 
-        if(viz) { viz.classList.remove('playing'); viz.classList.add('paused'); }
-        if(cov) cov.classList.add('paused');
-    } 
-}
+window.togglePlay = () => { const a=document.getElementById('audio-element'), viz = document.querySelector('.visualizer'), cov = document.querySelector('.music-cover-spin'); if(a.paused) { a.play(); document.getElementById('sp-icon').className="fas fa-pause"; if(viz) { viz.classList.remove('paused'); viz.classList.add('playing'); } if(cov) cov.classList.remove('paused'); } else { a.pause(); document.getElementById('sp-icon').className="fas fa-play"; if(viz) { viz.classList.remove('playing'); viz.classList.add('paused'); } if(cov) cov.classList.add('paused'); } }
 window.closePlayer = () => { document.getElementById('audio-element').pause(); document.getElementById('sticky-player').classList.remove('active'); }
-window.navigateTo = (p) => { if(p==='admin' && user.role!=='developer') return Swal.fire("Access Denied","Developer Only","error"); document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden')); document.getElementById('view-'+p).classList.remove('hidden'); if(p==='profile') { if(user.isGuest) { document.getElementById('profile-guest-view').classList.remove('hidden'); document.getElementById('profile-member-view').classList.add('hidden'); } else { document.getElementById('profile-guest-view').classList.add('hidden'); document.getElementById('profile-member-view').classList.remove('hidden'); document.getElementById('p-name').innerText = user.username; document.getElementById('p-avatar').src = user.profile_pic; if(user.role==='developer') document.getElementById('admin-panel-btn-container').classList.remove('hidden'); onValue(ref(rtdb,`users/${user.username}`),s=>{const d=s.val();if(d){document.getElementById('p-xp').innerText=d.xp||0;document.getElementById('p-level').innerText=d.level||1;document.getElementById('p-rank').innerText=d.rank||"Pemula"}}); } } document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active'); b.querySelector('i').classList.remove('text-indigo-400');}); const b = document.getElementById('nav-'+p); if(b) {b.classList.add('active'); b.querySelector('i').classList.add('text-indigo-400');} window.scrollTo(0,0); }
 
+window.navigateTo = (p) => { if(p==='admin' && user.role!=='developer') return Swal.fire("Access Denied","Developer Only","error"); document.querySelectorAll('.view-section').forEach(e=>e.classList.add('hidden')); document.getElementById('view-'+p).classList.remove('hidden'); if(p==='profile') { if(user.isGuest) { document.getElementById('profile-guest-view').classList.remove('hidden'); document.getElementById('profile-member-view').classList.add('hidden'); } else { document.getElementById('profile-guest-view').classList.add('hidden'); document.getElementById('profile-member-view').classList.remove('hidden'); document.getElementById('p-name').innerText = user.username; document.getElementById('p-avatar').src = user.profile_pic; if(user.role==='developer') document.getElementById('admin-panel-btn-container').classList.remove('hidden'); onValue(ref(rtdb,`users/${user.username}`),s=>{const d=s.val();if(d){document.getElementById('p-xp').innerText=d.xp||0;document.getElementById('p-level').innerText=d.level||1;document.getElementById('p-rank').innerText=d.rank||"Pemula"}}); } } document.querySelectorAll('.nav-item').forEach(b => {b.classList.remove('active'); b.querySelector('i').classList.remove('text-indigo-400');}); const b = document.getElementById('nav-'+p); if(b) {b.classList.add('active'); b.querySelector('i').classList.add('text-indigo-400');} window.scrollTo(0,0); }
 window.sharePostLink = () => { if(!curItem) return; const link = `${window.location.origin}${window.location.pathname}?v=${curCollection}&id=${curItem.id}`; navigator.clipboard.writeText(link).then(() => Swal.fire({icon:'success',title:'Link Disalin!',timer:1500,showConfirmButton:false})); const refShare = ref(rtdb, `posts/${curItem.id}/shares`); runTransaction(refShare, (v) => (v || 0) + 1); }
 window.checkDeepLink = async () => { const params = new URLSearchParams(window.location.search); const pId = params.get('id'); const pCol = params.get('v'); if (pId && pCol) { window.history.replaceState({}, document.title, window.location.pathname); try { const snap = await get(ref(rtdb, `${pCol}/${pId}`)); if (snap.exists()) { const item = {id: pId, ...snap.val()}; openDetail(item, pCol); } else { showGameToast("Postingan tidak ditemukan.", "error"); } } catch (e) { console.error(e); } } }
 window.loadComments = (postId) => { if(!postId) return; const list = document.getElementById('comments-list'); const refComm = ref(rtdb, `interactions/comments/${postId}`); onValue(refComm, (snap) => { list.innerHTML = ''; const data = snap.val(); if (!data) { list.innerHTML = '<div class="text-center text-gray-500 text-xs mt-2">Belum ada komentar.</div>'; document.getElementById('modal-comments-count').innerText = "0"; return; } document.getElementById('modal-comments-count').innerText = Object.keys(data).length; Object.values(data).forEach(c => { const isMe = c.username === user.username; const delBtn = isMe || user.role === 'developer' ? `<button onclick="delComment('${postId}','${c.id}')" class="ml-2 text-[10px] text-gray-500 hover:text-red-500"><i class="fas fa-trash"></i></button>` : ''; const html = `<div class="flex gap-3 items-start group"><img src="${c.pic}" class="w-8 h-8 rounded-full bg-gray-800 object-cover flex-shrink-0"><div class="flex-1"><div class="text-sm text-white"><span class="font-bold mr-1 cursor-pointer hover:text-gray-300">${c.username}</span><span class="font-light text-gray-200">${c.text}</span></div><div class="flex gap-3 mt-1 text-[10px] text-gray-400 font-bold"><span>${moment(c.timestamp).fromNow(true)}</span><button class="hover:text-white" onclick="document.getElementById('comment-input').value='@${c.username} '; document.getElementById('comment-input').focus();">Balas</button>${delBtn}</div></div><button class="text-xs text-gray-500 hover:text-red-500 pt-1"><i class="far fa-heart"></i></button></div>`; list.innerHTML += html; }); }); }
