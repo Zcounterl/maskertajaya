@@ -895,9 +895,24 @@ window.onerror = function(msg, url, lineNo) {
 };
 
 // Fungsi Tombol UI
+// Fungsi Tombol UI (FIXED V34.13)
 window.toggleDebugPanel = () => {
     const panel = document.getElementById('debug-panel');
-    panel.classList.toggle('active');
+    
+    // Logika Baru: Cek apakah sedang sembunyi?
+    if (panel.classList.contains('hidden')) {
+        // 1. Hapus hidden dulu biar muncul
+        panel.classList.remove('hidden');
+        // 2. Tunggu dikit, baru geser ke atas (biar animasi jalan)
+        setTimeout(() => panel.classList.add('active'), 10);
+    } else {
+        // 1. Geser ke bawah dulu
+        panel.classList.remove('active');
+        // 2. Tunggu animasi selesai (300ms), baru sembunyikan total
+        setTimeout(() => panel.classList.add('hidden'), 300);
+    }
+
+    // Cek Memori HP
     if (performance && performance.memory) {
         const mem = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
         document.getElementById('debug-memory').innerText = `Mem: ${mem}MB`;
