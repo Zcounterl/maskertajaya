@@ -1,224 +1,431 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Fira+Code:wght@400;600&display=swap');
+/* =========================================
+   PORTAL SEKOLAH ULTIMATE - STYLE.CSS V35
+   Status: FIXED LAYOUT & MUSIC PLAYER
+   ========================================= */
 
+/* --- 1. IMPORT FONTS --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&family=Fira+Code:wght@400;600&display=swap');
+
+/* --- 2. VARIABLES --- */
 :root {
-    --theme-color: #6366f1;
-    /* Variabel tinggi navbar agar pas di semua HP */
-    --nav-top: 70px;
-    --nav-bottom: 90px;
+    --theme-color: #6366f1; /* Indigo Primary */
+    --bg-dark: #0f172a;
+    --card-bg: #1e293b;
+    --nav-top-height: 70px;
+    --nav-bottom-height: 80px;
 }
 
-html, body {
-    height: 100%; /* Wajib agar overscroll behavior jalan */
-    background-color: #0f172a; 
+/* --- 3. GLOBAL RESET (KUNCI BODY) --- */
+html {
+    height: 100%;
+    overflow: hidden; /* Mencegah scroll di level HTML */
+}
+
+body { 
+    background-color: var(--bg-dark); 
     color: #f8fafc; 
     font-family: 'Inter', sans-serif; 
+    
+    /* PENTING: Mengatur tinggi body 100% layar */
+    height: 100%;
+    width: 100%;
+    position: fixed; /* Kunci Body agar tidak bisa digeser */
+    overflow-y: auto; /* Scroll hanya terjadi di dalam body */
+    overflow-x: hidden;
+    
     -webkit-tap-highlight-color: transparent; 
     user-select: none; 
-    /* Kunci Scroll Karet Global */
-    overscroll-behavior-y: none;
-    overflow-x: hidden;
+    overscroll-behavior-y: none; /* Matikan efek karet */
+    padding-bottom: 100px; /* Ruang untuk player */
 }
 
-body {
-    /* Padding bawah untuk ruang navbar & player */
-    padding-bottom: var(--nav-bottom); 
-}
-
-#particles-js { position: fixed; width: 100%; height: 100%; top: 0; left: 0; z-index: -1; opacity: 0.4; pointer-events: none; }
-
-/* --- 1. FIX PLAYER MUSIK (AGAR TIDAK RAKSASA) --- */
-.sticky-player { 
+/* Background Particles */
+#particles-js { 
     position: fixed; 
-    bottom: calc(var(--nav-bottom) + 15px); /* Di atas navbar persis */
-    left: 50%; 
-    transform: translateX(-50%) translateY(200%); /* Sembunyi ke bawah */
-    width: 90%; 
-    max-width: 400px; 
-    /* Glassmorphism Dark Modern */
-    background: rgba(15, 23, 42, 0.95); 
-    backdrop-filter: blur(20px); 
-    -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1); 
-    border-radius: 50px; 
-    padding: 8px 12px; 
-    z-index: 900; /* Di atas konten, di bawah modal */
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    box-shadow: 0 10px 30px rgba(0,0,0,0.6); 
-    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
-}
-.sticky-player.active { transform: translateX(-50%) translateY(0); }
-
-.music-cover-spin { 
-    width: 44px; 
-    height: 44px; 
-    /* PENTING: Mencegah gambar melar/gepeng */
-    flex-shrink: 0; 
-    border-radius: 50%; 
-    object-fit: cover; 
-    animation: spin 6s linear infinite; 
-    border: 2px solid rgba(255,255,255,0.2); 
-    box-shadow: 0 0 15px var(--theme-color);
-}
-.music-cover-spin.paused { animation-play-state: paused; opacity: 0.7; }
-
-.music-info { 
-    flex: 1; /* Mengisi sisa ruang */
-    min-width: 0; /* Agar teks bisa truncate */
-    display: flex; 
-    flex-direction: column; 
-    justify-content: center; 
-}
-.music-title { font-size: 12px; font-weight: 700; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.music-artist { font-size: 10px; color: #94a3b8; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* Equalizer Bars */
-.visualizer { display: flex; gap: 2px; height: 14px; align-items: flex-end; margin-right: 4px; flex-shrink: 0; }
-.bar { width: 3px; background: var(--theme-color); border-radius: 2px; animation: sound 0ms -800ms linear infinite alternate; }
-.playing .bar { animation-duration: 400ms; } .paused .bar { height: 2px !important; transition: height 0.3s; }
-@keyframes sound { 0% { height: 3px; opacity: 0.5; } 100% { height: 14px; opacity: 1; } }
-
-.btn-play-modern { 
-    width: 36px; height: 36px; 
-    border-radius: 50%; 
-    background: white; 
-    color: black; 
-    display: flex; align-items: center; justify-content: center; 
-    border: none; cursor: pointer; 
-    flex-shrink: 0;
-    transition: 0.2s; 
-    box-shadow: 0 0 10px rgba(255,255,255,0.2);
-}
-.btn-play-modern:active { transform: scale(0.9); }
-
-/* --- 2. FIX CHAT GOYANG (POSISI TERKUNCI) --- */
-.chat-container { 
-    /* Posisi Fixed memenuhi layar (dikurangi navbar) */
-    position: fixed; 
-    top: var(--nav-top); 
+    width: 100%; 
+    height: 100%; 
+    top: 0; 
     left: 0; 
-    right: 0; 
-    bottom: var(--nav-bottom); 
+    z-index: -1; 
+    opacity: 0.4; 
+    pointer-events: none; 
+}
+
+/* --- 4. UTILITIES & ANIMATIONS --- */
+.glass { 
+    background: rgba(30, 41, 59, 0.85); 
+    backdrop-filter: blur(16px); 
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08); 
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); 
+}
+
+.skeleton { 
+    background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%); 
+    background-size: 200% 100%; 
+    animation: loading 1.5s infinite; 
+    border-radius: 12px; 
+}
+
+@keyframes loading { 
+    0% { background-position: 200% 0; } 
+    100% { background-position: -200% 0; } 
+}
+
+.skeleton-card { 
+    height: 220px; 
+    width: 100%; 
+    border-radius: 16px; 
+    margin-bottom: 12px; 
+}
+
+/* --- 5. GALERI & GRID SYSTEM --- */
+.masonry-grid { 
+    display: grid; 
+    /* Grid Responsif: Minimal 155px, kalau layar kecil jadi 2 kolom otomatis */
+    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); 
+    gap: 16px; 
+    padding: 10px;
+    padding-bottom: 120px; /* Supaya scroll paling bawah tidak ketutup player */
+} 
+
+.glass-card { 
+    background: var(--card-bg); 
+    border: 1px solid rgba(255, 255, 255, 0.05); 
+    border-radius: 16px; 
+    overflow: hidden; 
+    
+    /* Struktur Kartu Solid */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    height: 100%; 
+    transition: transform 0.2s ease;
+}
+
+.glass-card:active { 
+    transform: scale(0.98); 
+}
+
+.gallery-card-img { 
+    width: 100%; 
+    height: 180px; /* Tinggi Gambar FIX */
+    object-fit: cover; /* Crop gambar biar rapi */
+    background-color: #000;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.card-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    color: white;
+    font-size: 10px;
+    font-weight: bold;
+    padding: 4px 8px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.card-info {
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+/* --- 6. CHAT SYSTEM (FIXED & LOCKED) --- */
+/* Ini yang bikin chat tidak goyang */
+.chat-container { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100vw; 
+    height: 100dvh; /* Dynamic Viewport Height */
     
     background-color: #111827; 
+    z-index: 60; /* Di atas segalanya kecuali modal */
+    
     display: flex; 
     flex-direction: column; 
-    z-index: 50; /* Di atas gallery, di bawah modal */
-    overflow: hidden; /* Mencegah scroll bocor ke body */
-}
-
-/* Desktop Adjustment */
-@media (min-width: 768px) {
-    .chat-container {
-        position: relative;
-        height: calc(100vh - 160px);
-        border-radius: 24px;
-        border: 1px solid rgba(255,255,255,0.1);
-        top: 0; bottom: auto;
-    }
+    overflow: hidden; /* Kunci scroll container */
 }
 
 .chat-bg-layer { 
     position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-    opacity: 0.4; z-index: 0; 
+    opacity: 0.3; z-index: -1; 
     background-size: cover; background-position: center; 
-    pointer-events: none; 
 }
 
 .chat-header { 
-    flex: 0 0 auto; 
-    z-index: 10; 
+    flex: 0 0 auto; /* Header tidak boleh menyusut */
+    padding-top: env(safe-area-inset-top); /* Support Poni HP */
+    height: auto;
+    min-height: 70px;
+    
     background: rgba(17, 24, 39, 0.98); 
-    backdrop-filter: blur(10px); 
+    backdrop-filter: blur(12px); 
     border-bottom: 1px solid rgba(255,255,255,0.1); 
-    padding: 12px 16px; 
+    
+    display: flex;
+    align-items: center;
+    padding: 10px 16px;
 }
 
 .chat-area { 
-    flex: 1; 
-    overflow-y: auto; /* Scrollbar hanya di area ini */
+    flex: 1; /* Mengisi sisa ruang tengah */
+    overflow-y: auto; /* HANYA area ini yang boleh discroll */
     padding: 16px; 
+    
     display: flex; 
     flex-direction: column; 
     gap: 12px; 
+    
     scroll-behavior: smooth; 
-    /* KUNCI UTAMA: Cegah scroll chain ke parent (body) */
-    overscroll-behavior: contain; 
-    -webkit-overflow-scrolling: touch; /* Smooth scroll di iOS */
+    overscroll-behavior: contain; /* Scroll tidak bocor ke body */
 }
 
 .chat-input-area { 
-    flex: 0 0 auto; 
-    z-index: 20; 
+    flex: 0 0 auto; /* Input area tidak boleh menyusut */
     background: #111827; 
     border-top: 1px solid rgba(255,255,255,0.1); 
-    padding: 10px 12px; 
-    padding-bottom: max(10px, env(safe-area-inset-bottom)); 
+    padding: 12px; 
+    padding-bottom: max(12px, env(safe-area-inset-bottom)); 
 }
 
-/* BUBBLE CHAT STYLING */
-.chat-row { display: flex; align-items: flex-end; gap: 8px; width: 100%; margin-bottom: 4px; z-index: 1; }
-.chat-row.me { flex-direction: row-reverse; }
-.chat-avatar-img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; background: #333; border: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; }
+/* Bubble Chat Style */
+.chat-row { 
+    display: flex; 
+    align-items: flex-end; 
+    gap: 8px; 
+    width: 100%; 
+    margin-bottom: 4px;
+}
+
+.chat-row.me { 
+    flex-direction: row-reverse; 
+}
+
+.chat-avatar-img { 
+    width: 32px; 
+    height: 32px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    background: #374151; 
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0; /* Mencegah foto gepeng */
+}
 
 .chat-bubble { 
     max-width: 75%; 
     padding: 10px 14px; 
     border-radius: 20px; 
-    font-size: 0.9rem; 
+    font-size: 0.95rem; 
+    line-height: 1.4;
     position: relative; 
     word-wrap: break-word; 
-    line-height: 1.4; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
-.chat-me .chat-bubble { background: var(--theme-color); color: white; border-bottom-right-radius: 4px; }
-.chat-other .chat-bubble { background: #334155; color: white; border-bottom-left-radius: 4px; }
-.chat-username-label { display: block; font-size: 10px; font-weight: 700; opacity: 0.6; margin-bottom: 2px; color: #cbd5e1; }
 
-/* UTILS & GRID */
-.masonry-grid { 
-    display: grid; 
-    grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); 
+.chat-me .chat-bubble { 
+    background: var(--theme-color); 
+    color: white; 
+    border-bottom-right-radius: 4px; 
+}
+
+.chat-other .chat-bubble { 
+    background: #334155; 
+    color: white; 
+    border-bottom-left-radius: 4px; 
+}
+
+.chat-username-label { 
+    display: block; 
+    font-size: 10px; 
+    font-weight: 700; 
+    opacity: 0.6; 
+    margin-bottom: 2px; 
+}
+
+.chat-image { 
+    border-radius: 12px; 
+    margin-top: 4px; 
+    max-width: 100%; 
+    height: auto; 
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+/* --- 7. MUSIC PLAYER (DYNAMIC ISLAND FIXED) --- */
+.sticky-player { 
+    position: fixed; 
+    bottom: 95px; 
+    left: 50%; 
+    transform: translateX(-50%) translateY(200%); /* Sembunyi di bawah */
+    
+    width: 92%; 
+    max-width: 380px; 
+    height: 65px; /* Kunci tinggi player */
+    
+    background: rgba(10, 10, 10, 0.9); 
+    backdrop-filter: blur(25px); 
+    -webkit-backdrop-filter: blur(25px);
+    
+    border: 1px solid rgba(255, 255, 255, 0.15); 
+    border-radius: 100px; /* Sangat bulat (Pill shape) */
+    
+    padding: 0 8px; 
+    z-index: 100; 
+    
+    display: flex; 
+    align-items: center; 
     gap: 12px; 
-    padding: 10px;
-    /* Tambahan padding bawah agar list terakhir tidak tertutup player */
-    padding-bottom: 100px; 
-} 
+    
+    box-shadow: 0 15px 40px rgba(0,0,0,0.7); 
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+}
 
-.glass-card { 
-    background: #1e293b; 
-    border: 1px solid rgba(255, 255, 255, 0.05); 
-    border-radius: 16px; 
+.sticky-player.active { 
+    transform: translateX(-50%) translateY(0); 
+}
+
+/* PERBAIKAN GAMBAR MUSIK RAKSASA */
+.music-cover-spin { 
+    width: 48px; 
+    height: 48px; 
+    border-radius: 50%; 
+    object-fit: cover; 
+    
+    /* WAJIB: Agar gambar tidak melar memenuhi layar */
+    flex-shrink: 0; 
+    flex-grow: 0;
+    
+    animation: spin 8s linear infinite; 
+    border: 2px solid rgba(255,255,255,0.2); 
+    margin-left: 4px;
+}
+
+.music-cover-spin.paused { 
+    animation-play-state: paused; 
+    opacity: 0.7; 
+}
+
+.music-info { 
+    flex: 1; 
     overflow: hidden; 
-    display: flex; flex-direction: column; position: relative;
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
     height: 100%;
+}
+
+.music-title { 
+    font-size: 13px; 
+    font-weight: 700; 
+    color: white; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+.music-artist { 
+    font-size: 11px; 
+    color: #94a3b8; 
+    font-weight: 500; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+}
+
+/* Tombol Play Bulat */
+.btn-play-modern { 
+    width: 40px; 
+    height: 40px; 
+    border-radius: 50%; 
+    background: white; 
+    color: black; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    border: none; 
+    cursor: pointer; 
+    flex-shrink: 0; /* Jangan mengecil */
     transition: transform 0.2s;
 }
-.glass-card:active { transform: scale(0.98); }
+.btn-play-modern:active { transform: scale(0.9); }
 
-.gallery-image-wrapper { width: 100%; aspect-ratio: 1 / 1; position: relative; overflow: hidden; background: #000; }
-.gallery-card-img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease; }
-.card-badge { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); color: white; font-size: 9px; font-weight: bold; padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); z-index: 2; }
-.card-info { padding: 10px; background: #1e293b; display: flex; flex-direction: column; gap: 2px; }
+/* Visualizer Animasi */
+.visualizer { display: flex; gap: 3px; height: 15px; align-items: flex-end; margin-right: 6px; }
+.bar { width: 3px; background: var(--theme-color); border-radius: 2px; animation: sound 0ms -800ms linear infinite alternate; }
+.playing .bar { animation-duration: 400ms; } 
+.paused .bar { height: 3px !important; transition: height 0.3s; }
+@keyframes sound { 0% { height: 3px; opacity: 0.5; } 100% { height: 15px; opacity: 1; } }
 
-/* DEBUG MANAGER V2 STYLES */
-#debug-panel { transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8); border-top: 1px solid rgba(255, 255, 255, 0.1); }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- 8. DEBUG MANAGER V2 --- */
+#debug-panel { 
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+    box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8); 
+    border-top: 1px solid rgba(255, 255, 255, 0.1); 
+}
 #debug-panel.active { transform: translateY(0); }
-.debug-tab { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: bold; cursor: pointer; color: #64748b; transition: all 0.2s; background: rgba(255,255,255,0.05); border: 1px solid transparent; }
+
+.debug-tab { 
+    padding: 4px 10px; 
+    border-radius: 6px; 
+    font-size: 10px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    color: #64748b; 
+    transition: all 0.2s; 
+    background: rgba(255,255,255,0.05); 
+    border: 1px solid transparent; 
+}
 .debug-tab.active { color: white; background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2); }
-.log-item { padding: 6px 10px; border-bottom: 1px solid rgba(255,255,255,0.03); font-family: 'Fira Code', monospace; font-size: 10px; display: flex; flex-direction: column; gap: 2px; }
+.debug-tab.tab-error.active { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #fca5a5; }
+.debug-tab.tab-warn.active { background: rgba(234, 179, 8, 0.2); border-color: #eab308; color: #fde047; }
+
+.log-item { 
+    padding: 6px 10px; 
+    border-bottom: 1px solid rgba(255,255,255,0.03); 
+    font-family: 'Fira Code', monospace; 
+    font-size: 10px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 2px; 
+}
 .log-type-ERROR { border-left: 2px solid #ef4444; background: rgba(239, 68, 68, 0.1); }
 .log-header { display: flex; justify-content: space-between; opacity: 0.5; font-size: 9px; }
-@keyframes error-pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+@keyframes error-pulse { 
+    0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 
+    70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 
+    100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } 
+}
 .has-error-pulse { animation: error-pulse 1.5s infinite; background-color: #ef4444 !important; }
 
-/* GLOBAL ANIMATION */
-@keyframes spin { 100% { transform: rotate(360deg); } }
-.nav-item.active i { color: var(--theme-color); transform: scale(1.1); } .nav-item.active span { color: white; }
-.theme-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); }
-.toggle-switch { position: relative; width: 44px; height: 24px; background: #334155; border-radius: 99px; transition: 0.3s; cursor: pointer; }
-.toggle-switch::after { content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: white; border-radius: 50%; transition: 0.3s; }
-.toggle-active { background: #10b981; } .toggle-active::after { left: 22px; }
-::-webkit-scrollbar { width: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
-.custom-scroll::-webkit-scrollbar { width: 4px; } .custom-scroll::-webkit-scrollbar-track { background: #111; } .custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }
+/* --- 9. NAVBAR --- */
+.nav-item { transition: all 0.2s; }
+.nav-item.active i { color: var(--theme-color); transform: scale(1.2); text-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+.nav-item.active span { color: white; font-weight: bold; }
+
+.theme-btn { width: 30px; height: 30px; border-radius: 50%; cursor: pointer; border: 2px solid rgba(255,255,255,0.2); transition: transform 0.2s; }
+.theme-btn:hover { transform: scale(1.1); border-color: white; }
+
+/* --- 10. OVERLAYS & MODALS --- */
+.terminal-modal { position: fixed; inset: 0; background: #050505; z-index: 100000; display: flex; flex-direction: column; font-family: 'Fira Code', monospace; border: 2px solid #333; }
+.terminal-header { background: #111; padding: 8px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #333; }
+.terminal-body { flex: 1; padding: 15px; overflow-y: auto; font-size: 13px; line-height: 1.4; background-image: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); background-size: 100% 2px, 3px 100%; }
+.terminal-input-container { padding: 10px; background: #000; border-top: 1px solid #333; display: flex; align-items: center; gap: 8px; }
+
+#anti-ss-overlay.active { display: flex !important; }
+
+/* SCROLLBARS CUSTOM */
+::-webkit-scrollbar { width: 4px; } 
+::-webkit-scrollbar-track { background: transparent; } 
+::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+.custom-scroll::-webkit-scrollbar { width: 3px; } 
+.custom-scroll::-webkit-scrollbar-track { background: #111; } 
+.custom-scroll::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
