@@ -845,121 +845,84 @@ const preventCapture = e => { if (e.key === 'PrintScreen' || (e.ctrlKey && (e.ke
 
 
 // ==========================================
-// 🐞 SISTEM DEBUG MANAJER (INTELLIGENT LOGGER)
+// 🐞 SISTEM DEBUG MANAJER (MANAJER KUMBANG)
 // ==========================================
+// Tempel ini di baris paling akhir script.js
 
-// 1. Inisialisasi Logger
 const debugContainer = document.getElementById('debug-logs-container');
-const MAX_LOGS = 200; // Batas log biar HP gak nge-lag
+const MAX_LOGS = 200;
 
+// Fungsi nambah log ke panel hitam
 function addLog(type, message, detail = '') {
     if (!debugContainer) return;
-
     const div = document.createElement('div');
     div.className = `log-item log-type-${type}`;
-    
     const time = new Date().toLocaleTimeString().split(' ')[0];
-    
-    // Format pesan objek jika perlu
-    if (typeof message === 'object') {
-        try { message = JSON.stringify(message); } catch(e) { message = '[Object]'; }
-    }
-
-    div.innerHTML = `
-        <span class="log-meta">[${time}] ${type}</span>
-        <span class="font-bold">${message}</span>
-        ${detail ? `<div class="text-[9px] text-gray-400 mt-1 pl-2 border-l border-white/20">${detail}</div>` : ''}
-    `;
-
+    if (typeof message === 'object') { try { message = JSON.stringify(message); } catch(e) { message = '[Object]'; } }
+    div.innerHTML = `<span class="log-meta">[${time}] ${type}</span><span class="font-bold">${message}</span>${detail ? `<div class="text-[9px] text-gray-400 mt-1 pl-2 border-l border-white/20">${detail}</div>` : ''}`;
     debugContainer.appendChild(div);
-    debugContainer.scrollTop = debugContainer.scrollHeight; // Auto scroll ke bawah
-
-    // Hapus log lama jika kepenuhan
-    if (debugContainer.childElementCount > MAX_LOGS) {
-        debugContainer.removeChild(debugContainer.firstChild);
-    }
+    debugContainer.scrollTop = debugContainer.scrollHeight;
+    if (debugContainer.childElementCount > MAX_LOGS) debugContainer.removeChild(debugContainer.firstChild);
 }
 
-// 2. Bajak Console Bawaan (Supaya semua tercatat)
+// Bajak Console (Supaya error tampil di layar HP)
 const originalLog = console.log;
 const originalWarn = console.warn;
 const originalError = console.error;
 
-console.log = function(...args) {
-    originalLog(...args);
-    // Cek apakah user dev sudah login, jika ya, tampilkan di UI
-    if (user && user.role === 'developer') {
-        addLog('LOG', args.join(' '));
-    }
-};
+console.log = function(...args) { originalLog(...args); if (isDev()) addLog('LOG', args.join(' ')); };
+console.warn = function(...args) { originalWarn(...args); if (isDev()) addLog('WARN', args.join(' ')); };
+console.error = function(...args) { originalError(...args); if (isDev()) addLog('ERROR', args.join(' ')); };
 
-console.warn = function(...args) {
-    originalWarn(...args);
-    if (user && user.role === 'developer') addLog('WARN', args.join(' '));
-};
+// Deteksi User Developer / God Mode
+function isDev() {
+    return user && (user.role === 'developer' || user.rank === 'GOD MODE' || user.username === 'sigit123');
+}
 
-console.error = function(...args) {
-    originalError(...args);
-    if (user && user.role === 'developer') addLog('ERROR', args.join(' '));
-};
-
-// 3. Pelacak Sentuhan/Klik (Spy User Interaction)
+// Spy Klik (Melacak apa yang dipencet)
 document.addEventListener('click', (e) => {
-    if (user && user.role === 'developer') {
+    if (isDev()) {
         const target = e.target;
-        const id = target.id ? `#${target.id}` : '';
-        const cls = target.className ? `.${target.className.split(' ')[0]}` : '';
         const text = target.innerText ? `"${target.innerText.substring(0, 15)}..."` : '';
-        
-        addLog('ACTION', `Click: ${target.tagName}${id}${cls}`, text);
+        addLog('ACTION', `Click: ${target.tagName}`, text);
     }
 }, true);
 
-// 4. Global Error Handler (Tangkap Error Merah)
-window.onerror = function(msg, url, lineNo, columnNo, error) {
-    if (user && user.role === 'developer') {
-        addLog('ERROR', 'CRITICAL SYSTEM ERROR', `${msg}\nLine: ${lineNo}`);
-    }
+// Tangkap Error Merah
+window.onerror = function(msg, url, lineNo) {
+    if (isDev()) addLog('ERROR', 'SYSTEM CRASH', `${msg}\nLine: ${lineNo}`);
     return false;
 };
 
-// 5. Fungsi Kontrol UI
+// Fungsi Tombol UI
 window.toggleDebugPanel = () => {
     const panel = document.getElementById('debug-panel');
     panel.classList.toggle('active');
-    // Hitung memori (Estimasi kasar)
     if (performance && performance.memory) {
         const mem = Math.round(performance.memory.usedJSHeapSize / 1024 / 1024);
         document.getElementById('debug-memory').innerText = `Mem: ${mem}MB`;
     }
 }
-
-window.clearDebugLogs = () => {
-    if(debugContainer) debugContainer.innerHTML = '';
-    addLog('SYSTEM', 'Log dibersihkan.');
-}
-
+window.clearDebugLogs = () => { if(debugContainer) debugContainer.innerHTML = ''; addLog('SYSTEM', 'Log dibersihkan.'); }
 window.execDebugCmd = (input) => {
-    const cmd = input.value;
-    addLog('SYSTEM', 'Exec:', cmd);
-    try {
-        const result = eval(cmd); // Hati-hati, tapi berguna buat dev
-        addLog('LOG', 'Result:', result);
-    } catch (e) {
-        addLog('ERROR', 'Exec Failed:', e.message);
-    }
+    const cmd = input.value; addLog('SYSTEM', 'Exec:', cmd);
+    try { const result = eval(cmd); addLog('LOG', 'Result:', result); } catch (e) { addLog('ERROR', 'Exec Failed:', e.message); }
     input.value = '';
 }
 
-// 6. Aktifkan Tombol Hanya Untuk Developer
-// Panggil fungsi ini di initApp() atau setelah login
-window.checkDevDebug = () => {
-    if (user && user.role === 'developer') {
-        const btn = document.getElementById('debug-floating-btn');
-        if(btn) btn.classList.remove('hidden');
-        addLog('SYSTEM', 'Debug Manajer Aktif', 'Monitoring dimulai...');
+// FUNGSI UTAMA: MUNCULKAN TOMBOL
+// Jalan otomatis setiap 2 detik untuk ngecek status login
+setInterval(() => {
+    const btn = document.getElementById('debug-floating-btn');
+    if (btn && isDev()) {
+        btn.classList.remove('hidden'); // Hapus class hidden biar muncul
     }
-}
+}, 2000);
 
-// Panggil checkDevDebug setiap kali script dimuat
-setTimeout(checkDevDebug, 2000);
+// Cek awal saat load
+setTimeout(() => {
+    if(isDev()) {
+        addLog('SYSTEM', 'Debug Manajer Siap', 'Selamat datang, Developer!');
+        document.getElementById('debug-floating-btn').classList.remove('hidden');
+    }
+}, 1000);
